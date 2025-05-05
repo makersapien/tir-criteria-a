@@ -1,0 +1,215 @@
+{
+    "distance": {
+      "strand2": [
+        {
+          "level": 8,
+          "answers": [
+            "The magnetic field strength decreases inversely with distance, consistent with the inverse square law.",
+            "As distance increases, the field strength falls sharply, showing an inverse proportionality.",
+            "There is a clear nonlinear decrease — field lines spread and weaken with distance."
+          ]
+        },
+        {
+          "level": 6,
+          "answers": [
+            "The graph shows a negative correlation between distance and magnetic field strength.",
+            "As distance increases, the field strength goes down in a consistent trend.",
+            "There’s a downward trend indicating weakening of magnetic field."
+          ]
+        },
+        {
+          "level": 4,
+          "answers": [
+            "When the magnet is far, the magnetic field is less.",
+            "Distance goes up, field strength goes down.",
+            "The magnet is weaker when it's farther away."
+          ]
+        }
+      ],
+      "strand3": [
+        {
+          "level": 8,
+          "answers": [
+            "The hypothesis predicted an inverse relationship and the data supported this through a nonlinear decrease.",
+            "The results match the hypothesis, both conceptually and quantitatively, with an R² value over 0.95.",
+            "Hypothesis stated inverse relation, which is consistent with the steep drop in field values observed."
+          ]
+        },
+        {
+          "level": 6,
+          "answers": [
+            "The hypothesis was correct, the field strength decreased as expected.",
+            "Trend supports the prediction — distance and strength are negatively related.",
+            "There was a clear drop in field strength as predicted."
+          ]
+        },
+        {
+          "level": 4,
+          "answers": [
+            "Yes, my hypothesis was right.",
+            "My prediction was correct.",
+            "The results agree with my hypothesis."
+          ]
+        }
+      ],
+      "strand4": [
+        {
+          "level": 8,
+          "answers": [
+            "There were slight angle misalignments and inconsistent placement of sensors.",
+            "Possible error sources include magnet misalignment and human reading error.",
+            "Some distance readings were not exact, introducing uncertainty in field values."
+          ]
+        },
+        {
+          "level": 6,
+          "answers": [
+            "There were a few mistakes in keeping the distance fixed.",
+            "Sometimes the setup moved while taking reading.",
+            "There might be some measurement errors."
+          ]
+        },
+        {
+          "level": 4,
+          "answers": [
+            "I made some mistakes in the experiment.",
+            "It worked but could be better.",
+            "Some problems happened."
+          ]
+        }
+      ],
+      "strand5": [
+        {
+          "level": 8,
+          "answers": [
+            "Use a fixed mount for the magnet and laser alignment for sensor.",
+            "Repeat trials and average readings to improve accuracy.",
+            "Replace manual measurement with digital distance sensors."
+          ]
+        },
+        {
+          "level": 6,
+          "answers": [
+            "Do more trials.",
+            "Use a better measuring tape.",
+            "Be more careful when placing the magnet."
+          ]
+        },
+        {
+          "level": 4,
+          "answers": [
+            "Try not to make mistakes.",
+            "Use a better method.",
+            "Improve the setup."
+          ]
+        }
+      ]
+    },
+    "magnets": {
+      "strand2": [
+        {
+          "level": 8,
+          "answers": [
+            "The field strength increases with magnet count, approaching saturation — a nonlinear relationship.",
+            "It’s a direct but leveling trend — similar to a square root or logarithmic curve.",
+            "More magnets increase the field strength but the rate of increase reduces."
+          ]
+        },
+        {
+          "level": 6,
+          "answers": [
+            "The field gets stronger with more magnets, but not linearly.",
+            "Field strength increases with magnet number.",
+            "There is a positive correlation between number and strength."
+          ]
+        },
+        {
+          "level": 4,
+          "answers": [
+            "More magnets make the field stronger.",
+            "Adding magnets increases the power.",
+            "It becomes more powerful with more magnets."
+          ]
+        }
+      ],
+      "strand3": [
+        {
+          "level": 8,
+          "answers": [
+            "The hypothesis assumed a linear relation but the graph shows saturation — partially correct.",
+            "Data shows a direct trend with decreasing rate — the hypothesis was simplistic.",
+            "Quantitatively, the hypothesis overestimated field growth — data suggests a cap."
+          ]
+        },
+        {
+          "level": 6,
+          "answers": [
+            "Prediction was right but maybe not fully accurate.",
+            "There is some match with the hypothesis.",
+            "The trend was like what I expected."
+          ]
+        },
+        {
+          "level": 4,
+          "answers": [
+            "Yes, my prediction was correct.",
+            "It worked how I thought.",
+            "I was right in my hypothesis."
+          ]
+        }
+      ],
+      "strand4": [
+        {
+          "level": 8,
+          "answers": [
+            "Magnets weren’t uniformly stacked, leading to uneven fields.",
+            "Sensor placement could have shifted slightly each time.",
+            "Some readings were off due to alignment issues."
+          ]
+        },
+        {
+          "level": 6,
+          "answers": [
+            "Magnets may not have been placed perfectly.",
+            "Some data might be wrong.",
+            "The readings were not always consistent."
+          ]
+        },
+        {
+          "level": 4,
+          "answers": [
+            "There were small mistakes.",
+            "The method had issues.",
+            "Some problems happened during test."
+          ]
+        }
+      ],
+      "strand5": [
+        {
+          "level": 8,
+          "answers": [
+            "Use a magnet holder with fixed orientation.",
+            "Record at fixed intervals with repeated trials.",
+            "Ensure alignment and use sensors with higher precision."
+          ]
+        },
+        {
+          "level": 6,
+          "answers": [
+            "Use better setup.",
+            "Repeat trials for more accuracy.",
+            "Hold magnets properly next time."
+          ]
+        },
+        {
+          "level": 4,
+          "answers": [
+            "Make it better next time.",
+            "Fix the errors.",
+            "Try again with improvements."
+          ]
+        }
+      ]
+    }
+  }
+  

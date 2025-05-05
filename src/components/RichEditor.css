@@ -1,0 +1,60 @@
+/* src/components/RichEditor.css */
+.editor-wrapper {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px;
+    background: #fff;
+  }
+  
+  .editor-toolbar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  
+  .editor-toolbar button {
+    background: #f1f1f1;
+    border: 1px solid #ccc;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .editor-content {
+    min-height: 200px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1em;
+  }
+  
+  th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+  }
+  .editor-content table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .editor-content td,
+  .editor-content th {
+    border: 1px solid #ccc;
+    padding: 4px;
+  }
+  
+  .editor-toolbar button {
+    background: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .editor-toolbar button:hover {
+    background-color: #e5e5e5;
+  }
+  

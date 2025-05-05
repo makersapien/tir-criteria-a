@@ -1,0 +1,57 @@
+{
+    "distance": {
+      "strand1": {
+        "level3-4": "Ensure your table is clear and organized with correct labels.",
+        "level5-6": "Add a well-labelled graph showing a trend between distance and strength.",
+        "level7-8": "Calculate averages and draw a trendline. Include units and significant figures."
+      },
+      "strand2": {
+        "level3-4": "Accurately describe what happens as distance increases.",
+        "level5-6": "Identify the relationship between distance and magnet strength.",
+        "level7-8": "Explain the decrease using magnetic field theory — inverse square law or field line spread."
+      },
+      "strand3": {
+        "level3-4": "State if your hypothesis was correct with supporting data.",
+        "level5-6": "Mention trends in the graph and back your conclusion with evidence.",
+        "level7-8": "Discuss strengths and weaknesses in your prediction. Reflect on the scientific reasoning behind the results."
+      },
+      "strand4": {
+        "level3-4": "Say whether the method worked and support it with data.",
+        "level5-6": "Point out what went well or what issues occurred during your experiment.",
+        "level7-8": "Discuss limitations like alignment of magnets, measurement errors, or inconsistent distances."
+      },
+      "strand5": {
+        "level3-4": "Suggest one valid way to improve the experiment.",
+        "level5-6": "Give improvements based on specific weaknesses like measurement errors.",
+        "level7-8": "Suggest improvements like digital measuring tools, repeated trials, and removing external variables."
+      }
+    },
+    "magnets": {
+      "strand1": {
+        "level3-4": "Label your table clearly with trials and number of magnets.",
+        "level5-6": "Graph your results showing how magnet count affects strength.",
+        "level7-8": "Include averages and use a line graph with trends and units."
+      },
+      "strand2": {
+        "level3-4": "Describe how magnet strength changes with more magnets.",
+        "level5-6": "Identify the pattern — does strength increase linearly or not?",
+        "level7-8": "Use reasoning: magnetic fields combine, creating a stronger unified field."
+      },
+      "strand3": {
+        "level3-4": "Say if your prediction was correct and refer to your data.",
+        "level5-6": "Refer to both your data and your graph to support or refute the hypothesis.",
+        "level7-8": "Discuss gaps in your hypothesis — did it assume linearity or overlook saturation effects?"
+      },
+      "strand4": {
+        "level3-4": "Say if the method helped you get an answer.",
+        "level5-6": "Mention limitations like uneven stacking or varying alignment of magnets.",
+        "level7-8": "Critically evaluate the experimental setup — was it repeatable, accurate, and valid?"
+      },
+      "strand5": {
+        "level3-4": "Propose one improvement like more trials.",
+        "level5-6": "Suggest using a magnetometer or better alignment tools.",
+        "level7-8": "Give detailed improvements for all weaknesses — tool precision, alignment control, and better data collection."
+      }
+    }
+  }
+  

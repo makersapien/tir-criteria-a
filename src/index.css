@@ -1,0 +1,29 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.ck-content table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  .ck-content table, .ck-content th, .ck-content td {
+    border: 1px solid #ccc;
+    padding: 8px;
+  }
+  
+  .ck-content th {
+    background-color: #f5f5f5;
+  }
+  
+  .ck-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1rem 0;
+  }
+  /* Glowing border for level 8 */
+.glow-border {
+  box-shadow: 0 0 8px 2px #34d399, 0 0 12px 4px #10b981;
+  transition: box-shadow 0.3s ease-in-out;
+}

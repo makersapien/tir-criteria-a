@@ -1,0 +1,46 @@
+{
+    "distance": {
+      "strand2": [
+        "Make sure to describe the shape of the graph (linear, curved, etc.).",
+        "Mention whether the field strength decreases proportionally or not.",
+        "Use physics terms like 'inverse square' or 'field line density' to explain drop."
+      ],
+      "strand3": [
+        "Refer back to your hypothesis statement.",
+        "Explain why your hypothesis was or wasn’t correct using data.",
+        "Discuss how your prediction could be improved."
+      ],
+      "strand4": [
+        "Mention specific experimental errors like alignment or measurement gaps.",
+        "Reflect on consistency of your method.",
+        "Was your setup valid and repeatable?"
+      ],
+      "strand5": [
+        "Mention specific tools or techniques that would improve precision.",
+        "Suggest improvements based on the flaws you found.",
+        "Think of changes that would help others replicate your setup better."
+      ]
+    },
+    "magnets": {
+      "strand2": [
+        "Describe the type of graph — is it straight or curving?",
+        "Talk about how magnet count affects the shape.",
+        "Is the field increase slowing down or still growing fast?"
+      ],
+      "strand3": [
+        "Go beyond 'yes/no' — explain using actual graph trend.",
+        "Mention mismatch if the trend is not what you expected.",
+        "Compare your prediction to what really happened."
+      ],
+      "strand4": [
+        "Was your magnet stack always the same?",
+        "Was alignment consistent?",
+        "Could human error affect the readings?"
+      ],
+      "strand5": [
+        "Think of changes to avoid those errors in future.",
+        "More trials? Better tools?",
+        "Would someone else be able to get the same results?"
+      ]
+    }
+  }

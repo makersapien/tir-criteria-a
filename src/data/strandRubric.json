@@ -1,0 +1,134 @@
+{
+  "experiments": {
+    "distance": {
+      "title": "Effect of Distance on Magnetic Field Strength",
+      "strands": {
+        "strand1": {
+          "keywords": [
+            { "label": "data table", "level": 3, "words": ["table", "data table", "structured table"] },
+            { "label": "graph with labels", "level": 5, "words": ["graph", "labeled graph", "x-axis", "y-axis"] },
+            { "label": "average with trendline", "level": 7, "words": ["average", "trendline", "significant figures", "units"] }
+          ],
+          "concepts": [
+            { "label": "organized presentation", "level": 3, "words": ["organized", "clear", "neat"] },
+            { "label": "visual pattern", "level": 5, "words": ["trend", "pattern", "relationship"] },
+            { "label": "analytical graphing", "level": 7, "words": ["graphical analysis", "data analysis", "inference"] }
+          ]
+        },
+        "strand2": {
+          "keywords": [
+            { "label": "increase/decrease", "level": 3, "words": ["increase", "decrease"] },
+            { "label": "relationship", "level": 5, "words": ["relationship", "proportional", "non-linear"] },
+            { "label": "inverse-square law", "level": 7, "words": ["inverse", "inverse-square", "magnetic field spread", "field theory"] }
+          ],
+          "concepts": [
+            { "label": "field strength change", "level": 3, "words": ["stronger", "weaker", "magnet strength"] },
+            { "label": "pattern recognition", "level": 5, "words": ["trend", "relationship", "link"] },
+            { "label": "magnetic theory", "level": 7, "words": ["field lines", "spread", "distance effect", "scientific explanation"] }
+          ]
+        },
+        "strand3": {
+          "keywords": [
+            { "label": "hypothesis checked", "level": 3, "words": ["correct", "incorrect", "supported"] },
+            { "label": "data and graph linked", "level": 5, "words": ["evidence", "graph shows", "data shows"] },
+            { "label": "scientific reasoning", "level": 7, "words": ["reason", "assumption", "logical explanation"] }
+          ],
+          "concepts": [
+            { "label": "comparison with prediction", "level": 3, "words": ["match", "prediction", "expected"] },
+            { "label": "justified conclusion", "level": 5, "words": ["supported", "justify", "explain with data"] },
+            { "label": "critical reflection", "level": 7, "words": ["evaluate", "bias", "limitation"] }
+          ]
+        },
+        "strand4": {
+          "keywords": [
+            { "label": "method result", "level": 3, "words": ["worked", "did not work", "method successful"] },
+            { "label": "issues identified", "level": 5, "words": ["errors", "mistake", "problem", "limitation"] },
+            { "label": "detailed limitation", "level": 7, "words": ["alignment", "measurement error", "variable control"] }
+          ],
+          "concepts": [
+            { "label": "method evaluation", "level": 3, "words": ["suitable", "not suitable"] },
+            { "label": "error discussion", "level": 5, "words": ["fault", "error", "setup flaw"] },
+            { "label": "validity critique", "level": 7, "words": ["repeatable", "valid", "improvement area"] }
+          ]
+        },
+        "strand5": {
+          "keywords": [
+            { "label": "improvement idea", "level": 3, "words": ["better", "change", "try again"] },
+            { "label": "specific improvement", "level": 5, "words": ["repeat", "more trials", "digital tools"] },
+            { "label": "holistic improvement", "level": 7, "words": ["remove variable", "high accuracy", "detailed fix"] }
+          ],
+          "concepts": [
+            { "label": "experiment tweak", "level": 3, "words": ["adjust", "fix"] },
+            { "label": "tool upgrade", "level": 5, "words": ["equipment", "tool", "technique"] },
+            { "label": "systematic improvement", "level": 7, "words": ["entire process", "system change", "rigorous fix"] }
+          ]
+        }
+      }
+    },
+    "magnets": {
+      "title": "Effect of Number of Magnets on Magnetic Field Strength",
+      "strands": {
+        "strand1": {
+          "keywords": [
+            { "label": "data table", "level": 3, "words": ["table", "rows", "columns"] },
+            { "label": "labeled graph", "level": 5, "words": ["graph", "labels", "x-axis", "y-axis"] },
+            { "label": "trend with averages", "level": 7, "words": ["average", "trend", "units"] }
+          ],
+          "concepts": [
+            { "label": "clear presentation", "level": 3, "words": ["organized", "presented"] },
+            { "label": "visual interpretation", "level": 5, "words": ["interpret", "visual", "graph"] },
+            { "label": "quantitative analysis", "level": 7, "words": ["mean", "analysis", "data processing"] }
+          ]
+        },
+        "strand2": {
+          "keywords": [
+            { "label": "strength increases", "level": 3, "words": ["increases", "more magnets", "stronger"] },
+            { "label": "pattern", "level": 5, "words": ["linear", "non-linear", "pattern"] },
+            { "label": "magnetic field theory", "level": 7, "words": ["combine", "field", "reinforce"] }
+          ],
+          "concepts": [
+            { "label": "magnet behavior", "level": 3, "words": ["magnet", "effect", "strength"] },
+            { "label": "field combination", "level": 5, "words": ["additive", "summation", "field interaction"] },
+            { "label": "advanced explanation", "level": 7, "words": ["magnet field", "theory", "scientific reasoning"] }
+          ]
+        },
+        "strand3": {
+          "keywords": [
+            { "label": "hypothesis result", "level": 3, "words": ["match", "correct", "wrong", "right"] },
+            { "label": "data supported", "level": 5, "words": ["graph shows", "data shows", "supported"] },
+            { "label": "reflection", "level": 7, "words": ["assumption", "limitation", "gap", "hypothesis critique"] }
+          ],
+          "concepts": [
+            { "label": "comparison", "level": 3, "words": ["compare", "check", "correct"] },
+            { "label": "evidence support", "level": 5, "words": ["support", "evidence", "trend"] },
+            { "label": "reasoning analysis", "level": 7, "words": ["saturation", "non-linearity", "error in thinking"] }
+          ]
+        },
+        "strand4": {
+          "keywords": [
+            { "label": "method outcome", "level": 3, "words": ["worked", "didn't work", "result"] },
+            { "label": "limitations", "level": 5, "words": ["limitation", "flaw", "error"] },
+            { "label": "validity critique", "level": 7, "words": ["valid", "repeatable", "reliable"] }
+          ],
+          "concepts": [
+            { "label": "outcome analysis", "level": 3, "words": ["result", "response"] },
+            { "label": "flaw analysis", "level": 5, "words": ["mistake", "fault"] },
+            { "label": "setup critique", "level": 7, "words": ["alignment", "measurement", "accuracy"] }
+          ]
+        },
+        "strand5": {
+          "keywords": [
+            { "label": "improvement", "level": 3, "words": ["improve", "better", "try again"] },
+            { "label": "specific fix", "level": 5, "words": ["more trials", "repeat", "equipment fix"] },
+            { "label": "holistic improvement", "level": 7, "words": ["systematic", "remove variable", "automation"] }
+          ],
+          "concepts": [
+            { "label": "enhancement", "level": 3, "words": ["better", "enhance"] },
+            { "label": "technical fix", "level": 5, "words": ["tool", "device", "tool change"] },
+            { "label": "complete overhaul", "level": 7, "words": ["system fix", "design improvement"] }
+          ]
+        }
+      }
+    }
+  }
+}

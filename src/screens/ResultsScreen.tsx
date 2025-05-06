@@ -1,7 +1,7 @@
 // src/screens/ResultsScreen.tsx
 import React, { useRef } from 'react';
-import jsPDF from 'jspdf';
 import { useStrandContext } from '../contexts/StrandContext';
+import { generatePDF } from '../utils/generatePDF';
 
 interface Props {
   studentName: string;
@@ -47,73 +47,20 @@ const ResultsScreen: React.FC<Props> = ({
   const totalBadges = Object.values(earnedBadges ?? {}).filter(Boolean).length;
   const downloadLinkRef = useRef<HTMLAnchorElement | null>(null);
 
-  const generatePdfBlob = async () => {
+  const handleGeneratePdf = async () => {
     try {
       setIsPdfGenerating(true);
-      const doc = new jsPDF();
-      let y = 20;
-
-      doc.setFontSize(16);
-      doc.text(`Lab Report - ${studentName}`, 105, y, { align: 'center' });
-      y += 10;
-
-      doc.setFontSize(12);
-      doc.text(`Experiment: ${experimentData[experimentChoice]?.title}`, 20, y); y += 8;
-      doc.text(`Student: ${studentName}`, 20, y); y += 8;
-      doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, y); y += 8;
-      doc.text(`Total Score: ${totalScore}/40`, 20, y); y += 8;
-      doc.text(`Points: ${points}`, 20, y); y += 8;
-      doc.text(`Badges Earned: ${totalBadges}/5`, 20, y); y += 12;
-
-      for (let i = 0; i < 5; i++) {
-        doc.setFont('helvetica', 'bold');
-        doc.text(`${i + 1}. Strand ${i + 1}`, 20, y); y += 8;
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Level: ${strandProgress[i] || 0}/8`, 20, y); y += 6;
-        doc.text('Content:', 20, y); y += 6;
-
-        const rawHtml = userInputs[`strand${i + 1}`]?.level8 || '';
-        const div = document.createElement('div');
-        div.innerHTML = rawHtml;
-
-        for (const node of Array.from(div.childNodes)) {
-          if (node.nodeType === 3) {
-            const text = doc.splitTextToSize(node.textContent || '', 170);
-            doc.text(text, 20, y);
-            y += text.length * 6;
-          } else if (node.nodeName === 'IMG') {
-            const img = node as HTMLImageElement;
-            if (img.src.startsWith('data:image')) {
-              doc.addImage(img.src, 'JPEG', 20, y, 100, 60);
-              y += 65;
-            }
-          } else if (node.nodeType === 1) {
-            const el = node as HTMLElement;
-            const text = doc.splitTextToSize(el.innerText, 170);
-            doc.text(text, 20, y);
-            y += text.length * 6;
-          }
-
-          if (y > 270) {
-            doc.addPage();
-            y = 20;
-          }
-        }
-
-        y += 10;
-      }
-
-      // Add badge summary
-      const badgeLines = Object.entries(earnedBadges).map(([k, v]) => `${k}: ${v ? '✓' : '✗'}`);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Badges:', 20, y); y += 8;
-      doc.setFont('helvetica', 'normal');
-      badgeLines.forEach(line => { doc.text(line, 20, y); y += 6; });
-
-      const pdfBlob = doc.output('blob');
-      const url = URL.createObjectURL(pdfBlob);
+      const blob = await generatePDF({
+        studentName,
+        experimentTitle: experimentData[experimentChoice]?.title,
+        strandProgress,
+        userInputs,
+        points,
+        earnedBadges,
+      });
+  
+      const url = URL.createObjectURL(blob);
       setPdfDataUrl(url);
-
     } catch (e) {
       alert('Failed to generate PDF');
       console.error(e);
@@ -121,7 +68,6 @@ const ResultsScreen: React.FC<Props> = ({
       setIsPdfGenerating(false);
     }
   };
-
   const handleReset = () => {
     setScreen('welcome');
     setStudentName('');
@@ -190,7 +136,8 @@ const ResultsScreen: React.FC<Props> = ({
 
       <div className="flex flex-col gap-4 mt-6">
         <button
-          onClick={generatePdfBlob}
+          onClick={handleGeneratePdf}
+
           disabled={isPdfGenerating}
           className="bg-green-600 text-white py-3 rounded-lg hover:bg-green-700"
         >

@@ -57,4 +57,208 @@
   .editor-toolbar button:hover {
     background-color: #e5e5e5;
   }
+  /* src/components/RichEditor.css */
+
+.editor-wrapper {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  overflow: hidden;
+}
+
+/* Toolbar layout */
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.editor-toolbar button {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editor-toolbar button:hover {
+  background-color: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.editor-toolbar button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #60a5fa55;
+}
+
+.editor-toolbar label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+/* Editor content area */
+.editor-content {
+  padding: 16px;
+  min-height: 250px;
+  line-height: 1.6;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+/* Table styles */
+.editor-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1em;
+  background: white;
+}
+
+.editor-content th,
+.editor-content td {
+  border: 1px solid #cbd5e1;
+  padding: 8px;
+  text-align: left;
+}
+
+.editor-content th {
+  background-color: #f1f5f9;
+  font-weight: 600;
+}
+
+.editor-content td {
+  background-color: #ffffff;
+}
+
+/* Table popup */
+.popup {
+  z-index: 4000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  font-size: 14px;
+}
+
+.popup input[type="number"] {
+  width: 60px;
+  padding: 4px 6px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  margin-left: 6px;
+}
+
+.popup h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+/* src/components/RichEditor.css */
+
+.editor-wrapper {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px;
+  background: #fff;
+  position: relative;
+  overflow: visible;  /* <-- allow popup to spill */
   
+}
+
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+.editor-toolbar button {
+  padding: 6px 10px;
+  font-weight: bold;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.editor-toolbar button:hover {
+  background-color: #e2e8f0;
+  border-color: #a0aec0;
+}
+
+.upload-label {
+  font-size: 0.875rem;
+  color: #333;
+  cursor: pointer;
+  position: relative;
+}
+
+.upload-label input {
+  display: none;
+}
+
+.editor-content {
+  padding: 16px;
+  min-height: 220px;
+  font-size: 1rem;
+}
+
+.editor-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1em;
+}
+
+.editor-content th,
+.editor-content td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+.popup {
+  position: absolute;
+  top: 60px;
+  left: 12px;
+  width: 240px;
+  background: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  z-index: 4000;
+  border-radius: 6px;
+  overflow-y: auto;
+}
+
+.popup h4 {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.popup label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.popup input {
+  width: 60px;
+  margin-left: 6px;
+  padding: 4px;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

@@ -1,5 +1,6 @@
 // src/components/RichEditor.tsx
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -7,6 +8,7 @@ import Table from '@tiptap/extension-table';
 import TableRow from '@tiptap/extension-table-row';
 import TableHeader from '@tiptap/extension-table-header';
 import TableCell from '@tiptap/extension-table-cell';
+import GraphFromTablePopup from './GraphFromTablePopup';
 import './RichEditor.css';
 
 interface Props {
@@ -16,6 +18,7 @@ interface Props {
 
 const RichEditor: React.FC<Props> = ({ content, onChange }) => {
   const [showTablePopup, setShowTablePopup] = useState(false);
+  const [showGraphPopup, setShowGraphPopup] = useState(false);
   const [tableRows, setTableRows] = useState(2);
   const [tableCols, setTableCols] = useState(2);
 
@@ -38,7 +41,7 @@ const RichEditor: React.FC<Props> = ({ content, onChange }) => {
     const reader = new FileReader();
     reader.onload = () => {
       const base64 = reader.result as string;
-      editor?.chain().focus().setImage({ src: base64 }).run();
+      editor?.chain().focus().insertContent('<p></p>').setImage({ src: base64 }).run();
     };
     reader.readAsDataURL(file);
   };
@@ -47,7 +50,7 @@ const RichEditor: React.FC<Props> = ({ content, onChange }) => {
     editor?.chain().focus().insertTable({
       rows: tableRows,
       cols: tableCols,
-      withHeaderRow: true
+      withHeaderRow: true,
     }).run();
     setShowTablePopup(false);
   };
@@ -55,14 +58,21 @@ const RichEditor: React.FC<Props> = ({ content, onChange }) => {
   if (!editor) return null;
 
   return (
-    <div className="editor-wrapper relative border rounded-md overflow-hidden bg-white">
+    <div className="editor-wrapper relative border rounded-md overflow-visible bg-white">
       {/* Toolbar */}
-      <div className="editor-toolbar bg-gray-100 px-4 py-2 border-b border-gray-300 flex flex-wrap gap-2 items-center">
-        <button onClick={() => editor.chain().focus().toggleBold().run()} title="Bold" className="font-bold px-2">B</button>
-        <button onClick={() => editor.chain().focus().toggleItalic().run()} title="Italic" className="italic px-2">I</button>
-        <button onClick={() => editor.chain().focus().toggleBulletList().run()} title="Bullet List" className="px-2">• List</button>
-        <button onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} title="Heading 2" className="px-2">H2</button>
-        <button onClick={() => setShowTablePopup(true)} className="px-2 text-blue-600" title="Insert Table">➕ Table</button>
+      <div className="editor-toolbar bg-gray-100 px-4 py-2 border-b border-gray-300 flex flex-wrap gap-2 items-center text-sm">
+        <button onClick={() => editor.chain().focus().toggleBold().run()}>B</button>
+        <button onClick={() => editor.chain().focus().toggleItalic().run()}>I</button>
+        <button onClick={() => editor.chain().focus().toggleBulletList().run()}>• List</button>
+        <button onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>H2</button>
+        <button onClick={() => setShowTablePopup(true)}>➕ Table</button>
+        <button onClick={() => editor.chain().focus().addColumnBefore().run()}>↤ Col</button>
+        <button onClick={() => editor.chain().focus().addColumnAfter().run()}>Col ↦</button>
+        <button onClick={() => editor.chain().focus().addRowBefore().run()}>↑ Row</button>
+        <button onClick={() => editor.chain().focus().addRowAfter().run()}>↓ Row</button>
+        <button onClick={() => editor.chain().focus().deleteColumn().run()}>❌ Col</button>
+        <button onClick={() => editor.chain().focus().deleteRow().run()}>❌ Row</button>
+        <button onClick={() => editor.chain().focus().deleteTable().run()}>🗑️ Table</button>
         <label className="ml-2 text-sm text-gray-700 cursor-pointer">
           📷 Upload Image
           <input
@@ -74,11 +84,12 @@ const RichEditor: React.FC<Props> = ({ content, onChange }) => {
             className="hidden"
           />
         </label>
+        <button onClick={() => setShowGraphPopup(true)}>📈 Graph</button>
       </div>
 
-      {/* Table popup */}
+      {/* Insert Table Popup */}
       {showTablePopup && (
-        <div className="popup bg-white border border-gray-300 rounded shadow-md p-4 absolute z-10 left-4 top-16 w-64">
+        <div className="popup bg-white border border-gray-300 rounded shadow-md p-4 absolute z-10 left-4 top-20 w-64">
           <h4 className="text-sm font-semibold mb-2">Insert Table</h4>
           <label className="block mb-2 text-sm">
             Rows:
@@ -106,6 +117,28 @@ const RichEditor: React.FC<Props> = ({ content, onChange }) => {
           </div>
         </div>
       )}
+
+      {/* Graph Popup Portal */}
+      {showGraphPopup &&
+        ReactDOM.createPortal(
+          <>
+            <div
+              className="fixed inset-0 bg-black bg-opacity-30 z-40"
+              onClick={() => setShowGraphPopup(false)}
+            />
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-auto">
+              <GraphFromTablePopup
+                editor={editor}
+                onClose={() => setShowGraphPopup(false)}
+                onInsert={(img) => {
+                  editor.chain().focus().insertContent('<p></p>').setImage({ src: img }).run();
+                  setShowGraphPopup(false);
+                }}
+              />
+            </div>
+          </>,
+          document.body
+        )}
 
       {/* Editor */}
       <EditorContent editor={editor} className="editor-content p-4" />

@@ -7,10 +7,12 @@ import HighlightText from '../../utils/highlightText';
 import { evaluateStrand } from '../../utils/evaluateStrand';
 import strandTips from '../../data/strandTips.json';
 import MagnetFieldSimulator from '../../components/MagnetFieldSimulator'; // ✅ new import
+import { supabase } from '../../lib/supabaseClient';
 
 interface StrandContentTabsProps {
   currentStrand: number;
   experimentChoice: 'distance' | 'magnets';
+  currentStudentId: string;               // ✅ add this
   onNext: () => void;
   onPrevious: () => void;
 }
@@ -25,6 +27,7 @@ const defaultFeedback = {
 const StrandContentTabs: React.FC<StrandContentTabsProps> = ({
   currentStrand,
   experimentChoice,
+  currentStudentId,
   onNext,
   onPrevious,
 }) => {
@@ -41,6 +44,31 @@ const StrandContentTabs: React.FC<StrandContentTabsProps> = ({
 
   const raw = userInputs[strandKey]?.level8 || '';
   const feedback = feedbackByStrand[strandKey] || defaultFeedback;
+// ✅ Fetch previously saved strand data from Supabase
+  useEffect(() => {
+    const fetchStrands = async () => {
+      const { data, error } = await supabase
+        .from('responses')
+        .select('strand1, strand2, strand3, strand4, strand5')
+        .eq('student_id', currentStudentId)
+        .eq('experiment', experimentChoice)
+        .maybeSingle();
+
+      if (data) {
+        setUserInputs({
+          strand1: { level8: data.strand1 || '' },
+          strand2: { level8: data.strand2 || '' },
+          strand3: { level8: data.strand3 || '' },
+          strand4: { level8: data.strand4 || '' },
+          strand5: { level8: data.strand5 || '' },
+        });
+      }
+    };
+
+    fetchStrands();
+  }, [currentStudentId, experimentChoice]);
+
+// ✅ Evaluate strand after user types input
 
   useEffect(() => {
     const evaluate = async () => {
@@ -135,7 +163,14 @@ const StrandContentTabs: React.FC<StrandContentTabsProps> = ({
             ))}
           </div>
 
-          <RichEditor key={strandKey} content={raw} onChange={handleEditorChange} />
+          <RichEditor
+              key={strandKey}
+              content={raw}
+              onChange={handleEditorChange}
+              currentStudentId={currentStudentId}
+              currentStrand={currentStrand}
+              currentExperimentChoice={experimentChoice}      // ✅ From props
+          />
 
           {/* Live Feedback */}
           <div className={`mt-4 p-4 rounded-md border ${levelColor(feedback.level)}`}>

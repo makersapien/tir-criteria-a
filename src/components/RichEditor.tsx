@@ -1,5 +1,5 @@
 // src/components/RichEditor.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -9,14 +9,25 @@ import TableRow from '@tiptap/extension-table-row';
 import TableHeader from '@tiptap/extension-table-header';
 import TableCell from '@tiptap/extension-table-cell';
 import GraphFromTablePopup from './GraphFromTablePopup';
+import { supabase } from '../lib/supabaseClient'; // ✅ ADD THIS
 import './RichEditor.css';
+import { useStrandSync } from '../hooks/useStrandSync';
 
 interface Props {
   content: string;
   onChange: (value: string) => void;
+  currentStudentId: string; // ✅ You can later get this from AuthContext
+  currentStrand: number;    // ✅ Passed from parent or context
+  currentExperimentChoice: 'distance' | 'magnets'; 
 }
+const RichEditor: React.FC<Props> = ({
+  content,
+  onChange,
+  currentStudentId,
+  currentStrand,
+  currentExperimentChoice, // ✅ ADD THIS
+}) => {
 
-const RichEditor: React.FC<Props> = ({ content, onChange }) => {
   const [showTablePopup, setShowTablePopup] = useState(false);
   const [showGraphPopup, setShowGraphPopup] = useState(false);
   const [tableRows, setTableRows] = useState(2);
@@ -33,9 +44,48 @@ const RichEditor: React.FC<Props> = ({ content, onChange }) => {
     ],
     content,
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      const html = editor.getHTML();
+      onChange(html);
+
+      // ✅ Debounced Supabase sync
+      const strandKey = `strand${currentStrand}`; // e.g., strand1
+      clearTimeout((editor as any)._supabaseTimeout);
+      (editor as any)._supabaseTimeout = setTimeout(async () => {
+        await supabase
+        .from('responses')
+        .upsert(
+          {
+            student_id: currentStudentId,
+            experiment: currentExperimentChoice, // must be passed from parent
+            [strandKey]: html, // updates strandN
+            updated_at: new Date().toISOString(),
+          },
+          {
+            onConflict: 'student_id,experiment',
+          }
+        );
+
+      
+      }, 800);
     },
   });
+
+  useStrandSync({
+    studentId: currentStudentId,
+    experiment: currentExperimentChoice,
+    currentStrand,
+    content,
+    onLoad: (savedContent) => {
+      if (editor && editor.isEmpty) {
+        editor.commands.setContent(savedContent);
+      }
+    },
+    onSave: (status) => {
+      console.log("💾 Save status:", status);
+    },
+  });
+  
+
 
   const addImage = (file: File) => {
     const reader = new FileReader();
@@ -87,7 +137,7 @@ const RichEditor: React.FC<Props> = ({ content, onChange }) => {
         <button onClick={() => setShowGraphPopup(true)}>📈 Graph</button>
       </div>
 
-      {/* Insert Table Popup */}
+      {/* Table Popup */}
       {showTablePopup && (
         <div className="popup bg-white border border-gray-300 rounded shadow-md p-4 absolute z-10 left-4 top-20 w-64">
           <h4 className="text-sm font-semibold mb-2">Insert Table</h4>
@@ -118,7 +168,7 @@ const RichEditor: React.FC<Props> = ({ content, onChange }) => {
         </div>
       )}
 
-      {/* Graph Popup Portal */}
+      {/* Graph Modal Portal */}
       {showGraphPopup &&
         ReactDOM.createPortal(
           <>
@@ -140,7 +190,6 @@ const RichEditor: React.FC<Props> = ({ content, onChange }) => {
           document.body
         )}
 
-      {/* Editor */}
       <EditorContent editor={editor} className="editor-content p-4" />
     </div>
   );

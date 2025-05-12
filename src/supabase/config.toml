@@ -1,0 +1,42 @@
+project_id = "qhjqccpoqingzjhubmyt"
+
+[api]
+url = "https://qhjqccpoqingzjhubmyt.supabase.co"
+port = 54321
+schemas = ["public"]
+extra_search_path = ["extensions"]
+max_rows = 1000
+
+[studio]
+enabled = true
+port = 54323
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = []
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = true
+secure_password_change = false
+max_frequency = "1m0s"
+
+[auth.email.template]
+confirm_email.subject = "Confirm your email"
+confirm_email.content = ""
+magic_link.subject = "Your magic link"
+magic_link.content = ""
+reset_password.subject = "Reset your password"
+reset_password.content = ""
+invite_email.subject = "You're invited!"
+invite_email.content = ""

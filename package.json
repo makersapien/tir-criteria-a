@@ -8,6 +8,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
     "@tiptap/extension-image": "^2.11.9",
     "@tiptap/extension-placeholder": "^2.11.9",
     "@tiptap/extension-table": "^2.11.9",

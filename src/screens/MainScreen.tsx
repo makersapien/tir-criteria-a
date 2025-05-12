@@ -59,7 +59,7 @@ const MainScreen: React.FC<MainScreenProps> = ({
       <StrandContentTabs
         currentStrand={currentStrand}
         experimentChoice={experimentChoice as 'distance' | 'magnets'} // ✅ Cast to correct type
-
+        currentStudentId="demo_student_123"
         onNext={() => {
           if (currentStrand < 5) setCurrentStrand(currentStrand + 1);
           else onNext();

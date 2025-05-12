@@ -9,7 +9,7 @@ import { TrendType } from '../types/graph';
 interface GraphFromTablePopupProps {
   editor: Editor;
   onClose: () => void;
-  onInsert: (img: string) => void; 
+  
 }
 
 const GraphFromTablePopup: React.FC<GraphFromTablePopupProps> = ({ editor, onClose }) => {
@@ -96,105 +96,145 @@ const GraphFromTablePopup: React.FC<GraphFromTablePopupProps> = ({ editor, onClo
   };
 
   return (
-    <div className="popup bg-white border border-gray-300 rounded shadow-md p-4 absolute z-20 left-4 top-24 w-[350px] md:w-[480px]">
-      <h4 className="text-sm font-semibold mb-2">📈 Create Graph from Table</h4>
-
-      <label className="block mb-2 text-sm">
-        Graph Title:
+    <>
+      {/* Dimmed backdrop */}
+      <div className="fixed inset-0 bg-black bg-opacity-40 z-40" onClick={onClose} />
+  
+      {/* Centered popup */}
+      <div className="fixed z-50 bg-white border border-gray-300 rounded-lg shadow-lg p-6 w-[90%] max-w-xl left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          📈 Create Graph from Table
+        </h4>
+  
+        {/* Graph Title */}
+        <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">
+          Graph Title:
+        </label>
         <input
           type="text"
           value={graphTitle}
           onChange={(e) => setGraphTitle(e.target.value)}
-          className="w-full mt-1 border px-2 py-1 text-sm rounded"
+          className="w-full mb-4 border px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-      </label>
+  
+        {/* X & Y Axis Selection */}
+        <div className="flex gap-4 mb-4">
+          <div className="flex-1">
+            <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">
+              X Axis:
+            </label>
+            <select
+              value={xAxis}
+              onChange={(e) => setXAxis(e.target.value)}
+              className="w-full border px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {columns.map((col, i) => (
+                <option key={i} value={col}>
+                  {col}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex-1">
+            <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">
+              Y Axis:
+            </label>
+            <select
+              value={yAxis}
+              onChange={(e) => setYAxis(e.target.value)}
+              className="w-full border px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {columns.map((col, i) => (
+                <option key={i} value={col}>
+                  {col}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+  
+        {/* Graph Type & Trendline */}
+        <div className="flex gap-4 mb-4">
+          <div className="flex-1">
+            <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">
+              Graph Type:
+            </label>
+            <select
+              value={graphType}
+              onChange={(e) => setGraphType(e.target.value as any)}
+              className="w-full border px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="scatter">Scatter</option>
+              <option value="bar">Bar</option>
+            </select>
+          </div>
+          <div className="flex-1">
+            <label className="block text-xs font-semibold text-gray-600 uppercase mb-1">
+              Trendline:
+            </label>
+            <select
+              value={trendType}
+              onChange={(e) => setTrendType(e.target.value as any)}
+              disabled={graphType === 'bar'} // disable trendline for bar
+              className={`w-full border px-3 py-2 text-sm rounded focus:outline-none focus:ring-2 ${graphType === 'bar' ? 'bg-gray-200 cursor-not-allowed' : 'focus:ring-blue-500'}`}
+            >
+              <option value="none">None</option>
+              <option value="linear">Linear (y = mx + c)</option>
+              <option value="proportional">Direct (y = mx)</option>
+              <option value="inverse">Inverse (y = m/x)</option>
+              <option value="polynomial">Polynomial (y = mxⁿ + c)</option>
+            </select>
+          </div>
+        </div>
+  
+        {/* Preview Note */}
+        <p className="text-sm text-gray-500 mb-2">
+          Preview your graph and equation before inserting.
+        </p>
+  
+        {/* Graph Preview */}
+        <div className="bg-gray-100 border rounded p-3 mb-4">
+        {graphType === 'scatter' && (
+          <GraphPreview
+            xData={graphData.x}
+            yData={graphData.y}
+            title={graphTitle}
+            xLabel={xAxis}
+            yLabel={yAxis}
+            type={graphType}
+            trendline={trendResult}
+          />
+          )}
+          {graphType === 'bar' && (
+            <GraphPreview
+              xData={graphData.x}
+              yData={graphData.y}
+              title={graphTitle}
+              xLabel={xAxis}
+              yLabel={yAxis}
+              type={graphType}
+              trendline={{ type: 'none', equation: '', r2: 0 }}
+            />
+        )}
 
-      <div className="flex gap-2 mb-2">
-        <label className="flex-1 text-sm">
-          X Axis:
-          <select
-            className="w-full mt-1 border px-2 py-1 text-sm rounded"
-            value={xAxis}
-            onChange={(e) => setXAxis(e.target.value)}
+        </div>
+  
+        {/* Buttons */}
+        <div className="flex justify-end gap-3">
+          <button onClick={onClose} className="text-sm text-gray-600 hover:text-gray-900">
+            Cancel
+          </button>
+          <button
+            onClick={insertGraph}
+            className="bg-blue-600 text-white px-4 py-2 text-sm rounded hover:bg-blue-700 transition"
           >
-            {columns.map((col, i) => (
-              <option key={i} value={col}>
-                {col}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex-1 text-sm">
-          Y Axis:
-          <select
-            className="w-full mt-1 border px-2 py-1 text-sm rounded"
-            value={yAxis}
-            onChange={(e) => setYAxis(e.target.value)}
-          >
-            {columns.map((col, i) => (
-              <option key={i} value={col}>
-                {col}
-              </option>
-            ))}
-          </select>
-        </label>
+            Insert Graph
+          </button>
+        </div>
       </div>
-
-      <div className="flex gap-2 mb-3">
-        <label className="flex-1 text-sm">
-          Graph Type:
-          <select
-            className="w-full mt-1 border px-2 py-1 text-sm rounded"
-            value={graphType}
-            onChange={(e) => setGraphType(e.target.value as any)}
-          >
-            <option value="scatter">Scatter</option>
-            <option value="bar">Bar</option>
-          </select>
-        </label>
-        <label className="flex-1 text-sm">
-          Trendline:
-          <select
-            className="w-full mt-1 border px-2 py-1 text-sm rounded"
-            value={trendType}
-            onChange={(e) => setTrendType(e.target.value as TrendType)}
-          >
-            <option value="none">None</option>
-            <option value="linear">Linear (y = mx + c)</option>
-            <option value="proportional">Direct (y = mx)</option>
-            <option value="inverse">Inverse (y = m/x)</option>
-            <option value="polynomial">Polynomial (y = mxⁿ + c)</option>
-          </select>
-        </label>
-      </div>
-
-      <div className="text-sm mb-3 text-gray-500">Preview your graph and equation before inserting.</div>
-
-      <div className="bg-gray-100 border rounded p-2 mb-3">
-        <GraphPreview
-          xData={graphData.x}
-          yData={graphData.y}
-          title={graphTitle}
-          xLabel={xAxis}
-          yLabel={yAxis}
-          type={graphType}
-          trendline={trendResult}
-        />
-      </div>
-
-      <div className="flex justify-between items-center mt-2">
-        <button onClick={onClose} className="text-sm text-gray-500">
-          Cancel
-        </button>
-        <button
-          onClick={insertGraph}
-          className="bg-blue-600 text-white px-4 py-1 rounded text-sm hover:bg-blue-700 transition"
-        >
-          Insert Graph
-        </button>
-      </div>
-    </div>
+    </>
   );
+  
 };
 
 export default GraphFromTablePopup;

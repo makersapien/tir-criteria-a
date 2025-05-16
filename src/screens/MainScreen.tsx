@@ -41,9 +41,9 @@ const MainScreen: React.FC<MainScreenProps> = ({
 
   // ✅ Extract student name from URL (e.g., ?name=Maya)
   const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
+  const searchParams = new URLSearchParams(window.location.search);
   const studentName = searchParams.get('name') ?? 'unknown_student';
-
+  const sessionCode = searchParams.get('sessionCode');
   return (
     <div className="main-screen px-6 py-4 space-y-6">
       <div className="flex justify-between items-center px-4 py-3 bg-orange-600 text-white rounded-md shadow-md">
@@ -68,6 +68,7 @@ const MainScreen: React.FC<MainScreenProps> = ({
         currentStrand={currentStrand}
         experimentChoice={experimentChoice as 'distance' | 'magnets'}
         currentStudentId={studentName} // ✅ Use dynamic ID from URL
+        sessionCode={sessionCode} // ✅ NEW LINE
         onNext={() => {
           if (currentStrand < 5) setCurrentStrand(currentStrand + 1);
           else onNext();

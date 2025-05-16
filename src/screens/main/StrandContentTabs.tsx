@@ -12,7 +12,8 @@ import { supabase } from '../../lib/supabaseClient';
 interface StrandContentTabsProps {
   currentStrand: number;
   experimentChoice: 'distance' | 'magnets';
-  currentStudentId: string;               // ✅ add this
+  currentStudentId: string;
+  sessionCode: string; // ✅ Add this line               // ✅ add this
   onNext: () => void;
   onPrevious: () => void;
 }
@@ -28,6 +29,7 @@ const StrandContentTabs: React.FC<StrandContentTabsProps> = ({
   currentStrand,
   experimentChoice,
   currentStudentId,
+  sessionCode, 
   onNext,
   onPrevious,
 }) => {
@@ -170,6 +172,7 @@ const StrandContentTabs: React.FC<StrandContentTabsProps> = ({
               currentStudentId={currentStudentId}
               currentStrand={currentStrand}
               currentExperimentChoice={experimentChoice}      // ✅ From props
+              sessionCode={sessionCode}
           />
 
           {/* Live Feedback */}

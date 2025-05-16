@@ -79,7 +79,7 @@ export const useStrandSync = ({
             updated_at: new Date().toISOString(),
           },
           {
-            onConflict: 'student_id,experiment,session_code,strandhoot',
+            onConflict: 'student_id,experiment'
           }
         );
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useStrandContext } from '../contexts/StrandContext';
+import { evaluateStrand } from '../utils/evaluateStrand'; // ✅ Make sure this exists
 
 interface UseStrandSyncProps {
   studentId: string;
@@ -27,13 +28,14 @@ export const useStrandSync = ({
   const [syncStatus, setSyncStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
 
   const strandKey = `strand${currentStrand}`;
+  const levelKey = `strand${currentStrand}_level`;
 
   // Load
   useEffect(() => {
     const loadStrand = async () => {
       const { data, error } = await supabase
         .from('responses')
-        .select(strandKey)
+        .select(`${strandKey}, ${levelKey}`)
         .eq('student_id', studentId)
         .eq('experiment', experiment)
         .eq('session_code', sessionCode)
@@ -61,6 +63,9 @@ export const useStrandSync = ({
     setSyncStatus('saving');
 
     const timeout = setTimeout(async () => {
+      // ✅ evaluate content for level
+      const { level } = await evaluateStrand(content, experiment as 'distance' | 'magnets', strandKey);
+
       const { error } = await supabase
         .from('responses')
         .upsert(
@@ -70,6 +75,7 @@ export const useStrandSync = ({
             session_code: sessionCode,
             strandhoot,
             [strandKey]: content,
+            [levelKey]: level,
             updated_at: new Date().toISOString(),
           },
           {
@@ -84,12 +90,12 @@ export const useStrandSync = ({
       } else {
         setSyncStatus('success');
         onSave?.('success');
-        setTimeout(() => setSyncStatus('idle'), 2000); // auto-clear after 2s
+        setTimeout(() => setSyncStatus('idle'), 2000);
       }
     }, 800);
 
     return () => clearTimeout(timeout);
-  }, [content, strandKey, studentId, experiment, sessionCode, strandhoot]);
+  }, [content, strandKey, levelKey, studentId, experiment, sessionCode, strandhoot]);
 
   return { syncStatus };
 };

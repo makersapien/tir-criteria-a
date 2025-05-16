@@ -107,6 +107,7 @@ export async function evaluateStrand(
     }
   }
 
+  // ✅ Final level calculation
   const finalLevel =
     strandKey === 'strand1'
       ? Math.round(

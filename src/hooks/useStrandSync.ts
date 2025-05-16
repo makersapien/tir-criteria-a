@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useStrandContext } from '../contexts/StrandContext';
-import { evaluateStrand } from '../utils/evaluateStrand'; // ✅ Make sure this exists
+import { evaluateStrand } from '../utils/evaluateStrand';
 
 interface UseStrandSyncProps {
   studentId: string;
@@ -30,7 +30,7 @@ export const useStrandSync = ({
   const strandKey = `strand${currentStrand}`;
   const levelKey = `strand${currentStrand}_level`;
 
-  // Load
+  // 🧠 Load previously saved content
   useEffect(() => {
     const loadStrand = async () => {
       const { data, error } = await supabase
@@ -38,12 +38,10 @@ export const useStrandSync = ({
         .select(`${strandKey}, ${levelKey}`)
         .eq('student_id', studentId)
         .eq('experiment', experiment)
-        .eq('session_code', sessionCode)
-        .eq('strandhoot', strandhoot)
         .maybeSingle();
 
       if (error) {
-        console.error('Error loading saved content:', error);
+        console.error('❌ Error loading saved content:', error);
         return;
       }
 
@@ -53,38 +51,38 @@ export const useStrandSync = ({
       }
     };
 
-    if (studentId && experiment && strandhoot) {
+    if (studentId && experiment) {
       loadStrand();
     }
-  }, [studentId, experiment, strandKey, sessionCode, strandhoot]);
+  }, [studentId, experiment, strandKey]);
 
-  // Save
+  // 💾 Auto-save on content change
   useEffect(() => {
+    if (!studentId || !experiment || !strandKey || !content) return;
+
     setSyncStatus('saving');
 
     const timeout = setTimeout(async () => {
-      // ✅ evaluate content for level
       const { level } = await evaluateStrand(content, experiment as 'distance' | 'magnets', strandKey);
+
+      const payload = {
+        student_id: studentId,
+        experiment,
+        session_code: sessionCode ?? '', // ensure non-null
+        strandhoot,
+        [strandKey]: content,
+        [levelKey]: level,
+        updated_at: new Date().toISOString(),
+      };
 
       const { error } = await supabase
         .from('responses')
-        .upsert(
-          {
-            student_id: studentId,
-            experiment,
-            session_code: sessionCode,
-            strandhoot,
-            [strandKey]: content,
-            [levelKey]: level,
-            updated_at: new Date().toISOString(),
-          },
-          {
-            onConflict: 'student_id,experiment'
-          }
-        );
+        .upsert(payload, {
+          onConflict: 'student_id,experiment',
+        });
 
       if (error) {
-        console.error('Error saving to Supabase:', error.message);
+        console.error('💥 Error saving to Supabase:', error.message);
         setSyncStatus('error');
         onSave?.('error');
       } else {

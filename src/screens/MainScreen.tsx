@@ -1,8 +1,11 @@
 // src/screens/MainScreen.tsx
+'use client';
+
 import React from 'react';
 import ProgressBarSection from './main/ProgressBarSection';
 import StrandContentTabs from './main/StrandContentTabs';
 import { useStrandContext } from '../contexts/StrandContext';
+import { useLocation } from 'react-router-dom'; // ✅
 
 interface MainScreenProps {
   currentStrand: number;
@@ -36,6 +39,11 @@ const MainScreen: React.FC<MainScreenProps> = ({
 }) => {
   const { userInputs, strandProgress } = useStrandContext();
 
+  // ✅ Extract student name from URL (e.g., ?name=Maya)
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const studentName = searchParams.get('name') ?? 'unknown_student';
+
   return (
     <div className="main-screen px-6 py-4 space-y-6">
       <div className="flex justify-between items-center px-4 py-3 bg-orange-600 text-white rounded-md shadow-md">
@@ -58,8 +66,8 @@ const MainScreen: React.FC<MainScreenProps> = ({
 
       <StrandContentTabs
         currentStrand={currentStrand}
-        experimentChoice={experimentChoice as 'distance' | 'magnets'} // ✅ Cast to correct type
-        currentStudentId="demo_student_123"
+        experimentChoice={experimentChoice as 'distance' | 'magnets'}
+        currentStudentId={studentName} // ✅ Use dynamic ID from URL
         onNext={() => {
           if (currentStrand < 5) setCurrentStrand(currentStrand + 1);
           else onNext();

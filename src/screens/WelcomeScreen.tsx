@@ -1,5 +1,5 @@
 // src/screens/WelcomeScreen.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface WelcomeScreenProps {
   onStart: (name: string, experiment: string) => void;
@@ -8,6 +8,15 @@ interface WelcomeScreenProps {
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart }) => {
   const [studentName, setStudentName] = useState('');
   const [experimentChoice, setExperimentChoice] = useState<string | null>(null);
+
+  // ✅ Auto-fill name from URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const nameParam = urlParams.get('name');
+    if (nameParam && nameParam.trim()) {
+      setStudentName(nameParam);
+    }
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-orange-100 to-orange-400">

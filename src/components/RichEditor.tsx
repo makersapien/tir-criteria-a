@@ -1,5 +1,5 @@
 // src/components/RichEditor.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -9,25 +9,26 @@ import TableRow from '@tiptap/extension-table-row';
 import TableHeader from '@tiptap/extension-table-header';
 import TableCell from '@tiptap/extension-table-cell';
 import GraphFromTablePopup from './GraphFromTablePopup';
-import { supabase } from '../lib/supabaseClient'; // ✅ ADD THIS
 import './RichEditor.css';
 import { useStrandSync } from '../hooks/useStrandSync';
 
 interface Props {
   content: string;
   onChange: (value: string) => void;
-  currentStudentId: string; // ✅ You can later get this from AuthContext
-  currentStrand: number;    // ✅ Passed from parent or context
-  currentExperimentChoice: 'distance' | 'magnets'; 
+  currentStudentId: string;
+  currentStrand: number;
+  currentExperimentChoice: 'distance' | 'magnets';
+  sessionCode?: string | null;
 }
+
 const RichEditor: React.FC<Props> = ({
   content,
   onChange,
   currentStudentId,
   currentStrand,
-  currentExperimentChoice, // ✅ ADD THIS
+  currentExperimentChoice,
+  sessionCode = null,
 }) => {
-
   const [showTablePopup, setShowTablePopup] = useState(false);
   const [showGraphPopup, setShowGraphPopup] = useState(false);
   const [tableRows, setTableRows] = useState(2);
@@ -46,33 +47,14 @@ const RichEditor: React.FC<Props> = ({
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
       onChange(html);
-
-      // ✅ Debounced Supabase sync
-      const strandKey = `strand${currentStrand}`; // e.g., strand1
-      clearTimeout((editor as any)._supabaseTimeout);
-      (editor as any)._supabaseTimeout = setTimeout(async () => {
-        await supabase
-        .from('responses')
-        .upsert(
-          {
-            student_id: currentStudentId,
-            experiment: currentExperimentChoice, // must be passed from parent
-            [strandKey]: html, // updates strandN
-            updated_at: new Date().toISOString(),
-          },
-          {
-            onConflict: 'student_id,experiment',
-          }
-        );
-
-      
-      }, 800);
     },
   });
 
-  useStrandSync({
+  const { syncStatus } = useStrandSync({
     studentId: currentStudentId,
     experiment: currentExperimentChoice,
+    sessionCode,
+    strandhoot: 'crit-c-magnetism',
     currentStrand,
     content,
     onLoad: (savedContent) => {
@@ -80,12 +62,7 @@ const RichEditor: React.FC<Props> = ({
         editor.commands.setContent(savedContent);
       }
     },
-    onSave: (status) => {
-      console.log("💾 Save status:", status);
-    },
   });
-  
-
 
   const addImage = (file: File) => {
     const reader = new FileReader();
@@ -135,6 +112,13 @@ const RichEditor: React.FC<Props> = ({
           />
         </label>
         <button onClick={() => setShowGraphPopup(true)}>📈 Graph</button>
+
+        {/* 🟢 Sync Status Indicator */}
+        <span className="ml-auto text-xs text-gray-500">
+          {syncStatus === 'saving' && '🔄 Saving...'}
+          {syncStatus === 'success' && <span className="text-green-600">✅ Synced</span>}
+          {syncStatus === 'error' && <span className="text-red-600">❌ Sync Failed</span>}
+        </span>
       </div>
 
       {/* Table Popup */}

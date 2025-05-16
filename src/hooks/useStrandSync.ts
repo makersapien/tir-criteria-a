@@ -1,77 +1,95 @@
-// src/hooks/useStrandSync.ts
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { useStrandContext } from '../contexts/StrandContext';
 
-interface UseStrandSyncParams {
+interface UseStrandSyncProps {
   studentId: string;
-  experiment: 'distance' | 'magnets';
+  experiment: string;
+  sessionCode?: string | null;
+  strandhoot: string;
   currentStrand: number;
   content: string;
-  onLoad: (loaded: string) => void;
-  onSave?: (status: 'saving' | 'saved' | 'error') => void;
+  onLoad?: (content: string) => void;
+  onSave?: (status: 'success' | 'error') => void;
 }
 
-export function useStrandSync({
+export const useStrandSync = ({
   studentId,
   experiment,
+  sessionCode = null,
+  strandhoot,
   currentStrand,
   content,
   onLoad,
   onSave,
-}: UseStrandSyncParams) {
-  const strandKey = `strand${currentStrand}` as
-    | 'strand1'
-    | 'strand2'
-    | 'strand3'
-    | 'strand4'
-    | 'strand5';
+}: UseStrandSyncProps) => {
+  const { userInputs } = useStrandContext();
+  const [syncStatus, setSyncStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
 
-  // 1. Load once on mount
+  const strandKey = `strand${currentStrand}`;
+
+  // Load
   useEffect(() => {
-    const load = async () => {
+    const loadStrand = async () => {
       const { data, error } = await supabase
         .from('responses')
-        .select(
-          'strand1, strand2, strand3, strand4, strand5'
-        )
+        .select(strandKey)
         .eq('student_id', studentId)
         .eq('experiment', experiment)
+        .eq('session_code', sessionCode)
+        .eq('strandhoot', strandhoot)
         .maybeSingle();
 
       if (error) {
-        console.warn('[useStrandSync] Fetch error:', error.message);
+        console.error('Error loading saved content:', error);
         return;
       }
 
-      if (data && data[strandKey]) {
-        onLoad(data[strandKey] || '');
+      const savedContent = data?.[strandKey];
+      if (savedContent && onLoad) {
+        onLoad(savedContent);
       }
     };
 
-    load();
-  }, [studentId, experiment, currentStrand]);
+    if (studentId && experiment && strandhoot) {
+      loadStrand();
+    }
+  }, [studentId, experiment, strandKey, sessionCode, strandhoot]);
 
-  // 2. Save on change (debounced)
+  // Save
   useEffect(() => {
-    if (!content.trim()) return;
+    setSyncStatus('saving');
+
     const timeout = setTimeout(async () => {
-      if (onSave) onSave('saving');
       const { error } = await supabase
         .from('responses')
         .upsert(
           {
             student_id: studentId,
             experiment,
+            session_code: sessionCode,
+            strandhoot,
             [strandKey]: content,
             updated_at: new Date().toISOString(),
           },
-          { onConflict: 'student_id,experiment' }
+          {
+            onConflict: 'student_id,experiment,session_code,strandhoot',
+          }
         );
 
-      if (onSave) onSave(error ? 'error' : 'saved');
-      if (error) console.error('[useStrandSync] Save error:', error.message);
+      if (error) {
+        console.error('Error saving to Supabase:', error.message);
+        setSyncStatus('error');
+        onSave?.('error');
+      } else {
+        setSyncStatus('success');
+        onSave?.('success');
+        setTimeout(() => setSyncStatus('idle'), 2000); // auto-clear after 2s
+      }
     }, 800);
 
     return () => clearTimeout(timeout);
-  }, [content, studentId, experiment, currentStrand]);
-}
+  }, [content, strandKey, studentId, experiment, sessionCode, strandhoot]);
+
+  return { syncStatus };
+};

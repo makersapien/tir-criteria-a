@@ -1,6 +1,5 @@
-// src/screens/WelcomeScreen.tsx
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabaseClient'; // ✅ corrected import path
+import { supabase } from '../lib/supabaseClient';
 
 interface WelcomeScreenProps {
   onStart: (name: string, experiment: string) => void;
@@ -11,48 +10,18 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart }) => {
   const [studentId, setStudentId] = useState<string | null>(null);
   const [experimentChoice, setExperimentChoice] = useState<string | null>(null);
 
-  // ✅ Auto-fill name and studentId from URL
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const nameParam = urlParams.get('name');
     const idParam = urlParams.get('studentId');
 
-    if (nameParam && nameParam.trim()) {
-      setStudentName(nameParam);
-    }
-
+    if (nameParam && nameParam.trim()) setStudentName(nameParam);
     if (idParam && /^[0-9a-fA-F-]{36}$/.test(idParam)) {
       setStudentId(idParam);
     } else {
       console.warn('❌ Invalid or missing studentId in URL:', idParam);
     }
   }, []);
-
-  // ✅ Optional: auto-upsert a response row for identification
-  useEffect(() => {
-    const autoInsertParticipant = async () => {
-      if (!studentId || !studentName) return;
-
-      const sessionCode = new URLSearchParams(window.location.search).get('sessionCode');
-      const experiment = new URLSearchParams(window.location.search).get('experiment') ?? 'distance';
-
-      const { error } = await supabase.from('responses').upsert({
-        student_id: studentId,
-        player_name: studentName,
-        session_code: sessionCode,
-        experiment,
-        updated_at: new Date().toISOString(),
-      });
-
-      if (error) {
-        console.error('💥 Error auto-inserting response:', error.message);
-      } else {
-        console.log('✅ Auto-inserted response row for', studentName);
-      }
-    };
-
-    autoInsertParticipant();
-  }, [studentId, studentName]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-orange-100 to-orange-400">
@@ -82,8 +51,41 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart }) => {
           <div className="mb-6">
             <h3 className="text-md font-semibold text-gray-800 mb-2">🏅 Available Badges</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-              {/* badge items */}
-              {/* ... existing badge blocks retained ... */}
+              <div className="border rounded-lg p-3 flex items-start gap-3 bg-orange-50">
+                <span className="text-lg">📊</span>
+                <div>
+                  <p className="font-medium">Data Dynamo</p>
+                  <p className="text-gray-600">Accurate tables and clear graphs</p>
+                </div>
+              </div>
+              <div className="border rounded-lg p-3 flex items-start gap-3 bg-orange-50">
+                <span className="text-lg">🧠</span>
+                <div>
+                  <p className="font-medium">Ace Analyzer</p>
+                  <p className="text-gray-600">Data trend + concept match</p>
+                </div>
+              </div>
+              <div className="border rounded-lg p-3 flex items-start gap-3 bg-orange-50">
+                <span className="text-lg">🎯</span>
+                <div>
+                  <p className="font-medium">Hypothesis Hero</p>
+                  <p className="text-gray-600">Strong hypothesis evaluation</p>
+                </div>
+              </div>
+              <div className="border rounded-lg p-3 flex items-start gap-3 bg-orange-50">
+                <span className="text-lg">🧪</span>
+                <div>
+                  <p className="font-medium">Method Master</p>
+                  <p className="text-gray-600">Clear + safe procedure</p>
+                </div>
+              </div>
+              <div className="border rounded-lg p-3 flex items-start gap-3 bg-orange-50">
+                <span className="text-lg">💡</span>
+                <div>
+                  <p className="font-medium">Innovation Innovator</p>
+                  <p className="text-gray-600">Smart improvement suggestions</p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -126,8 +128,24 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart }) => {
           </div>
 
           <button
-            onClick={() => {
-              if (studentName && experimentChoice) {
+            onClick={async () => {
+              if (!studentId || !studentName || !experimentChoice) return;
+
+              const urlParams = new URLSearchParams(window.location.search);
+              const sessionCode = urlParams.get('sessionCode') ?? 'unknown';
+
+              const { error } = await supabase.from('responses').upsert({
+                student_id: studentId,
+                player_name: studentName,
+                session_code: sessionCode,
+                experiment: experimentChoice,
+                updated_at: new Date().toISOString(),
+              });
+
+              if (error) {
+                console.error('💥 Error syncing experiment:', error.message);
+              } else {
+                console.log('✅ Synced experiment choice for:', studentName);
                 onStart(studentName, experimentChoice);
               }
             }}

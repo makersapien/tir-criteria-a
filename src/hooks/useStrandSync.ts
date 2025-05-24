@@ -61,7 +61,11 @@ export function useStrandSync({
         session_code: sessionCode,
         [strandKey]: content,
         updated_at: new Date().toISOString(),
-      });
+      },
+      { onConflict: 'student_id,session_code,experiment' } // ✅ Correct
+
+    
+    );
 
       if (error) {
         console.error('💥 Error saving to Supabase:', error.message);

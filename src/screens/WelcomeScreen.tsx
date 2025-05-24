@@ -140,7 +140,11 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart }) => {
                 session_code: sessionCode,
                 experiment: experimentChoice,
                 updated_at: new Date().toISOString(),
-              });
+              },
+              { onConflict: 'student_id,session_code,experiment' } // ✅ Correct
+
+            
+            );
 
               if (error) {
                 console.error('💥 Error syncing experiment:', error.message);

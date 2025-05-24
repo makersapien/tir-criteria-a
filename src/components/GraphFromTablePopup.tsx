@@ -9,6 +9,7 @@ import { TrendType } from '../types/graph';
 interface GraphFromTablePopupProps {
   editor: Editor;
   onClose: () => void;
+  onInsert: (img: string) => void; // ✅ Add this line
   
 }
 

@@ -12,6 +12,15 @@ import GraphFromTablePopup from './GraphFromTablePopup';
 import './RichEditor.css';
 import { useStrandSync } from '../hooks/useStrandSync';
 
+// ✅ Helper to safely extract a valid UUID from URL
+const getValidStudentId = (): string | null => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const id = urlParams.get('studentId');
+  if (id && /^[0-9a-fA-F-]{36}$/.test(id)) return id;
+  console.warn('❌ Invalid or missing studentId:', id);
+  return null;
+};
+
 interface Props {
   content: string;
   onChange: (value: string) => void;
@@ -50,8 +59,11 @@ const RichEditor: React.FC<Props> = ({
     },
   });
 
+  // ✅ Use helper to get validated studentId from URL instead of prop
+  const studentId = getValidStudentId();
+
   const { syncStatus } = useStrandSync({
-    studentId: currentStudentId,
+    studentId: studentId || '',
     experiment: currentExperimentChoice,
     sessionCode,
     strandhoot: 'crit-c-magnetism',

@@ -1,99 +1,81 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import { useStrandContext } from '../contexts/StrandContext';
-import { evaluateStrand } from '../utils/evaluateStrand';
 
-interface UseStrandSyncProps {
+type Props = {
   studentId: string;
   experiment: string;
-  sessionCode?: string | null;
+  sessionCode: string | null;
   strandhoot: string;
   currentStrand: number;
   content: string;
-  onLoad?: (content: string) => void;
-  onSave?: (status: 'success' | 'error') => void;
-}
+  onLoad?: (html: string) => void;
+};
 
-export const useStrandSync = ({
+export function useStrandSync({
   studentId,
   experiment,
-  sessionCode = null,
+  sessionCode,
   strandhoot,
   currentStrand,
   content,
   onLoad,
-  onSave,
-}: UseStrandSyncProps) => {
-  const { userInputs } = useStrandContext();
+}: Props) {
   const [syncStatus, setSyncStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
 
-  const strandKey = `strand${currentStrand}`;
-  const levelKey = `strand${currentStrand}_level`;
+  const isValidUuid = (uuid: string) => /^[0-9a-fA-F-]{36}$/.test(uuid);
 
-  // 🧠 Load previously saved content
   useEffect(() => {
-    const loadStrand = async () => {
+    if (!isValidUuid(studentId)) {
+      console.warn('❌ Invalid studentId UUID format:', studentId);
+      return;
+    }
+
+    const fetchSaved = async () => {
+      const strandKey = `strand${currentStrand}`;
       const { data, error } = await supabase
         .from('responses')
-        .select(`${strandKey}, ${levelKey}`)
+        .select(`${strandKey}`)
         .eq('student_id', studentId)
         .eq('experiment', experiment)
         .maybeSingle();
 
       if (error) {
         console.error('❌ Error loading saved content:', error);
-        return;
-      }
-
-      const savedContent = data?.[strandKey];
-      if (savedContent && onLoad) {
-        onLoad(savedContent);
+        setSyncStatus('error');
+      } else if (data && data[strandKey]) {
+        onLoad?.(data[strandKey]);
       }
     };
 
-    if (studentId && experiment) {
-      loadStrand();
-    }
-  }, [studentId, experiment, strandKey]);
+    fetchSaved();
+  }, [studentId, experiment, currentStrand]);
 
-  // 💾 Auto-save on content change
   useEffect(() => {
-    if (!studentId || !experiment || !strandKey || !content) return;
+    if (!isValidUuid(studentId)) return;
 
-    setSyncStatus('saving');
-
-    const timeout = setTimeout(async () => {
-      const { level } = await evaluateStrand(content, experiment as 'distance' | 'magnets', strandKey);
-
-      const payload = {
+    const timer = setTimeout(async () => {
+      const strandKey = `strand${currentStrand}`;
+      const { error } = await supabase.from('responses').upsert({
         student_id: studentId,
         experiment,
-        session_code: sessionCode ?? '', // ensure non-null
-        strandhoot,
+        session_code: sessionCode,
         [strandKey]: content,
-        [levelKey]: level,
         updated_at: new Date().toISOString(),
-      };
-
-      const { error } = await supabase
-        .from('responses')
-        .upsert(payload, {
-          onConflict: 'student_id,experiment',
-        });
+      });
 
       if (error) {
         console.error('💥 Error saving to Supabase:', error.message);
         setSyncStatus('error');
-        onSave?.('error');
       } else {
         setSyncStatus('success');
-        onSave?.('success');
-        setTimeout(() => setSyncStatus('idle'), 2000);
       }
     }, 800);
 
-    return () => clearTimeout(timeout);
-  }, [content, strandKey, levelKey, studentId, experiment, sessionCode, strandhoot]);
+    return () => {
+      clearTimeout(timer);
+      setSyncStatus('saving');
+    };
+  }, [content, studentId, experiment, currentStrand]);
 
   return { syncStatus };
-};
+}

@@ -51,6 +51,7 @@ const RichEditor: React.FC<Props> = ({
   const [showGraphPopup, setShowGraphPopup] = useState(false);
   const [tableRows, setTableRows] = useState(2);
   const [tableCols, setTableCols] = useState(2);
+  const studentId = getValidStudentId(); // ✅ must be before useEditor
 
   const editor = useEditor({
     extensions: [
@@ -66,6 +67,7 @@ const RichEditor: React.FC<Props> = ({
 
       onUpdate: ({ editor }) => {
         const html = editor.getHTML();
+        console.log('⏱️ Typing started for', studentId);
         onChange(html);
 
         // ✅ Debounced is_typing sync
@@ -95,7 +97,7 @@ const RichEditor: React.FC<Props> = ({
   
   
   // ✅ Use helper to get validated studentId from URL instead of prop
-  const studentId = getValidStudentId();
+ 
   const { strandProgress } = useStrandContext();
 
   const { syncStatus } = useStrandSync({
@@ -167,6 +169,8 @@ const RichEditor: React.FC<Props> = ({
           {syncStatus === 'saving' && '🔄 Saving...'}
           {syncStatus === 'success' && <span className="text-green-600">✅ Synced</span>}
           {syncStatus === 'error' && <span className="text-red-600">❌ Sync Failed</span>}
+          {syncStatus === 'typing' && <span className="text-blue-600">✍️ Typing...</span>}
+
         </span>
       </div>
 

@@ -22,7 +22,8 @@ export function useStrandSync({
   evaluatedLevel,
   onLoad,
 }: Props) {
-  const [syncStatus, setSyncStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+  const [syncStatus, setSyncStatus] = useState<'idle' | 'saving' | 'success' | 'error' | 'typing'>('idle');
+
 
   const isValidUuid = (uuid: string) => /^[0-9a-fA-F-]{36}$/.test(uuid);
 

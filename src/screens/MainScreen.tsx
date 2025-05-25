@@ -43,6 +43,8 @@ const MainScreen: React.FC<MainScreenProps> = ({
   const location = useLocation();
   const searchParams = new URLSearchParams(window.location.search);
   const studentName = searchParams.get('name') ?? 'unknown_student';
+  const studentId = searchParams.get('studentId') ?? null;
+
   const sessionCode = searchParams.get('sessionCode');
   return (
     <div className="main-screen px-6 py-4 space-y-6">
@@ -67,7 +69,7 @@ const MainScreen: React.FC<MainScreenProps> = ({
       <StrandContentTabs
         currentStrand={currentStrand}
         experimentChoice={experimentChoice as 'distance' | 'magnets'}
-        currentStudentId={studentName} // ✅ Use dynamic ID from URL
+        currentStudentId={studentId} // ✅ Use dynamic ID from URL
         sessionCode={sessionCode} // ✅ NEW LINE
         onNext={() => {
           if (currentStrand < 5) setCurrentStrand(currentStrand + 1);

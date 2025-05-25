@@ -11,6 +11,7 @@ import TableCell from '@tiptap/extension-table-cell';
 import GraphFromTablePopup from './GraphFromTablePopup';
 import './RichEditor.css';
 import { useStrandSync } from '../hooks/useStrandSync';
+import { useStrandContext } from '../contexts/StrandContext'; // ✅ adjust path if needed
 
 // ✅ Helper to safely extract a valid UUID from URL
 const getValidStudentId = (): string | null => {
@@ -26,6 +27,7 @@ interface Props {
   onChange: (value: string) => void;
   currentStudentId: string;
   currentStrand: number;
+  evaluatedLevel?: number; // ✅ NEW
   currentExperimentChoice: 'distance' | 'magnets';
   sessionCode?: string | null;
 }
@@ -61,6 +63,7 @@ const RichEditor: React.FC<Props> = ({
 
   // ✅ Use helper to get validated studentId from URL instead of prop
   const studentId = getValidStudentId();
+  const { strandProgress } = useStrandContext();
 
   const { syncStatus } = useStrandSync({
     studentId: studentId || '',
@@ -69,6 +72,7 @@ const RichEditor: React.FC<Props> = ({
     strandhoot: 'crit-c-magnetism',
     currentStrand,
     content,
+    evaluatedLevel: strandProgress[currentStrand - 1],
     onLoad: (savedContent) => {
       if (editor && editor.isEmpty) {
         editor.commands.setContent(savedContent);

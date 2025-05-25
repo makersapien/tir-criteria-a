@@ -12,6 +12,13 @@ import GraphFromTablePopup from './GraphFromTablePopup';
 import './RichEditor.css';
 import { useStrandSync } from '../hooks/useStrandSync';
 import { useStrandContext } from '../contexts/StrandContext'; // ✅ adjust path if needed
+import { supabase } from '../lib/supabaseClient';
+
+declare global {
+  interface Window {
+    typingTimeout?: ReturnType<typeof setTimeout>;
+  }
+}
 
 // ✅ Helper to safely extract a valid UUID from URL
 const getValidStudentId = (): string | null => {
@@ -55,12 +62,38 @@ const RichEditor: React.FC<Props> = ({
       TableCell,
     ],
     content,
-    onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
-      onChange(html);
-    },
+    // inside useEditor config block, around line 63
+
+      onUpdate: ({ editor }) => {
+        const html = editor.getHTML();
+        onChange(html);
+
+        // ✅ Debounced is_typing sync
+        if (studentId && sessionCode) {
+          supabase
+            .from('responses')
+            .update({ is_typing: true })
+            .eq('student_id', studentId)
+            .eq('session_code', sessionCode)
+            .eq('experiment', currentExperimentChoice);
+
+          if (window.typingTimeout) clearTimeout(window.typingTimeout);
+          window.typingTimeout = setTimeout(() => {
+            supabase
+              .from('responses')
+              .update({ is_typing: false })
+              .eq('student_id', studentId)
+              .eq('session_code', sessionCode)
+              .eq('experiment', currentExperimentChoice);
+          }, 3000);
+        }
+      }
+
+    
   });
 
+  
+  
   // ✅ Use helper to get validated studentId from URL instead of prop
   const studentId = getValidStudentId();
   const { strandProgress } = useStrandContext();

@@ -1,5 +1,4 @@
-// src/components/RichEditor.tsx
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -12,22 +11,6 @@ import GraphFromTablePopup from './GraphFromTablePopup';
 import './RichEditor.css';
 import { useStrandSync } from '../hooks/useStrandSync';
 import { useStrandContext } from '../contexts/StrandContext';
-import { supabase } from '../lib/supabaseClient';
-
-declare global {
-  interface Window {
-    typingTimeout?: ReturnType<typeof setTimeout>;
-  }
-}
-
-// ✅ Helper to safely extract a valid UUID from URL
-const getValidStudentId = (): string | null => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const id = urlParams.get('studentId');
-  if (id && /^[0-9a-fA-F-]{36}$/.test(id)) return id;
-  console.warn('❌ Invalid or missing studentId:', id);
-  return null;
-};
 
 interface Props {
   content: string;
@@ -44,6 +27,7 @@ const RichEditor: React.FC<Props> = ({
   onChange,
   currentStudentId,
   currentStrand,
+  evaluatedLevel,
   currentExperimentChoice,
   sessionCode = null,
 }) => {
@@ -51,8 +35,9 @@ const RichEditor: React.FC<Props> = ({
   const [showGraphPopup, setShowGraphPopup] = useState(false);
   const [tableRows, setTableRows] = useState(2);
   const [tableCols, setTableCols] = useState(2);
+  const typingRef = useRef<NodeJS.Timeout | null>(null); // in case you use later
 
-  const studentId = currentStudentId; // ✅ use from props instead of getValidStudentId
+  const { strandProgress } = useStrandContext();
 
   const editor = useEditor({
     extensions: [
@@ -66,41 +51,19 @@ const RichEditor: React.FC<Props> = ({
     content,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
-      console.log('⏱️ Typing started for', studentId);
       onChange(html);
-
-      if (studentId && sessionCode) {
-        supabase
-          .from('responses')
-          .update({ is_typing: true })
-          .eq('student_id', studentId)
-          .eq('session_code', sessionCode)
-          .eq('experiment', currentExperimentChoice);
-
-        if (window.typingTimeout) clearTimeout(window.typingTimeout);
-        window.typingTimeout = setTimeout(() => {
-          console.log('⏳ Typing stopped for', studentId);
-          supabase
-            .from('responses')
-            .update({ is_typing: false })
-            .eq('student_id', studentId)
-            .eq('session_code', sessionCode)
-            .eq('experiment', currentExperimentChoice);
-        }, 3000);
-      }
     },
   });
 
-  const { strandProgress } = useStrandContext();
-
   const { syncStatus } = useStrandSync({
-    studentId: studentId || '',
+    studentId: currentStudentId,
     experiment: currentExperimentChoice,
     sessionCode,
     strandhoot: 'crit-c-magnetism',
     currentStrand,
     content,
     evaluatedLevel: strandProgress[currentStrand - 1],
+    isTyping: editor?.isFocused || false,
     onLoad: (savedContent) => {
       if (editor && editor.isEmpty) {
         editor.commands.setContent(savedContent);
@@ -157,12 +120,11 @@ const RichEditor: React.FC<Props> = ({
         </label>
         <button onClick={() => setShowGraphPopup(true)}>📈 Graph</button>
 
-        {/* 🟢 Sync Status Indicator */}
+        {/* Sync status */}
         <span className="ml-auto text-xs text-gray-500">
           {syncStatus === 'saving' && '🔄 Saving...'}
           {syncStatus === 'success' && <span className="text-green-600">✅ Synced</span>}
           {syncStatus === 'error' && <span className="text-red-600">❌ Sync Failed</span>}
-          {syncStatus === 'typing' && <span className="text-blue-600">✍️ Typing...</span>}
         </span>
       </div>
 
@@ -197,7 +159,7 @@ const RichEditor: React.FC<Props> = ({
         </div>
       )}
 
-      {/* Graph Modal Portal */}
+      {/* Graph Popup Portal */}
       {showGraphPopup &&
         ReactDOM.createPortal(
           <>

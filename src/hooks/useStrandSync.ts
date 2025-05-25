@@ -8,7 +8,8 @@ type Props = {
   strandhoot: string;
   currentStrand: number;
   content: string;
-  evaluatedLevel?: number; // ✅ NEW
+  evaluatedLevel?: number;
+  isTyping?: boolean;
   onLoad?: (html: string) => void;
 };
 
@@ -20,26 +21,24 @@ export function useStrandSync({
   currentStrand,
   content,
   evaluatedLevel,
+  isTyping = false,
   onLoad,
 }: Props) {
-  const [syncStatus, setSyncStatus] = useState<'idle' | 'saving' | 'success' | 'error' | 'typing'>('idle');
+  const [syncStatus, setSyncStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
 
-
-  const isValidUuid = (uuid: string) => /^[0-9a-fA-F-]{36}$/.test(uuid);
+  const strandKey = `strand${currentStrand}`;
+  const levelKey = `${strandKey}_level`;
 
   useEffect(() => {
-    if (!isValidUuid(studentId)) {
-      console.warn('❌ Invalid studentId UUID format:', studentId);
-      return;
-    }
+    if (!studentId || !experiment || !sessionCode) return;
 
     const fetchSaved = async () => {
-      const strandKey = `strand${currentStrand}`;
       const { data, error } = await supabase
         .from('responses')
         .select(`${strandKey}`)
         .eq('student_id', studentId)
         .eq('experiment', experiment)
+        .eq('session_code', sessionCode)
         .maybeSingle();
 
       if (error) {
@@ -51,27 +50,46 @@ export function useStrandSync({
     };
 
     fetchSaved();
-  }, [studentId, experiment, currentStrand]);
+  }, [studentId, experiment, sessionCode, strandhoot, currentStrand]);
 
   useEffect(() => {
-    if (!isValidUuid(studentId)) return;
+    if (!studentId || !experiment || !sessionCode) return;
 
     const timer = setTimeout(async () => {
-      
-      const strandKey = `strand${currentStrand}`;
-      const levelKey = `${strandKey}_level`;
-      const { error } = await supabase.from('responses').upsert({
-        student_id: studentId,
-        experiment,
-        session_code: sessionCode,
-        [strandKey]: content,
-        [levelKey]: evaluatedLevel ?? null, 
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: 'student_id,session_code,experiment' } // ✅ Correct
+      setSyncStatus('saving');
 
-    
-    );
+      // ✅ Handle is_typing separately if flagged
+      if (isTyping) {
+        await supabase
+          .from('responses')
+          .update({ is_typing: true })
+          .eq('student_id', studentId)
+          .eq('experiment', experiment)
+          .eq('session_code', sessionCode);
+
+        setTimeout(() => {
+          supabase
+            .from('responses')
+            .update({ is_typing: false })
+            .eq('student_id', studentId)
+            .eq('experiment', experiment)
+            .eq('session_code', sessionCode);
+        }, 3000);
+      }
+
+      const { error } = await supabase.from('responses').upsert(
+        {
+          student_id: studentId,
+          experiment,
+          session_code: sessionCode,
+          [strandKey]: content,
+          [levelKey]: evaluatedLevel ?? null,
+          updated_at: new Date().toISOString(),
+        },
+        {
+          onConflict: 'student_id,session_code,experiment',
+        }
+      );
 
       if (error) {
         console.error('💥 Error saving to Supabase:', error.message);
@@ -83,9 +101,8 @@ export function useStrandSync({
 
     return () => {
       clearTimeout(timer);
-      setSyncStatus('saving');
     };
-  }, [content, studentId, experiment, currentStrand]);
+  }, [content, studentId, experiment, sessionCode, strandhoot, currentStrand, evaluatedLevel, isTyping]);
 
   return { syncStatus };
 }

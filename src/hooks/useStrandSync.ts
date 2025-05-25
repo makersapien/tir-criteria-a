@@ -31,81 +31,79 @@ export function useStrandSync({
 
   const isValidUUID = (uuid: string) => /^[0-9a-fA-F-]{36}$/.test(uuid);
 
- // 🔁 1. Load saved strand content once
-useEffect(() => {
-  if (!studentId || !experiment || !sessionCode) return;
-  if (!isValidUUID(studentId)) {
-    console.warn('❌ Invalid UUID for studentId in fetch:', studentId);
-    return;
-  }
-
-  const fetchSaved = async () => {
-    const { data, error } = await supabase
-      .from('responses')
-      .select(`${strandKey}`)
-      .eq('student_id', studentId)
-      .eq('experiment', experiment)
-      .eq('session_code', sessionCode)
-      .maybeSingle();
-
-    if (error) {
-      console.error('❌ Error loading saved content:', error);
-      setSyncStatus('error');
-    } else if (data && data[strandKey]) {
-      onLoad?.(data[strandKey]);
+  useEffect(() => {
+    if (!studentId || !experiment || !sessionCode) return;
+    if (!isValidUUID(studentId)) {
+      console.warn('❌ Invalid UUID for studentId in fetch:', studentId);
+      return;
     }
-  };
 
-  fetchSaved();
-}, [studentId, experiment, sessionCode, strandhoot, currentStrand]);
+    const fetchSaved = async () => {
+      const { data, error } = await supabase
+        .from('responses')
+        .select(`${strandKey}`)
+        .eq('student_id', studentId)
+        .eq('experiment', experiment)
+        .eq('session_code', sessionCode)
+        .maybeSingle();
 
-// 💾 2. Debounced strand content & level saving
-useEffect(() => {
-  if (!studentId || !experiment || !sessionCode) return;
-  if (!isValidUUID(studentId)) {
-    console.warn('❌ Invalid UUID for studentId in typing:', studentId);
-    return;
-  }
-
-  let resetTimer: NodeJS.Timeout | null = null;
-  let lastTypedAt = Date.now();
-
-  // ✅ 1. Send `is_typing: true`
-  if (isTyping) {
-    lastTypedAt = Date.now();
-    console.log('✍️ Typing detected → setting is_typing true');
-
-    supabase
-      .from('responses')
-      .update({ is_typing: true })
-      .eq('student_id', studentId)
-      .eq('experiment', experiment)
-      .eq('session_code', sessionCode);
-
-    // ✅ 2. Setup smart reset if no new typing within 3s
-    resetTimer = setInterval(() => {
-      const now = Date.now();
-      const secondsSinceLastType = (now - lastTypedAt) / 1000;
-
-      if (secondsSinceLastType >= 3) {
-        console.log('🌀 Typing stopped → setting is_typing false');
-
-        supabase
-          .from('responses')
-          .update({ is_typing: false })
-          .eq('student_id', studentId)
-          .eq('experiment', experiment)
-          .eq('session_code', sessionCode);
-
-        clearInterval(resetTimer!);
+      if (error) {
+        console.error('❌ Error loading saved content:', error);
+        setSyncStatus('error');
+      } else if (data && data[strandKey]) {
+        onLoad?.(data[strandKey]);
       }
-    }, 1000);
-  }
+    };
 
-  return () => {
-    if (resetTimer) clearInterval(resetTimer);
-  };
-}, [isTyping, studentId, experiment, sessionCode]);
+    fetchSaved();
+  }, [studentId, experiment, sessionCode, strandhoot, currentStrand]);
 
+  useEffect(() => {
+    if (!studentId || !experiment || !sessionCode) return;
+    if (!isValidUUID(studentId)) {
+      console.warn('❌ Invalid UUID for studentId in typing:', studentId);
+      return;
+    }
+  
+    let resetTimer: NodeJS.Timeout | null = null;
+    let lastTypedAt = Date.now();
+  
+    // ✅ 1. Send `is_typing: true`
+    if (isTyping) {
+      lastTypedAt = Date.now();
+      console.log('✍️ Typing detected → setting is_typing true');
+  
+      supabase
+        .from('responses')
+        .update({ is_typing: true })
+        .eq('student_id', studentId)
+        .eq('experiment', experiment)
+        .eq('session_code', sessionCode);
+  
+      // ✅ 2. Setup smart reset if no new typing within 3s
+      resetTimer = setInterval(() => {
+        const now = Date.now();
+        const secondsSinceLastType = (now - lastTypedAt) / 1000;
+  
+        if (secondsSinceLastType >= 3) {
+          console.log('🌀 Typing stopped → setting is_typing false');
+  
+          supabase
+            .from('responses')
+            .update({ is_typing: false })
+            .eq('student_id', studentId)
+            .eq('experiment', experiment)
+            .eq('session_code', sessionCode);
+  
+          clearInterval(resetTimer!);
+        }
+      }, 1000);
+    }
+  
+    return () => {
+      if (resetTimer) clearInterval(resetTimer);
+    };
+  }, [isTyping, studentId, experiment, sessionCode]);
+  
   return { syncStatus };
 }

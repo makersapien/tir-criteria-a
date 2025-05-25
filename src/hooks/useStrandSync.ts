@@ -116,6 +116,8 @@ export function useStrandSync({
 
   // 🔁 Always reset is_typing after inactivity
   useEffect(() => {
+    console.log('🌀 useEffect ran to reset typing');
+
     if (!studentId || !experiment || !sessionCode) return;
     if (!isTyping) return;
 

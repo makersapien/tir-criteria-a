@@ -77,14 +77,21 @@ export function useStrandSync({
           .eq('experiment', experiment)
           .eq('session_code', sessionCode);
 
-        setTimeout(() => {
           supabase
-            .from('responses')
-            .update({ is_typing: false })
-            .eq('student_id', studentId)
-            .eq('experiment', experiment)
-            .eq('session_code', sessionCode);
-        }, 3000);
+          .from('responses')
+          .update({ is_typing: false })
+          .eq('student_id', studentId)
+          .eq('experiment', experiment)
+          .eq('session_code', sessionCode)
+          .select('*')
+          .then(({ data, error }) => {
+            if (error) {
+              console.error('❌ Error resetting is_typing:', error.message);
+            } else {
+              console.log('✅ Reset is_typing to false:', data);
+            }
+          });
+        
       }
 
       const { error } = await supabase.from('responses').upsert(

@@ -29,8 +29,14 @@ export function useStrandSync({
   const strandKey = `strand${currentStrand}`;
   const levelKey = `${strandKey}_level`;
 
+  const isValidUUID = (uuid: string) => /^[0-9a-fA-F-]{36}$/.test(uuid);
+
   useEffect(() => {
     if (!studentId || !experiment || !sessionCode) return;
+    if (!isValidUUID(studentId)) {
+      console.warn('❌ Invalid UUID for studentId in fetch:', studentId);
+      return;
+    }
 
     const fetchSaved = async () => {
       const { data, error } = await supabase
@@ -54,11 +60,15 @@ export function useStrandSync({
 
   useEffect(() => {
     if (!studentId || !experiment || !sessionCode) return;
+    if (!isValidUUID(studentId)) {
+      console.warn('❌ Invalid UUID for studentId in upsert:', studentId);
+      return;
+    }
 
     const timer = setTimeout(async () => {
       setSyncStatus('saving');
 
-      // ✅ Handle is_typing separately if flagged
+      // ✅ Handle is_typing (debounced reset)
       if (isTyping) {
         await supabase
           .from('responses')

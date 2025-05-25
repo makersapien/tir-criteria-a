@@ -114,5 +114,22 @@ export function useStrandSync({
     };
   }, [content, studentId, experiment, sessionCode, strandhoot, currentStrand, evaluatedLevel, isTyping]);
 
+  // 🔁 Always reset is_typing after inactivity
+  useEffect(() => {
+    if (!studentId || !experiment || !sessionCode) return;
+    if (!isTyping) return;
+
+    const reset = setTimeout(() => {
+      supabase
+        .from('responses')
+        .update({ is_typing: false })
+        .eq('student_id', studentId)
+        .eq('experiment', experiment)
+        .eq('session_code', sessionCode);
+    }, 3000);
+
+    return () => clearTimeout(reset);
+  }, [isTyping, studentId, experiment, sessionCode]);
+
   return { syncStatus };
 }

@@ -126,6 +126,10 @@ const RichEditor: React.FC<Props> = ({
           {syncStatus === 'success' && <span className="text-green-600">✅ Synced</span>}
           {syncStatus === 'error' && <span className="text-red-600">❌ Sync Failed</span>}
         </span>
+          {editor?.isFocused && (
+        <span className="ml-2 text-blue-500 text-xs animate-pulse">✍️ Typing...</span>
+        )}
+
       </div>
 
       {/* Table Popup */}

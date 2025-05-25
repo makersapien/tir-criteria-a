@@ -11,7 +11,7 @@ import TableCell from '@tiptap/extension-table-cell';
 import GraphFromTablePopup from './GraphFromTablePopup';
 import './RichEditor.css';
 import { useStrandSync } from '../hooks/useStrandSync';
-import { useStrandContext } from '../contexts/StrandContext'; // ✅ adjust path if needed
+import { useStrandContext } from '../contexts/StrandContext';
 import { supabase } from '../lib/supabaseClient';
 
 declare global {
@@ -34,7 +34,7 @@ interface Props {
   onChange: (value: string) => void;
   currentStudentId: string;
   currentStrand: number;
-  evaluatedLevel?: number; // ✅ NEW
+  evaluatedLevel?: number;
   currentExperimentChoice: 'distance' | 'magnets';
   sessionCode?: string | null;
 }
@@ -51,7 +51,8 @@ const RichEditor: React.FC<Props> = ({
   const [showGraphPopup, setShowGraphPopup] = useState(false);
   const [tableRows, setTableRows] = useState(2);
   const [tableCols, setTableCols] = useState(2);
-  const studentId = getValidStudentId(); // ✅ must be before useEditor
+
+  const studentId = currentStudentId; // ✅ use from props instead of getValidStudentId
 
   const editor = useEditor({
     extensions: [
@@ -63,41 +64,33 @@ const RichEditor: React.FC<Props> = ({
       TableCell,
     ],
     content,
-    // inside useEditor config block, around line 63
+    onUpdate: ({ editor }) => {
+      const html = editor.getHTML();
+      console.log('⏱️ Typing started for', studentId);
+      onChange(html);
 
-      onUpdate: ({ editor }) => {
-        const html = editor.getHTML();
-        console.log('⏱️ Typing started for', studentId);
-        onChange(html);
+      if (studentId && sessionCode) {
+        supabase
+          .from('responses')
+          .update({ is_typing: true })
+          .eq('student_id', studentId)
+          .eq('session_code', sessionCode)
+          .eq('experiment', currentExperimentChoice);
 
-        // ✅ Debounced is_typing sync
-        if (studentId && sessionCode) {
+        if (window.typingTimeout) clearTimeout(window.typingTimeout);
+        window.typingTimeout = setTimeout(() => {
+          console.log('⏳ Typing stopped for', studentId);
           supabase
             .from('responses')
-            .update({ is_typing: true })
+            .update({ is_typing: false })
             .eq('student_id', studentId)
             .eq('session_code', sessionCode)
             .eq('experiment', currentExperimentChoice);
-
-          if (window.typingTimeout) clearTimeout(window.typingTimeout);
-          window.typingTimeout = setTimeout(() => {
-            supabase
-              .from('responses')
-              .update({ is_typing: false })
-              .eq('student_id', studentId)
-              .eq('session_code', sessionCode)
-              .eq('experiment', currentExperimentChoice);
-          }, 3000);
-        }
+        }, 3000);
       }
-
-    
+    },
   });
 
-  
-  
-  // ✅ Use helper to get validated studentId from URL instead of prop
- 
   const { strandProgress } = useStrandContext();
 
   const { syncStatus } = useStrandSync({
@@ -170,7 +163,6 @@ const RichEditor: React.FC<Props> = ({
           {syncStatus === 'success' && <span className="text-green-600">✅ Synced</span>}
           {syncStatus === 'error' && <span className="text-red-600">❌ Sync Failed</span>}
           {syncStatus === 'typing' && <span className="text-blue-600">✍️ Typing...</span>}
-
         </span>
       </div>
 

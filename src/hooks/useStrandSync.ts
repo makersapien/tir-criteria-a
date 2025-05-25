@@ -63,65 +63,48 @@ useEffect(() => {
 useEffect(() => {
   if (!studentId || !experiment || !sessionCode) return;
   if (!isValidUUID(studentId)) {
-    console.warn('❌ Invalid UUID for studentId in upsert:', studentId);
-    return;
-  }
-
-  const timer = setTimeout(async () => {
-    setSyncStatus('saving');
-
-    const { error } = await supabase.from('responses').upsert(
-      {
-        student_id: studentId,
-        experiment,
-        session_code: sessionCode,
-        [strandKey]: content,
-        [levelKey]: evaluatedLevel ?? null,
-        updated_at: new Date().toISOString(),
-      },
-      {
-        onConflict: 'student_id,session_code,experiment',
-      }
-    );
-
-    if (error) {
-      console.error('💥 Error saving to Supabase:', error.message);
-      setSyncStatus('error');
-    } else {
-      setSyncStatus('success');
-    }
-  }, 800);
-
-  return () => clearTimeout(timer);
-}, [content, studentId, experiment, sessionCode, strandhoot, currentStrand, evaluatedLevel]);
-
-// ✍️ 3. is_typing debounce tracker (independent)
-useEffect(() => {
-  if (!studentId || !experiment || !sessionCode) return;
-  if (!isValidUUID(studentId)) {
     console.warn('❌ Invalid UUID for studentId in typing:', studentId);
     return;
   }
 
+  let resetTimer: NodeJS.Timeout | null = null;
+  let lastTypedAt = Date.now();
+
+  // ✅ 1. Send `is_typing: true`
   if (isTyping) {
-    console.log('✍️ Setting is_typing true');
-    supabase.from('responses')
+    lastTypedAt = Date.now();
+    console.log('✍️ Typing detected → setting is_typing true');
+
+    supabase
+      .from('responses')
       .update({ is_typing: true })
       .eq('student_id', studentId)
       .eq('experiment', experiment)
       .eq('session_code', sessionCode);
 
-    const reset = setTimeout(() => {
-      console.log('🌀 Resetting is_typing to false');
-      supabase.from('responses')
-        .update({ is_typing: false })
-        .eq('student_id', studentId)
-        .eq('experiment', experiment)
-        .eq('session_code', sessionCode);
-    }, 3000);
+    // ✅ 2. Setup smart reset if no new typing within 3s
+    resetTimer = setInterval(() => {
+      const now = Date.now();
+      const secondsSinceLastType = (now - lastTypedAt) / 1000;
 
-    return () => clearTimeout(reset);
+      if (secondsSinceLastType >= 3) {
+        console.log('🌀 Typing stopped → setting is_typing false');
+
+        supabase
+          .from('responses')
+          .update({ is_typing: false })
+          .eq('student_id', studentId)
+          .eq('experiment', experiment)
+          .eq('session_code', sessionCode);
+
+        clearInterval(resetTimer!);
+      }
+    }, 1000);
   }
+
+  return () => {
+    if (resetTimer) clearInterval(resetTimer);
+  };
 }, [isTyping, studentId, experiment, sessionCode]);
 
   return { syncStatus };

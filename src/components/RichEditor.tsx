@@ -18,7 +18,7 @@ interface Props {
   currentStudentId: string;
   currentStrand: number;
   evaluatedLevel?: number;
-  currentExperimentChoice: 'distance' | 'magnets';
+  currentExperimentChoice: 'distance' | 'magnets' | 'critical-angle' | 'fiber-optics'; // ✅ Accept both old and new types
   sessionCode?: string | null;
 }
 
@@ -35,7 +35,7 @@ const RichEditor: React.FC<Props> = ({
   const [showGraphPopup, setShowGraphPopup] = useState(false);
   const [tableRows, setTableRows] = useState(2);
   const [tableCols, setTableCols] = useState(2);
-  const typingRef = useRef<NodeJS.Timeout | null>(null); // in case you use later
+  const typingRef = useRef<NodeJS.Timeout | null>(null);
 
   const { strandProgress } = useStrandContext();
 
@@ -59,7 +59,7 @@ const RichEditor: React.FC<Props> = ({
     studentId: currentStudentId,
     experiment: currentExperimentChoice,
     sessionCode,
-    strandhoot: 'crit-c-magnetism',
+    strandhoot: 'crit-a-tir', // ✅ Updated strandhoot ID
     currentStrand,
     content,
     evaluatedLevel: strandProgress[currentStrand - 1],
@@ -88,6 +88,18 @@ const RichEditor: React.FC<Props> = ({
     }).run();
     setShowTablePopup(false);
   };
+  // 🔧 Convert experiment choice to the format expected by the evaluation system
+  const getEvaluationExperimentType = (
+    choice: 'distance' | 'magnets' | 'critical-angle' | 'fiber-optics'
+  ): 'distance' | 'magnets' => {
+    // Map new types back to old types for evaluation compatibility
+    if (choice === 'critical-angle') return 'distance';
+    if (choice === 'fiber-optics') return 'magnets';
+    // If it's already an old type, return as-is
+    return choice as 'distance' | 'magnets';
+  };
+
+  const evaluationExperimentChoice = getEvaluationExperimentType(currentExperimentChoice);
 
   if (!editor) return null;
 
@@ -127,7 +139,7 @@ const RichEditor: React.FC<Props> = ({
           {syncStatus === 'error' && <span className="text-red-600">❌ Sync Failed</span>}
         </span>
           {editor?.isFocused && (
-        <span className="ml-2 text-blue-500 text-xs animate-pulse">✍️ Typing...</span>
+        <span className="ml-2 text-purple-500 text-xs animate-pulse">✍️ Typing...</span>
         )}
 
       </div>
@@ -157,7 +169,7 @@ const RichEditor: React.FC<Props> = ({
             />
           </label>
           <div className="flex justify-end gap-2">
-            <button onClick={insertTable} className="bg-blue-500 text-white text-sm px-3 py-1 rounded">Insert</button>
+            <button onClick={insertTable} className="bg-purple-500 text-white text-sm px-3 py-1 rounded">Insert</button>
             <button onClick={() => setShowTablePopup(false)} className="text-sm text-gray-500">Cancel</button>
           </div>
         </div>

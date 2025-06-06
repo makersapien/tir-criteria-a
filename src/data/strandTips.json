@@ -1,57 +1,263 @@
 {
-    "distance": {
-      "strand1": {
-        "level3-4": "Ensure your table is clear and organized with correct labels.",
-        "level5-6": "Add a well-labelled graph showing a trend between distance and strength.",
-        "level7-8": "Calculate averages and draw a trendline. Include units and significant figures."
+  "critical-angle": {
+    "strand1": {
+      "name": "TIR Principles & Laws",
+      "level2": {
+        "tip": "📚 **Define** total internal reflection using simple, clear language. **State** the basic conditions when it happens.",
+        "commandTerms": ["define", "state", "list"],
+        "guidance": "Focus on basic facts: TIR occurs when light completely reflects at a boundary. Use simple vocabulary and avoid complex explanations.",
+        "examples": ["Define TIR as complete reflection of light", "State that it happens at boundaries between materials"]
       },
-      "strand2": {
-        "level3-4": "Accurately describe what happens as distance increases.",
-        "level5-6": "Identify the relationship between distance and magnet strength.",
-        "level7-8": "Explain the decrease using magnetic field theory — inverse square law or field line spread."
+      "level4": {
+        "tip": "🔍 **Describe** the conditions for TIR clearly. **Identify** the key factors: dense to less dense medium + critical angle.",
+        "commandTerms": ["describe", "identify", "outline"],
+        "guidance": "Explain the two main conditions clearly. Use proper scientific terms like 'refractive index' and 'critical angle'.",
+        "examples": ["Describe light traveling from glass to air", "Identify when incident angle exceeds critical angle"]
       },
-      "strand3": {
-        "level3-4": "State if your hypothesis was correct with supporting data.",
-        "level5-6": "Mention trends in the graph and back your conclusion with evidence.",
-        "level7-8": "Discuss strengths and weaknesses in your prediction. Reflect on the scientific reasoning behind the results."
+      "level6": {
+        "tip": "⚡ **Calculate** critical angles using the formula sin(θc) = n₂/n₁. **Explain** the physics behind Snell's law.",
+        "commandTerms": ["calculate", "explain", "apply"],
+        "guidance": "Show mathematical work clearly. Connect formulas to physical principles. Explain why the formula works.",
+        "examples": ["Calculate θc for glass-air interface", "Explain relationship between refractive indices and critical angle"]
       },
-      "strand4": {
-        "level3-4": "Say whether the method worked and support it with data.",
-        "level5-6": "Point out what went well or what issues occurred during your experiment.",
-        "level7-8": "Discuss limitations like alignment of magnets, measurement errors, or inconsistent distances."
-      },
-      "strand5": {
-        "level3-4": "Suggest one valid way to improve the experiment.",
-        "level5-6": "Give improvements based on specific weaknesses like measurement errors.",
-        "level7-8": "Suggest improvements like digital measuring tools, repeated trials, and removing external variables."
+      "level8": {
+        "tip": "🧠 **Analyze** complex scenarios involving multiple factors. **Evaluate** how changing variables affects TIR behavior.",
+        "commandTerms": ["analyze", "evaluate", "synthesize"],
+        "guidance": "Consider multiple variables simultaneously. Discuss implications and trade-offs. Connect to real applications.",
+        "examples": ["Analyze effect of temperature on critical angle", "Evaluate optimal refractive index differences for optical devices"]
       }
     },
-    "magnets": {
-      "strand1": {
-        "level3-4": "Label your table clearly with trials and number of magnets.",
-        "level5-6": "Graph your results showing how magnet count affects strength.",
-        "level7-8": "Include averages and use a line graph with trends and units."
+    "strand2": {
+      "name": "Understanding TIR Phenomena",
+      "level2": {
+        "tip": "👀 **Identify** when TIR happens. **State** that it occurs above the critical angle.",
+        "commandTerms": ["identify", "state", "recognize"],
+        "guidance": "Focus on observable conditions. Keep explanations simple and direct.",
+        "examples": ["Identify angles where complete reflection occurs", "State the critical angle as the boundary"]
       },
-      "strand2": {
-        "level3-4": "Describe how magnet strength changes with more magnets.",
-        "level5-6": "Identify the pattern — does strength increase linearly or not?",
-        "level7-8": "Use reasoning: magnetic fields combine, creating a stronger unified field."
+      "level4": {
+        "tip": "📖 **Describe** what happens at different angles. **Compare** behavior below and above critical angle.",
+        "commandTerms": ["describe", "compare", "distinguish"],
+        "guidance": "Contrast partial reflection+refraction vs total reflection. Use clear, scientific language.",
+        "examples": ["Describe refraction below critical angle", "Compare light behavior at different incident angles"]
       },
-      "strand3": {
-        "level3-4": "Say if your prediction was correct and refer to your data.",
-        "level5-6": "Refer to both your data and your graph to support or refute the hypothesis.",
-        "level7-8": "Discuss gaps in your hypothesis — did it assume linearity or overlook saturation effects?"
+      "level6": {
+        "tip": "🎯 **Explain** why TIR only works in one direction. **Predict** light behavior using Snell's law.",
+        "commandTerms": ["explain", "predict", "justify"],
+        "guidance": "Use Snell's law to show mathematical impossibility of certain solutions. Connect math to physics.",
+        "examples": ["Explain why sin(θ) > 1 is impossible", "Predict light paths in different scenarios"]
       },
-      "strand4": {
-        "level3-4": "Say if the method helped you get an answer.",
-        "level5-6": "Mention limitations like uneven stacking or varying alignment of magnets.",
-        "level7-8": "Critically evaluate the experimental setup — was it repeatable, accurate, and valid?"
+      "level8": {
+        "tip": "🔬 **Evaluate** multiple factors affecting TIR. **Analyze** the relationship between material properties and optical behavior.",
+        "commandTerms": ["evaluate", "analyze", "assess"],
+        "guidance": "Consider wavelength dependence, temperature effects, and material properties comprehensively.",
+        "examples": ["Evaluate how dispersion affects critical angles", "Analyze temperature dependence of refractive index"]
+      }
+    },
+    "strand3": {
+      "name": "Real-World Applications", 
+      "level2": {
+        "tip": "📝 **List** common applications of TIR. **Give** examples like fiber optics and diamonds.",
+        "commandTerms": ["list", "give", "name"],
+        "guidance": "Provide concrete, familiar examples. Keep descriptions simple and factual.",
+        "examples": ["List: fiber optics, diamonds, periscopes", "Name everyday items that use TIR"]
       },
-      "strand5": {
-        "level3-4": "Propose one improvement like more trials.",
-        "level5-6": "Suggest using a magnetometer or better alignment tools.",
-        "level7-8": "Give detailed improvements for all weaknesses — tool precision, alignment control, and better data collection."
+      "level4": {
+        "tip": "💡 **Describe** how TIR is used in specific applications. **Outline** the benefits it provides.",
+        "commandTerms": ["describe", "outline", "summarize"],
+        "guidance": "Explain practical benefits clearly. Connect TIR properties to application advantages.",
+        "examples": ["Describe how fiber optics guide light", "Outline benefits of TIR in telecommunications"]
+      },
+      "level6": {
+        "tip": "🌟 **Explain** the physics behind TIR applications. **Discuss** why TIR is ideal for these uses.",
+        "commandTerms": ["explain", "discuss", "justify"],
+        "guidance": "Connect physical principles to practical benefits. Explain material choices and design decisions.",
+        "examples": ["Explain why diamonds sparkle due to high refractive index", "Discuss advantages of TIR over mirrors in fiber optics"]
+      },
+      "level8": {
+        "tip": "⚖️ **Evaluate** multiple TIR applications. **Analyze** limitations and trade-offs in real systems.",
+        "commandTerms": ["evaluate", "analyze", "critique"],
+        "guidance": "Consider multiple applications comprehensively. Address both advantages and limitations.",
+        "examples": ["Evaluate medical endoscopy vs external imaging", "Analyze future potential of TIR technology"]
+      }
+    },
+    "strand4": {
+      "name": "Analysis & Problem Solving",
+      "level2": {
+        "tip": "🧮 **Calculate** using given formulas and values. **Show** your mathematical work clearly.",
+        "commandTerms": ["calculate", "show", "compute"],
+        "guidance": "Use provided formulas correctly. Include units and show step-by-step calculations.",
+        "examples": ["Calculate critical angle with given refractive indices", "Show work for simple TIR problems"]
+      },
+      "level4": {
+        "tip": "🔢 **Solve** TIR problems using appropriate equations. **Determine** unknown variables from given data.",
+        "commandTerms": ["solve", "determine", "find"],
+        "guidance": "Choose correct equations for different scenarios. Organize solution steps logically.",
+        "examples": ["Solve for refractive index from critical angle", "Determine if TIR will occur in given scenario"]
+      },
+      "level6": {
+        "tip": "📊 **Analyze** complex TIR scenarios with multiple variables. **Investigate** relationships between different factors.",
+        "commandTerms": ["analyze", "investigate", "examine"],
+        "guidance": "Handle multi-step problems systematically. Consider how changing one variable affects others.",
+        "examples": ["Analyze light behavior in layered media", "Investigate optimal fiber design parameters"]
+      },
+      "level8": {
+        "tip": "🔬 **Design** experiments to test TIR principles. **Evaluate** measurement accuracy and sources of error.",
+        "commandTerms": ["design", "evaluate", "critique"],
+        "guidance": "Consider experimental design holistically. Address practical limitations and improvement strategies.",
+        "examples": ["Design critical angle measurement experiment", "Evaluate experimental uncertainties and improvements"]
+      }
+    }
+  },
+  "fiber-optics": {
+    "strand1": {
+      "name": "Fiber Optic Principles",
+      "level2": {
+        "tip": "🔍 **Identify** the main parts of optical fibers: core and cladding. **State** their basic functions.",
+        "commandTerms": ["identify", "state", "name"],
+        "guidance": "Focus on basic components and their simple functions. Keep explanations straightforward.",
+        "examples": ["Identify core as light-carrying part", "State that cladding provides confinement"]
+      },
+      "level4": {
+        "tip": "📖 **Describe** how light travels through fiber cores. **Explain** the role of refractive index differences.",
+        "commandTerms": ["describe", "explain", "outline"],
+        "guidance": "Connect TIR principles to fiber operation. Use appropriate scientific terminology.",
+        "examples": ["Describe light bouncing along fiber core", "Explain core-cladding index difference"]
+      },
+      "level6": {
+        "tip": "⚡ **Calculate** numerical aperture and acceptance angles. **Analyze** single-mode vs multimode fiber differences.",
+        "commandTerms": ["calculate", "analyze", "compare"],
+        "guidance": "Use fiber optic equations correctly. Compare different fiber types systematically.",
+        "examples": ["Calculate NA from core/cladding indices", "Analyze bandwidth limitations of multimode fibers"]
+      },
+      "level8": {
+        "tip": "🎯 **Evaluate** fiber design trade-offs. **Synthesize** multiple factors affecting fiber performance.",
+        "commandTerms": ["evaluate", "synthesize", "optimize"],
+        "guidance": "Consider multiple design parameters simultaneously. Address complex trade-offs in system design.",
+        "examples": ["Evaluate step-index vs graded-index performance", "Synthesize optimal fiber design for specific applications"]
+      }
+    },
+    "strand2": {
+      "name": "Fiber Optic Technology",
+      "level2": {
+        "tip": "🔌 **List** components of fiber optic systems: light sources, fibers, detectors. **Name** their functions.",
+        "commandTerms": ["list", "name", "identify"],
+        "guidance": "Focus on main system components. Keep descriptions simple and functional.",
+        "examples": ["List: LED, fiber, photodetector", "Name function of each component"]
+      },
+      "level4": {
+        "tip": "⚙️ **Describe** how fiber optic communication systems work. **Outline** the signal transmission process.",
+        "commandTerms": ["describe", "outline", "trace"],
+        "guidance": "Follow signal path through system. Explain electrical-to-optical-to-electrical conversion.",
+        "examples": ["Describe signal conversion process", "Outline data transmission through fiber"]
+      },
+      "level6": {
+        "tip": "🌐 **Explain** advanced technologies like WDM and optical amplifiers. **Discuss** how they increase system capacity.",
+        "commandTerms": ["explain", "discuss", "analyze"],
+        "guidance": "Connect advanced technologies to system performance improvements. Use technical terminology appropriately.",
+        "examples": ["Explain wavelength division multiplexing", "Discuss optical amplifier benefits"]
+      },
+      "level8": {
+        "tip": "🔬 **Evaluate** fiber system performance factors. **Assess** limitations and emerging solutions.",
+        "commandTerms": ["evaluate", "assess", "critique"],
+        "guidance": "Consider multiple performance metrics. Address current limitations and future developments.",
+        "examples": ["Evaluate factors limiting fiber bandwidth", "Assess potential of new fiber technologies"]
+      }
+    },
+    "strand3": {
+      "name": "Applications & Impact",
+      "level2": {
+        "tip": "📱 **List** where fiber optics are used: internet, medical, sensing. **Give** specific examples.",
+        "commandTerms": ["list", "give", "mention"],
+        "guidance": "Provide concrete, recognizable applications. Focus on familiar examples.",
+        "examples": ["List internet, phone, medical uses", "Give examples like endoscopes, internet cables"]
+      },
+      "level4": {
+        "tip": "🌍 **Describe** how fiber optics changed telecommunications. **Outline** benefits over traditional methods.",
+        "commandTerms": ["describe", "outline", "compare"],
+        "guidance": "Explain transformation of communications. Compare advantages over older technologies.",
+        "examples": ["Describe internet revolution", "Outline advantages over copper cables"]
+      },
+      "level6": {
+        "tip": "💡 **Explain** why fiber properties make them ideal for specific applications. **Justify** material and design choices.",
+        "commandTerms": ["explain", "justify", "relate"],
+        "guidance": "Connect physical properties to application requirements. Explain material selection rationale.",
+        "examples": ["Explain why fibers are ideal for long-distance communication", "Justify use in medical applications"]
+      },
+      "level8": {
+        "tip": "🌟 **Analyze** societal impact of fiber optic technology. **Evaluate** future implications and emerging applications.",
+        "commandTerms": ["analyze", "evaluate", "predict"],
+        "guidance": "Consider broad societal effects. Discuss both positive impacts and challenges.",
+        "examples": ["Analyze global digital divide issues", "Evaluate potential of emerging fiber applications"]
+      }
+    },
+    "strand4": {
+      "name": "Design & Innovation",
+      "level2": {
+        "tip": "🛠️ **Identify** basic design factors in fiber systems. **State** simple requirements.",
+        "commandTerms": ["identify", "state", "recognize"],
+        "guidance": "Focus on fundamental design considerations. Keep requirements simple and clear.",
+        "examples": ["Identify need for protection", "State basic performance requirements"]
+      },
+      "level4": {
+        "tip": "📋 **Describe** key design considerations for fiber installations. **Outline** basic requirements.",
+        "commandTerms": ["describe", "outline", "specify"],
+        "guidance": "Explain practical installation factors. Address basic engineering requirements.",
+        "examples": ["Describe bend radius requirements", "Outline environmental protection needs"]
+      },
+      "level6": {
+        "tip": "⚖️ **Explain** trade-offs between performance, cost, and complexity. **Analyze** design optimization strategies.",
+        "commandTerms": ["explain", "analyze", "optimize"],
+        "guidance": "Address multiple competing requirements. Explain optimization approaches.",
+        "examples": ["Explain cost vs performance trade-offs", "Analyze installation complexity factors"]
+      },
+      "level8": {
+        "tip": "🚀 **Evaluate** innovative fiber designs and emerging technologies. **Synthesize** solutions for complex challenges.",
+        "commandTerms": ["evaluate", "synthesize", "innovate"],
+        "guidance": "Consider cutting-edge developments. Address complex system-level challenges.",
+        "examples": ["Evaluate new fiber designs", "Synthesize solutions for next-generation networks"]
+      }
+    }
+  },
+  "general": {
+    "commandTermGuidance": {
+      "define": "Give a precise meaning or explanation of a term, concept, or phenomenon",
+      "describe": "Give a detailed account including characteristics and features", 
+      "explain": "Give a detailed account including reasons or causes",
+      "analyze": "Break down complex information into parts and examine relationships",
+      "evaluate": "Make an appraisal by weighing up strengths and limitations",
+      "calculate": "Obtain a numerical answer showing relevant working",
+      "identify": "Provide an answer from a number of possibilities or recognize and state briefly",
+      "state": "Give a specific name, value, or brief answer without explanation",
+      "list": "Give a sequence of brief answers with no explanation",
+      "compare": "Give an account of similarities and differences",
+      "contrast": "Give an account of differences only",
+      "discuss": "Offer a considered and balanced review of a topic",
+      "justify": "Give valid reasons or evidence to support an answer",
+      "predict": "Give an expected result based on available information",
+      "synthesize": "Combine different ideas or information to create something new"
+    },
+    "levelProgression": {
+      "levels1-2": {
+        "focus": "Recall and basic understanding",
+        "language": "Simple, clear statements using basic vocabulary",
+        "expectations": "Factual knowledge, simple definitions, basic examples"
+      },
+      "levels3-4": {
+        "focus": "Comprehension and application", 
+        "language": "Appropriate scientific terminology with clear explanations",
+        "expectations": "Understanding concepts, describing processes, simple problem-solving"
+      },
+      "levels5-6": {
+        "focus": "Analysis and synthesis",
+        "language": "Sophisticated scientific language with detailed explanations",
+        "expectations": "Complex problem-solving, connecting multiple concepts, mathematical applications"
+      },
+      "levels7-8": {
+        "focus": "Evaluation and creation",
+        "language": "Advanced scientific discourse with critical analysis",
+        "expectations": "Critical thinking, evaluating evidence, designing solutions, predicting outcomes"
       }
     }
   }
-  
+}

@@ -5,7 +5,7 @@ import React from 'react';
 import ProgressBarSection from './main/ProgressBarSection';
 import StrandContentTabs from './main/StrandContentTabs';
 import { useStrandContext } from '../contexts/StrandContext';
-import { useLocation } from 'react-router-dom'; // ✅
+import { useLocation } from 'react-router-dom';
 
 interface MainScreenProps {
   currentStrand: number;
@@ -18,8 +18,8 @@ interface MainScreenProps {
   setStrandStatus: (status: string[]) => void;
   earnedBadges: any;
   setEarnedBadges: (badges: any) => void;
-  experimentData: any;
-  experimentChoice: string;
+  learningPathData: any; // ✅ Updated prop name
+  learningPathChoice: 'critical-angle' | 'fiber-optics'; // ✅ Updated prop name
   experimentTitle: string;
 }
 
@@ -33,8 +33,8 @@ const MainScreen: React.FC<MainScreenProps> = ({
   setStrandStatus,
   earnedBadges,
   setEarnedBadges,
-  experimentData,
-  experimentChoice,
+  learningPathData, // ✅ Updated prop name
+  learningPathChoice, // ✅ Updated prop name
   experimentTitle,
 }) => {
   const { userInputs, strandProgress } = useStrandContext();
@@ -44,13 +44,13 @@ const MainScreen: React.FC<MainScreenProps> = ({
   const searchParams = new URLSearchParams(window.location.search);
   const studentName = searchParams.get('name') ?? 'unknown_student';
   const studentId = searchParams.get('studentId') ?? null;
-
   const sessionCode = searchParams.get('sessionCode');
+
   return (
     <div className="main-screen px-6 py-4 space-y-6">
-      <div className="flex justify-between items-center px-4 py-3 bg-orange-600 text-white rounded-md shadow-md">
+      <div className="flex justify-between items-center px-4 py-3 bg-purple-600 text-white rounded-md shadow-md">
         <h1 className="text-lg md:text-xl font-semibold">
-          Scientific Lab Report Guide: MYP Criteria C
+          🌟 Total Internal Reflection Explorer - MYP Criteria A 💎
         </h1>
         <div className="text-sm md:text-base font-medium">
           🏆 {points} POINTS / 100
@@ -68,11 +68,11 @@ const MainScreen: React.FC<MainScreenProps> = ({
 
       <StrandContentTabs
         currentStrand={currentStrand}
-        experimentChoice={experimentChoice as 'distance' | 'magnets'}
-        currentStudentId={studentId} // ✅ Use dynamic ID from URL
-        sessionCode={sessionCode} // ✅ NEW LINE
+        learningPathChoice={learningPathChoice} // ✅ Updated prop name
+        currentStudentId={studentId}
+        sessionCode={sessionCode}
         onNext={() => {
-          if (currentStrand < 5) setCurrentStrand(currentStrand + 1);
+          if (currentStrand < 4) setCurrentStrand(currentStrand + 1); // ✅ Updated to 4 strands
           else onNext();
         }}
         onPrevious={() => {

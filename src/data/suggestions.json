@@ -1,46 +1,278 @@
 {
-    "distance": {
-      "strand2": [
-        "Make sure to describe the shape of the graph (linear, curved, etc.).",
-        "Mention whether the field strength decreases proportionally or not.",
-        "Use physics terms like 'inverse square' or 'field line density' to explain drop."
+  "critical-angle": {
+    "strand1": {
+      "general": [
+        "Use precise scientific vocabulary like 'refractive index' and 'critical angle'",
+        "Include the mathematical formula: sin(θc) = n₂/n₁",
+        "Explain the physical meaning behind the mathematical relationships",
+        "Connect Snell's law to the conditions for total internal reflection"
       ],
-      "strand3": [
-        "Refer back to your hypothesis statement.",
-        "Explain why your hypothesis was or wasn’t correct using data.",
-        "Discuss how your prediction could be improved."
+      "level2-4": [
+        "Define total internal reflection clearly and simply",
+        "State the basic conditions: dense to less dense medium + large angle",
+        "Use correct scientific terms consistently",
+        "Give concrete examples of when TIR occurs"
       ],
-      "strand4": [
-        "Mention specific experimental errors like alignment or measurement gaps.",
-        "Reflect on consistency of your method.",
-        "Was your setup valid and repeatable?"
+      "level5-6": [
+        "Show step-by-step calculations with proper units",
+        "Explain why the critical angle formula works",
+        "Connect mathematical results to physical behavior",
+        "Describe the relationship between refractive index and critical angle"
       ],
-      "strand5": [
-        "Mention specific tools or techniques that would improve precision.",
-        "Suggest improvements based on the flaws you found.",
-        "Think of changes that would help others replicate your setup better."
+      "level7-8": [
+        "Analyze how multiple factors affect critical angle measurements",
+        "Evaluate the limitations of ideal TIR theory in real materials",
+        "Synthesize connections between molecular structure and optical properties",
+        "Discuss implications for optical device design and performance"
       ]
     },
-    "magnets": {
-      "strand2": [
-        "Describe the type of graph — is it straight or curving?",
-        "Talk about how magnet count affects the shape.",
-        "Is the field increase slowing down or still growing fast?"
+    "strand2": {
+      "general": [
+        "Explain the directional nature of TIR (dense to less dense only)",
+        "Use Snell's law to show why TIR has mathematical limits",
+        "Describe what happens at angles below, at, and above critical angle",
+        "Connect the physics to observable phenomena"
       ],
-      "strand3": [
-        "Go beyond 'yes/no' — explain using actual graph trend.",
-        "Mention mismatch if the trend is not what you expected.",
-        "Compare your prediction to what really happened."
+      "level2-4": [
+        "Identify the specific angle conditions for TIR",
+        "Describe what happens to light at the critical angle",
+        "Compare reflection vs refraction behavior",
+        "Use simple, clear language with correct terminology"
       ],
-      "strand4": [
-        "Was your magnet stack always the same?",
-        "Was alignment consistent?",
-        "Could human error affect the readings?"
+      "level5-6": [
+        "Explain why sin(θ₂) > 1 is impossible mathematically",
+        "Predict light behavior in different scenarios using theory",
+        "Justify why TIR only works in one direction",
+        "Apply Snell's law to analyze specific cases"
       ],
-      "strand5": [
-        "Think of changes to avoid those errors in future.",
-        "More trials? Better tools?",
-        "Would someone else be able to get the same results?"
+      "level7-8": [
+        "Evaluate multiple factors affecting TIR in real materials",
+        "Analyze wavelength dependence and dispersion effects",
+        "Assess temperature and pressure influences on critical angles",
+        "Critique ideal vs real-world TIR behavior"
+      ]
+    },
+    "strand3": {
+      "general": [
+        "Give specific, detailed examples of TIR applications",
+        "Explain why TIR properties make it suitable for each use",
+        "Connect physical principles to practical benefits",
+        "Discuss both advantages and limitations of TIR applications"
+      ],
+      "level2-4": [
+        "List concrete examples: fiber optics, diamonds, periscopes",
+        "Describe the basic function in each application",
+        "Explain the main benefits TIR provides",
+        "Use familiar, everyday examples when possible"
+      ],
+      "level5-6": [
+        "Explain the physics behind each application in detail",
+        "Justify why TIR is chosen over alternatives",
+        "Describe how material properties enable specific applications",
+        "Connect refractive index values to application performance"
+      ],
+      "level7-8": [
+        "Analyze multiple TIR applications comprehensively",
+        "Evaluate trade-offs and limitations in real systems",
+        "Assess societal and technological impact of TIR applications",
+        "Predict future developments and emerging applications"
+      ]
+    },
+    "strand4": {
+      "general": [
+        "Show all mathematical work clearly with proper units",
+        "Organize problem-solving steps logically",
+        "Check answers for reasonableness and physical meaning",
+        "Consider sources of experimental error and uncertainty"
+      ],
+      "level2-4": [
+        "Use given formulas correctly with proper substitution",
+        "Include appropriate units in all calculations",
+        "Show intermediate steps clearly",
+        "State final answers with appropriate precision"
+      ],
+      "level5-6": [
+        "Choose appropriate equations for different scenarios",
+        "Analyze complex problems systematically",
+        "Interpret results in terms of physical behavior",
+        "Consider multiple variables and their relationships"
+      ],
+      "level7-8": [
+        "Design comprehensive experimental procedures",
+        "Evaluate sources of measurement uncertainty",
+        "Propose improvements to increase accuracy",
+        "Synthesize multiple approaches to complex problems"
       ]
     }
+  },
+  "fiber-optics": {
+    "strand1": {
+      "general": [
+        "Describe fiber structure clearly: core, cladding, and their functions",
+        "Explain how refractive index differences enable light guidance",
+        "Use technical terms like numerical aperture and acceptance angle appropriately",
+        "Connect fiber properties to performance characteristics"
+      ],
+      "level2-4": [
+        "Identify the main components of optical fibers",
+        "Describe how light travels through fiber cores",
+        "Explain the role of total internal reflection in fibers",
+        "Use clear, accurate scientific vocabulary"
+      ],
+      "level5-6": [
+        "Calculate numerical aperture and acceptance angles",
+        "Explain differences between single-mode and multimode fibers",
+        "Analyze how core size affects fiber performance",
+        "Apply TIR principles to fiber design considerations"
+      ],
+      "level7-8": [
+        "Evaluate trade-offs in fiber design parameters",
+        "Analyze dispersion effects and their impact on performance",
+        "Synthesize optimal fiber characteristics for specific applications",
+        "Assess emerging fiber technologies and their potential"
+      ]
+    },
+    "strand2": {
+      "general": [
+        "Describe the complete fiber optic communication system",
+        "Explain electro-optic and opto-electronic conversions",
+        "Discuss advanced technologies like WDM and optical amplifiers",
+        "Connect component functions to overall system performance"
+      ],
+      "level2-4": [
+        "List the main components: sources, fibers, detectors",
+        "Describe signal conversion from electrical to optical and back",
+        "Explain basic system operation clearly",
+        "Use appropriate technical terminology"
+      ],
+      "level5-6": [
+        "Explain advanced multiplexing techniques",
+        "Analyze system bandwidth and capacity limitations",
+        "Discuss optical amplification and signal processing",
+        "Apply knowledge to system design problems"
+      ],
+      "level7-8": [
+        "Evaluate current fiber system limitations",
+        "Analyze emerging technologies and their impact",
+        "Assess future capacity and performance requirements",
+        "Synthesize solutions for next-generation systems"
+      ]
+    },
+    "strand3": {
+      "general": [
+        "Provide specific examples of fiber optic applications",
+        "Explain why fiber properties make them ideal for each use",
+        "Discuss both benefits and limitations of fiber technology",
+        "Consider societal and economic impacts of fiber optics"
+      ],
+      "level2-4": [
+        "List major applications: telecommunications, medical, sensing",
+        "Describe benefits fiber optics provide in each area",
+        "Give concrete examples of fiber optic devices",
+        "Explain basic advantages over alternative technologies"
+      ],
+      "level5-6": [
+        "Justify fiber optic advantages using physical principles",
+        "Explain how fiber properties enable specific applications",
+        "Analyze the transformation of communications technology",
+        "Discuss technical requirements for different applications"
+      ],
+      "level7-8": [
+        "Evaluate societal impact of fiber optic revolution",
+        "Analyze economic and social implications globally",
+        "Assess digital divide and accessibility issues",
+        "Predict future applications and technological convergence"
+      ]
+    },
+    "strand4": {
+      "general": [
+        "Consider practical engineering constraints and trade-offs",
+        "Address installation, maintenance, and lifecycle factors",
+        "Discuss cost-performance optimization strategies",
+        "Evaluate emerging design approaches and innovations"
+      ],
+      "level2-4": [
+        "Identify basic design requirements for fiber systems",
+        "Describe essential installation considerations",
+        "List key performance and reliability factors",
+        "Use appropriate engineering terminology"
+      ],
+      "level5-6": [
+        "Explain trade-offs between performance, cost, and complexity",
+        "Analyze installation challenges and solutions",
+        "Discuss maintenance and reliability requirements",
+        "Apply engineering principles to design problems"
+      ],
+      "level7-8": [
+        "Evaluate innovative fiber designs and technologies",
+        "Synthesize solutions for complex system challenges",
+        "Assess sustainability and environmental considerations",
+        "Predict future design trends and breakthrough technologies"
+      ]
+    }
+  },
+  "commandTermSpecific": {
+    "define": [
+      "Give precise, accurate definitions using appropriate scientific vocabulary",
+      "Include key characteristics and distinguishing features",
+      "Use clear, concise language that demonstrates understanding",
+      "Avoid circular definitions or overly complex explanations"
+    ],
+    "describe": [
+      "Provide detailed accounts including relevant characteristics",
+      "Use appropriate scientific terminology consistently",
+      "Include specific examples and concrete details",
+      "Organize information logically and comprehensively"
+    ],
+    "explain": [
+      "Give detailed accounts including reasons, causes, or mechanisms",
+      "Connect underlying principles to observable phenomena",
+      "Use scientific theories and models to support explanations",
+      "Make relationships between concepts clear and explicit"
+    ],
+    "calculate": [
+      "Show all working steps clearly and systematically",
+      "Include appropriate units throughout calculations",
+      "Check answers for reasonableness and physical meaning",
+      "Express final answers to appropriate significant figures"
+    ],
+    "analyze": [
+      "Break down complex information into component parts",
+      "Examine relationships and interactions between elements",
+      "Use scientific principles to interpret data and phenomena",
+      "Draw evidence-based conclusions from your analysis"
+    ],
+    "evaluate": [
+      "Make judgments about strengths and limitations",
+      "Use criteria and evidence to support evaluations",
+      "Consider multiple perspectives and alternative viewpoints",
+      "Reach balanced conclusions based on available evidence"
+    ]
+  },
+  "improvementStrategies": {
+    "vocabulary": [
+      "Use precise scientific terminology consistently",
+      "Define technical terms when first introduced",
+      "Avoid vague or imprecise language",
+      "Demonstrate understanding through appropriate word choice"
+    ],
+    "mathematical": [
+      "Show all calculation steps systematically",
+      "Include units and check for dimensional consistency",
+      "Express uncertainty and significant figures appropriately",
+      "Verify answers using alternative methods when possible"
+    ],
+    "conceptual": [
+      "Connect multiple concepts and principles explicitly",
+      "Use analogies and examples to clarify abstract ideas",
+      "Explain the 'why' behind observations and phenomena",
+      "Make relationships between theory and application clear"
+    ],
+    "application": [
+      "Give specific, detailed examples of principles in action",
+      "Explain how scientific knowledge solves real-world problems",
+      "Consider practical constraints and limitations",
+      "Discuss implications and consequences of applications"
+    ]
   }
+}

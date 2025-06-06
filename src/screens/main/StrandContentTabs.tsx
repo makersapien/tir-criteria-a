@@ -1,4 +1,4 @@
-// src/screens/main/StrandContentTabs.tsx
+// src/screens/main/StrandContentTabs.tsx - Fixed for Criteria A
 import React, { useState, useEffect } from 'react';
 import { useStrandContext } from '../../contexts/StrandContext';
 import GuidedExamplePanel from './GuidedExamplePanel';
@@ -6,14 +6,15 @@ import RichEditor from '../../components/RichEditor';
 import HighlightText from '../../utils/highlightText';
 import { evaluateStrand } from '../../utils/evaluateStrand';
 import strandTips from '../../data/strandTips.json';
-import MagnetFieldSimulator from '../../components/MagnetFieldSimulator'; // ✅ new import
+import MagnetFieldSimulator from './TIRsimulation';
+import YourResponseSection from '../../components/YourResponseSection';
 import { supabase } from '../../lib/supabaseClient';
 
 interface StrandContentTabsProps {
   currentStrand: number;
-  experimentChoice: 'distance' | 'magnets';
+  learningPathChoice: 'critical-angle' | 'fiber-optics';
   currentStudentId: string;
-  sessionCode: string; // ✅ Add this line               // ✅ add this
+  sessionCode: string;
   onNext: () => void;
   onPrevious: () => void;
 }
@@ -27,9 +28,9 @@ const defaultFeedback = {
 
 const StrandContentTabs: React.FC<StrandContentTabsProps> = ({
   currentStrand,
-  experimentChoice,
+  learningPathChoice,
   currentStudentId,
-  sessionCode, 
+  sessionCode,
   onNext,
   onPrevious,
 }) => {
@@ -41,19 +42,31 @@ const StrandContentTabs: React.FC<StrandContentTabsProps> = ({
     setStrandProgress,
   } = useStrandContext();
 
-  const [activeTab, setActiveTab] = useState<'guided' | 'your' | 'sim'>('your');
+  const [activeTab, setActiveTab] = useState<'guided' | 'your' | 'sim' | 'questions'>('questions');
   const [feedbackByStrand, setFeedbackByStrand] = useState<Record<string, typeof defaultFeedback>>({});
 
   const raw = userInputs[strandKey]?.level8 || '';
   const feedback = feedbackByStrand[strandKey] || defaultFeedback;
-// ✅ Fetch previously saved strand data from Supabase
+
+  // Handle progress updates from question system
+  const handleProgressUpdate = (strand: number, level: number, score: number) => {
+    console.log('Progress update:', { strand, level, score });
+    const updatedProgress = [...strandProgress];
+    updatedProgress[strand - 1] = Math.max(updatedProgress[strand - 1], score);
+    setStrandProgress(updatedProgress);
+  };
+
+  // ✅ Fetch previously saved strand data from Supabase
   useEffect(() => {
     const fetchStrands = async () => {
+      if (!currentStudentId || !learningPathChoice || !sessionCode) return;
+      
       const { data, error } = await supabase
         .from('responses')
         .select('strand1, strand2, strand3, strand4, strand5')
         .eq('student_id', currentStudentId)
-        .eq('experiment', experimentChoice)
+        .eq('experiment', learningPathChoice)
+        .eq('session_code', sessionCode)
         .maybeSingle();
 
       if (data) {
@@ -65,26 +78,34 @@ const StrandContentTabs: React.FC<StrandContentTabsProps> = ({
           strand5: { level8: data.strand5 || '' },
         });
       }
+      
+      if (error) {
+        console.error('Error fetching strand data:', error);
+      }
     };
 
     fetchStrands();
-  }, [currentStudentId, experimentChoice]);
+  }, [currentStudentId, learningPathChoice, sessionCode]);
 
-// ✅ Evaluate strand after user types input
-
+  // ✅ Evaluate strand after user types input using new Criteria A evaluation
   useEffect(() => {
     const evaluate = async () => {
-      const result = await evaluateStrand(raw, experimentChoice, strandKey);
-      setFeedbackByStrand((prev) => ({ ...prev, [strandKey]: result }));
-      const updatedProgress = [...strandProgress];
-      updatedProgress[currentStrand - 1] = result.level;
-      setStrandProgress(updatedProgress);
+      try {
+        // ✅ Pass the correct learning path type to the new evaluation system
+        const result = await evaluateStrand(raw, learningPathChoice, strandKey);
+        setFeedbackByStrand((prev) => ({ ...prev, [strandKey]: result }));
+        const updatedProgress = [...strandProgress];
+        updatedProgress[currentStrand - 1] = result.level;
+        setStrandProgress(updatedProgress);
+      } catch (error) {
+        console.error('Error evaluating strand:', error);
+      }
     };
 
     if (raw.trim()) {
       evaluate();
     }
-  }, [raw, experimentChoice, strandKey]);
+  }, [raw, learningPathChoice, strandKey, currentStrand, strandProgress, setStrandProgress]);
 
   const handleEditorChange = (newContent: string) => {
     setUserInputs((prev) => ({
@@ -103,43 +124,66 @@ const StrandContentTabs: React.FC<StrandContentTabsProps> = ({
     return 'bg-gray-100 text-gray-800';
   };
 
+  // ✅ Get appropriate tips for the learning path
+  const getTipsForLearningPath = () => {
+    // Map learning paths to tip categories (using existing tip structure)
+    const tipMapping = {
+      'critical-angle': 'distance', // Map to existing tip structure
+      'fiber-optics': 'magnets'     // Map to existing tip structure
+    };
+    
+    const mappedTipCategory = tipMapping[learningPathChoice];
+    return strandTips?.[mappedTipCategory]?.[strandKey] || {};
+  };
+
   return (
     <div className="strand-content-tabs p-4 border rounded-md shadow-sm bg-white">
       <h2 className="font-semibold text-lg mb-2">Strand {currentStrand}</h2>
       <p className="text-sm mb-4 text-gray-700">
-        Navigate through tabs to explore examples, try simulations, and write your response.
+        Navigate through tabs to explore examples, try simulations, and complete interactive questions.
       </p>
 
-      <div className="flex border-b mb-4">
+      <div className="flex border-b mb-4 overflow-x-auto">
         <button
-          className={`px-4 py-2 font-medium transition ${
-            activeTab === 'guided' ? 'border-b-2 border-blue-500 text-blue-600' : ''
+          className={`px-4 py-2 font-medium transition whitespace-nowrap ${
+            activeTab === 'guided' ? 'border-b-2 border-purple-500 text-purple-600' : ''
           }`}
           onClick={() => setActiveTab('guided')}
         >
-          Guided Example
+          📚 Guided Example
         </button>
         <button
-          className={`px-4 py-2 font-medium transition ${
-            activeTab === 'sim' ? 'border-b-2 border-blue-500 text-blue-600' : ''
+          className={`px-4 py-2 font-medium transition whitespace-nowrap ${
+            activeTab === 'sim' ? 'border-b-2 border-purple-500 text-purple-600' : ''
           }`}
           onClick={() => setActiveTab('sim')}
         >
-          Simulation
+          🔬 Simulation
         </button>
         <button
-          className={`px-4 py-2 font-medium transition ${
-            activeTab === 'your' ? 'border-b-2 border-blue-500 text-blue-600' : ''
+          className={`px-4 py-2 font-medium transition whitespace-nowrap ${
+            activeTab === 'questions' ? 'border-b-2 border-purple-500 text-purple-600' : ''
+          }`}
+          onClick={() => setActiveTab('questions')}
+        >
+          ✍️ Interactive Questions
+        </button>
+        <button
+          className={`px-4 py-2 font-medium transition whitespace-nowrap ${
+            activeTab === 'your' ? 'border-b-2 border-purple-500 text-purple-600' : ''
           }`}
           onClick={() => setActiveTab('your')}
         >
-          Your Experiment
+          📝 Your Response (Rich Editor)
         </button>
       </div>
 
       {activeTab === 'guided' && (
         <div className="mt-4">
-          <GuidedExamplePanel currentStrand={currentStrand} />
+          <GuidedExamplePanel 
+            currentStrand={currentStrand} 
+            learningPathChoice={learningPathChoice}
+          />
         </div>
       )}
 
@@ -149,16 +193,28 @@ const StrandContentTabs: React.FC<StrandContentTabsProps> = ({
         </div>
       )}
 
+      {activeTab === 'questions' && (
+        <div className="mt-4">
+          <YourResponseSection
+            currentStrand={currentStrand}
+            experimentChoice={learningPathChoice}
+            currentStudentId={currentStudentId}
+            sessionCode={sessionCode}
+            onProgressUpdate={handleProgressUpdate}
+          />
+        </div>
+      )}
+
       {activeTab === 'your' && (
         <div className="mt-4">
           <label className="block mb-2 font-medium text-sm">
-            Your Response for Strand {currentStrand}
+            Your Response for Strand {currentStrand} (Rich Editor)
           </label>
 
           {/* Tips Section */}
           <div className="bg-yellow-50 p-3 mb-3 rounded border border-yellow-200 text-sm">
             <h4 className="font-semibold text-sm mb-1">💡 Tips to Reach Level 8:</h4>
-            {Object.entries(strandTips?.[experimentChoice]?.[strandKey] || {}).map(([level, tip]) => (
+            {Object.entries(getTipsForLearningPath()).map(([level, tip]) => (
               <p key={level} className="text-gray-700 mb-1">
                 <strong>{level.toUpperCase()}:</strong> {String(tip)}
               </p>
@@ -171,7 +227,7 @@ const StrandContentTabs: React.FC<StrandContentTabsProps> = ({
               onChange={handleEditorChange}
               currentStudentId={currentStudentId}
               currentStrand={currentStrand}
-              currentExperimentChoice={experimentChoice}      // ✅ From props
+              currentExperimentChoice={learningPathChoice} // ✅ Pass the learning path directly
               sessionCode={sessionCode}
           />
 
@@ -218,7 +274,7 @@ const StrandContentTabs: React.FC<StrandContentTabsProps> = ({
         <button onClick={onPrevious} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md">
           ◀ Previous Strand
         </button>
-        <button onClick={onNext} className="px-4 py-2 bg-blue-500 text-white rounded-md">
+        <button onClick={onNext} className="px-4 py-2 bg-purple-500 text-white rounded-md">
           Next Strand ▶
         </button>
       </div>

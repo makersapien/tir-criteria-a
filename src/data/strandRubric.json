@@ -1,133 +1,353 @@
 {
-  "experiments": {
-    "distance": {
-      "title": "Effect of Distance on Magnetic Field Strength",
+  "learningPaths": {
+    "critical-angle": {
+      "name": "Discovering Critical Angles",
+      "description": "Explore the physics behind total internal reflection and critical angle calculations",
       "strands": {
         "strand1": {
+          "name": "TIR Principles & Laws",
+          "description": "Understanding the fundamental laws governing total internal reflection",
           "keywords": [
-            { "label": "data table", "level": 3, "words": ["table", "data table", "structured table"] },
-            { "label": "graph with labels", "level": 5, "words": ["graph", "labeled graph", "x-axis", "y-axis"] },
-            { "label": "average with trendline", "level": 7, "words": ["average", "trendline", "significant figures", "units"] }
+            "total internal reflection",
+            "critical angle",
+            "snells law",
+            "refractive index",
+            "light ray",
+            "normal",
+            "incident angle",
+            "refracted ray",
+            "medium",
+            "dense medium",
+            "less dense medium",
+            "optical density",
+            "sine",
+            "formula",
+            "equation"
           ],
           "concepts": [
-            { "label": "organized presentation", "level": 3, "words": ["organized", "clear", "neat"] },
-            { "label": "visual pattern", "level": 5, "words": ["trend", "pattern", "relationship"] },
-            { "label": "analytical graphing", "level": 7, "words": ["graphical analysis", "data analysis", "inference"] }
-          ]
+            "TIR occurs when light travels from a denser to less dense medium at angles greater than critical angle",
+            "Critical angle formula: sin(θc) = n₂/n₁ where n₁ > n₂",
+            "Snells law: n₁sin(θ₁) = n₂sin(θ₂)",
+            "Refractive index determines how much light bends",
+            "Light speed changes in different materials: v = c/n",
+            "Total internal reflection reflects 100% of incident light",
+            "Critical angle depends only on the refractive indices of the two media"
+          ],
+          "levelDescriptors": {
+            "2": "States basic facts about light and reflection",
+            "4": "Describes total internal reflection phenomenon",
+            "6": "Explains TIR using scientific terminology and relationships",
+            "8": "Analyzes TIR principles with comprehensive understanding of underlying physics"
+          }
         },
         "strand2": {
+          "name": "Understanding TIR Phenomena",
+          "description": "Comprehending why and when total internal reflection occurs",
           "keywords": [
-            { "label": "increase/decrease", "level": 3, "words": ["increase", "decrease"] },
-            { "label": "relationship", "level": 5, "words": ["relationship", "proportional", "non-linear"] },
-            { "label": "inverse-square law", "level": 7, "words": ["inverse", "inverse-square", "magnetic field spread", "field theory"] }
+            "conditions for TIR",
+            "light behavior",
+            "angle of incidence",
+            "reflection",
+            "refraction",
+            "boundary",
+            "interface",
+            "wavelength",
+            "frequency",
+            "speed of light",
+            "optical phenomenon",
+            "light path",
+            "ray diagram",
+            "physics principles"
           ],
           "concepts": [
-            { "label": "field strength change", "level": 3, "words": ["stronger", "weaker", "magnet strength"] },
-            { "label": "pattern recognition", "level": 5, "words": ["trend", "relationship", "link"] },
-            { "label": "magnetic theory", "level": 7, "words": ["field lines", "spread", "distance effect", "scientific explanation"] }
-          ]
+            "TIR only occurs when light travels from higher to lower refractive index medium",
+            "Incident angle must exceed the critical angle for TIR to happen",
+            "At critical angle, refracted ray grazes along the interface (90° to normal)",
+            "Below critical angle, both reflection and refraction occur",
+            "TIR is a wave phenomenon that applies to all electromagnetic radiation",
+            "The phenomenon is reversible - light paths can be traced backwards",
+            "TIR preserves light intensity unlike partial reflection"
+          ],
+          "levelDescriptors": {
+            "2": "Identifies when light reflects completely",
+            "4": "Describes conditions needed for total internal reflection",
+            "6": "Explains the relationship between incident angle and TIR occurrence",
+            "8": "Evaluates multiple factors affecting TIR phenomena with detailed reasoning"
+          }
         },
         "strand3": {
+          "name": "Real-World Applications",
+          "description": "Exploring practical uses of total internal reflection in technology and nature",
           "keywords": [
-            { "label": "hypothesis checked", "level": 3, "words": ["correct", "incorrect", "supported"] },
-            { "label": "data and graph linked", "level": 5, "words": ["evidence", "graph shows", "data shows"] },
-            { "label": "scientific reasoning", "level": 7, "words": ["reason", "assumption", "logical explanation"] }
+            "fiber optics",
+            "optical fibers",
+            "internet cables",
+            "medical endoscopy",
+            "diamond brilliance",
+            "gemstone sparkle",
+            "periscope",
+            "binoculars",
+            "prisms",
+            "light guides",
+            "telecommunications",
+            "laser surgery",
+            "underwater vision",
+            "total internal reflection microscopy",
+            "LED efficiency"
           ],
           "concepts": [
-            { "label": "comparison with prediction", "level": 3, "words": ["match", "prediction", "expected"] },
-            { "label": "justified conclusion", "level": 5, "words": ["supported", "justify", "explain with data"] },
-            { "label": "critical reflection", "level": 7, "words": ["evaluate", "bias", "limitation"] }
-          ]
+            "Optical fibers use TIR to transmit light signals over long distances",
+            "Diamond brilliance results from TIR due to high refractive index (2.42)",
+            "Fiber optic communications revolutionized internet and telecommunications",
+            "Medical endoscopes use flexible fiber bundles for internal imaging",
+            "Prisms in binoculars and periscopes redirect light using TIR",
+            "LED design utilizes TIR to improve light extraction efficiency",
+            "Underwater animals may use TIR for camouflage and communication"
+          ],
+          "levelDescriptors": {
+            "2": "Lists examples of TIR in everyday life",
+            "4": "Describes how TIR is used in common applications",
+            "6": "Explains the physics behind TIR applications with appropriate examples",
+            "8": "Analyzes multiple TIR applications and evaluates their effectiveness and limitations"
+          }
         },
         "strand4": {
+          "name": "Analysis & Problem Solving",
+          "description": "Applying mathematical and analytical skills to solve TIR problems",
           "keywords": [
-            { "label": "method result", "level": 3, "words": ["worked", "did not work", "method successful"] },
-            { "label": "issues identified", "level": 5, "words": ["errors", "mistake", "problem", "limitation"] },
-            { "label": "detailed limitation", "level": 7, "words": ["alignment", "measurement error", "variable control"] }
+            "calculations",
+            "problem solving",
+            "mathematical analysis",
+            "critical angle calculation",
+            "refractive index determination",
+            "angle measurement",
+            "trigonometry",
+            "sine function",
+            "inverse sine",
+            "data analysis",
+            "experimental design",
+            "variables",
+            "precision",
+            "accuracy",
+            "error analysis"
           ],
           "concepts": [
-            { "label": "method evaluation", "level": 3, "words": ["suitable", "not suitable"] },
-            { "label": "error discussion", "level": 5, "words": ["fault", "error", "setup flaw"] },
-            { "label": "validity critique", "level": 7, "words": ["repeatable", "valid", "improvement area"] }
-          ]
-        },
-        "strand5": {
-          "keywords": [
-            { "label": "improvement idea", "level": 3, "words": ["better", "change", "try again"] },
-            { "label": "specific improvement", "level": 5, "words": ["repeat", "more trials", "digital tools"] },
-            { "label": "holistic improvement", "level": 7, "words": ["remove variable", "high accuracy", "detailed fix"] }
+            "Critical angle calculations using θc = arcsin(n₂/n₁)",
+            "Determining refractive indices from critical angle measurements",
+            "Analyzing ray diagrams to predict light behavior",
+            "Designing experiments to measure critical angles",
+            "Evaluating factors affecting measurement accuracy",
+            "Using TIR principles to solve design challenges",
+            "Interpreting data from TIR experiments and applications"
           ],
-          "concepts": [
-            { "label": "experiment tweak", "level": 3, "words": ["adjust", "fix"] },
-            { "label": "tool upgrade", "level": 5, "words": ["equipment", "tool", "technique"] },
-            { "label": "systematic improvement", "level": 7, "words": ["entire process", "system change", "rigorous fix"] }
-          ]
+          "levelDescriptors": {
+            "2": "Performs simple calculations with given formulas",
+            "4": "Solves basic TIR problems using appropriate equations",
+            "6": "Analyzes complex TIR scenarios and calculates multiple variables",
+            "8": "Evaluates experimental designs and synthesizes solutions to novel TIR problems"
+          }
         }
       }
     },
-    "magnets": {
-      "title": "Effect of Number of Magnets on Magnetic Field Strength",
+    "fiber-optics": {
+      "name": "How Fibre Optics Work",
+      "description": "Investigate the science behind fiber optic technology and its applications",
       "strands": {
         "strand1": {
+          "name": "Fiber Optic Principles",
+          "description": "Understanding how light travels through optical fibers",
           "keywords": [
-            { "label": "data table", "level": 3, "words": ["table", "rows", "columns"] },
-            { "label": "labeled graph", "level": 5, "words": ["graph", "labels", "x-axis", "y-axis"] },
-            { "label": "trend with averages", "level": 7, "words": ["average", "trend", "units"] }
+            "optical fiber",
+            "core",
+            "cladding",
+            "step index fiber",
+            "graded index fiber",
+            "acceptance angle",
+            "numerical aperture",
+            "light coupling",
+            "fiber modes",
+            "single mode",
+            "multimode",
+            "dispersion",
+            "attenuation",
+            "light propagation"
           ],
           "concepts": [
-            { "label": "clear presentation", "level": 3, "words": ["organized", "presented"] },
-            { "label": "visual interpretation", "level": 5, "words": ["interpret", "visual", "graph"] },
-            { "label": "quantitative analysis", "level": 7, "words": ["mean", "analysis", "data processing"] }
-          ]
+            "Optical fibers consist of high refractive index core surrounded by lower index cladding",
+            "Light is trapped in core by total internal reflection at core-cladding boundary",
+            "Acceptance angle determines how much light can be coupled into fiber",
+            "Numerical aperture quantifies light-gathering ability of fiber",
+            "Step-index fibers have uniform core refractive index",
+            "Graded-index fibers have gradually varying core index to reduce dispersion",
+            "Single-mode fibers carry one light path, multimode fibers carry many"
+          ],
+          "levelDescriptors": {
+            "2": "States basic components of optical fibers",
+            "4": "Describes how light travels through optical fibers",
+            "6": "Explains fiber optic principles using TIR and refractive index concepts",
+            "8": "Analyzes different fiber types and their optical properties comprehensively"
+          }
         },
         "strand2": {
+          "name": "Fiber Optic Technology",
+          "description": "Exploring the engineering and physics behind fiber optic systems",
           "keywords": [
-            { "label": "strength increases", "level": 3, "words": ["increases", "more magnets", "stronger"] },
-            { "label": "pattern", "level": 5, "words": ["linear", "non-linear", "pattern"] },
-            { "label": "magnetic field theory", "level": 7, "words": ["combine", "field", "reinforce"] }
+            "light sources",
+            "LED",
+            "laser diodes",
+            "photodetectors",
+            "signal transmission",
+            "bandwidth",
+            "data rate",
+            "optical amplifiers",
+            "wavelength division multiplexing",
+            "fiber splicing",
+            "connectors",
+            "optical loss",
+            "signal degradation",
+            "pulse broadening"
           ],
           "concepts": [
-            { "label": "magnet behavior", "level": 3, "words": ["magnet", "effect", "strength"] },
-            { "label": "field combination", "level": 5, "words": ["additive", "summation", "field interaction"] },
-            { "label": "advanced explanation", "level": 7, "words": ["magnet field", "theory", "scientific reasoning"] }
-          ]
+            "LEDs and laser diodes convert electrical signals to optical signals",
+            "Photodetectors convert optical signals back to electrical signals",
+            "Fiber optic systems can transmit multiple wavelengths simultaneously",
+            "Optical amplifiers boost signal strength without electrical conversion",
+            "Fiber splicing joins fiber segments with minimal loss",
+            "Modal dispersion causes pulse broadening in multimode fibers",
+            "Chromatic dispersion affects different wavelengths differently"
+          ],
+          "levelDescriptors": {
+            "2": "Identifies components of fiber optic communication systems",
+            "4": "Describes the function of key fiber optic components",
+            "6": "Explains how fiber optic systems transmit information using physics principles",
+            "8": "Evaluates fiber optic system performance and limitations with detailed analysis"
+          }
         },
         "strand3": {
+          "name": "Applications & Impact",
+          "description": "Examining fiber optic applications and their societal impact",
           "keywords": [
-            { "label": "hypothesis result", "level": 3, "words": ["match", "correct", "wrong", "right"] },
-            { "label": "data supported", "level": 5, "words": ["graph shows", "data shows", "supported"] },
-            { "label": "reflection", "level": 7, "words": ["assumption", "limitation", "gap", "hypothesis critique"] }
+            "telecommunications",
+            "internet infrastructure",
+            "undersea cables",
+            "medical applications",
+            "endoscopy",
+            "laser surgery",
+            "sensing applications",
+            "industrial monitoring",
+            "military communications",
+            "broadcast television",
+            "computer networks",
+            "smart cities",
+            "data centers",
+            "cloud computing"
           ],
           "concepts": [
-            { "label": "comparison", "level": 3, "words": ["compare", "check", "correct"] },
-            { "label": "evidence support", "level": 5, "words": ["support", "evidence", "trend"] },
-            { "label": "reasoning analysis", "level": 7, "words": ["saturation", "non-linearity", "error in thinking"] }
-          ]
+            "Fiber optics revolutionized global telecommunications and internet",
+            "Undersea fiber cables connect continents with high-speed data transmission",
+            "Medical fiber optics enable minimally invasive procedures and diagnostics",
+            "Fiber optic sensors monitor temperature, pressure, and structural health",
+            "Broadcast industry uses fiber optics for high-quality signal distribution",
+            "Data centers rely on fiber optics for high-speed internal connections",
+            "Smart city infrastructure increasingly depends on fiber optic networks"
+          ],
+          "levelDescriptors": {
+            "2": "Lists applications of fiber optic technology",
+            "4": "Describes benefits of fiber optics in various applications",
+            "6": "Explains how fiber optic properties make them suitable for specific applications",
+            "8": "Analyzes the societal impact and future potential of fiber optic technology"
+          }
         },
         "strand4": {
+          "name": "Design & Innovation",
+          "description": "Applying fiber optic principles to solve design challenges",
           "keywords": [
-            { "label": "method outcome", "level": 3, "words": ["worked", "didn't work", "result"] },
-            { "label": "limitations", "level": 5, "words": ["limitation", "flaw", "error"] },
-            { "label": "validity critique", "level": 7, "words": ["valid", "repeatable", "reliable"] }
+            "system design",
+            "performance optimization",
+            "loss minimization",
+            "bandwidth maximization",
+            "cost effectiveness",
+            "environmental factors",
+            "installation challenges",
+            "maintenance requirements",
+            "future developments",
+            "emerging technologies",
+            "innovation",
+            "engineering solutions",
+            "trade-offs",
+            "sustainability"
           ],
           "concepts": [
-            { "label": "outcome analysis", "level": 3, "words": ["result", "response"] },
-            { "label": "flaw analysis", "level": 5, "words": ["mistake", "fault"] },
-            { "label": "setup critique", "level": 7, "words": ["alignment", "measurement", "accuracy"] }
-          ]
-        },
-        "strand5": {
-          "keywords": [
-            { "label": "improvement", "level": 3, "words": ["improve", "better", "try again"] },
-            { "label": "specific fix", "level": 5, "words": ["more trials", "repeat", "equipment fix"] },
-            { "label": "holistic improvement", "level": 7, "words": ["systematic", "remove variable", "automation"] }
+            "Fiber optic system design involves trade-offs between performance and cost",
+            "Environmental factors like temperature and humidity affect fiber performance",
+            "Installation methods must minimize fiber stress and damage",
+            "Maintenance strategies ensure long-term system reliability",
+            "New fiber designs aim to reduce loss and increase bandwidth",
+            "Integration with wireless technologies creates hybrid communication systems",
+            "Sustainable manufacturing and disposal methods are increasingly important"
           ],
-          "concepts": [
-            { "label": "enhancement", "level": 3, "words": ["better", "enhance"] },
-            { "label": "technical fix", "level": 5, "words": ["tool", "device", "tool change"] },
-            { "label": "complete overhaul", "level": 7, "words": ["system fix", "design improvement"] }
-          ]
+          "levelDescriptors": {
+            "2": "Identifies factors in fiber optic system design",
+            "4": "Describes design considerations for fiber optic applications",
+            "6": "Explains design trade-offs and optimization strategies for fiber systems",
+            "8": "Evaluates innovative fiber optic solutions and predicts future developments"
+          }
         }
+      }
+    }
+  },
+  "assessmentCriteria": {
+    "name": "Criterion A: Knowledge and Understanding",
+    "description": "Students demonstrate knowledge and understanding of scientific concepts, theories, models, and principles",
+    "commandTerms": [
+      "define",
+      "describe",
+      "explain",
+      "identify",
+      "list",
+      "state",
+      "calculate",
+      "determine",
+      "analyze",
+      "evaluate",
+      "predict",
+      "compare",
+      "contrast",
+      "justify"
+    ],
+    "levels": {
+      "1-2": {
+        "descriptor": "Limited knowledge and understanding",
+        "characteristics": [
+          "States basic scientific facts",
+          "Uses simple scientific vocabulary",
+          "Demonstrates minimal conceptual understanding"
+        ]
+      },
+      "3-4": {
+        "descriptor": "Adequate knowledge and understanding",
+        "characteristics": [
+          "Describes scientific concepts clearly",
+          "Uses appropriate scientific terminology",
+          "Shows understanding of relationships between concepts"
+        ]
+      },
+      "5-6": {
+        "descriptor": "Substantial knowledge and understanding",
+        "characteristics": [
+          "Explains scientific phenomena using theories and models",
+          "Applies knowledge to solve problems",
+          "Demonstrates comprehensive understanding of concepts"
+        ]
+      },
+      "7-8": {
+        "descriptor": "Excellent knowledge and understanding",
+        "characteristics": [
+          "Analyzes complex scientific scenarios",
+          "Evaluates theories and models critically",
+          "Synthesizes knowledge from multiple sources",
+          "Demonstrates sophisticated understanding"
+        ]
       }
     }
   }

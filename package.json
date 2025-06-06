@@ -1,11 +1,24 @@
 {
-  "name": "magnetism-lab-explorer",
+  "name": "tir-criteria-a-explorer",
   "version": "1.0.0",
+  "description": "Interactive MYP Physics platform for Total Internal Reflection - Criteria A assessment tool",
+  "keywords": ["total internal reflection", "fiber optics", "physics", "MYP", "criteria A", "education"],
+  "author": "MakerSapiens",
+  "license": "MIT",
+  "homepage": "https://MakerSapiens.github.io/tir-criteria-a/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MakerSapiens/tir-criteria-a.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MakerSapiens/tir-criteria-a/issues"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "predeploy": "npm run build"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
@@ -20,7 +33,7 @@
     "antd": "^5.24.8",
     "canvas-confetti": "^1.9.3",
     "chart.js": "^4.4.9",
-    "framer-motion": "^12.9.4",
+    "framer-motion": "^12.16.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.1",
     "react": "^18.2.0",

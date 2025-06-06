@@ -14,18 +14,30 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
+
+      - name: Clear npm cache
+        run: npm cache clean --force
+
+      - name: Delete lock file
+        run: rm -f package-lock.json
+
+      - name: Install specific react-router-dom version
+        run: npm install react-router-dom@6.8.1 --save-exact
 
       - name: Install Dependencies
         run: npm install
 
       - name: Build
         run: npm run build
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3

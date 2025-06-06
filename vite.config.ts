@@ -14,15 +14,10 @@ export default defineConfig({
   assetsInclude: ['**/*.svg'],
   build: {
     outDir: 'dist',
-    sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          motion: ['framer-motion'],
-          charts: ['chart.js', 'react-chartjs-2'],
-        }
-      }
+    sourcemap: false, // Disable sourcemap to reduce build issues
+    commonjsOptions: {
+      include: [/node_modules/],
+      transformMixedEsModules: true
     }
   },
   server: {
@@ -30,12 +25,10 @@ export default defineConfig({
     open: true
   },
   optimizeDeps: {
-    include: ['framer-motion']
+    include: ['react-router-dom'],
+    exclude: ['react-router']
   },
   resolve: {
-    alias: {
-      // Fix for framer-motion build issues
-      'motion-utils': 'motion-utils/dist/index.js'
-    }
+    dedupe: ['react', 'react-dom', 'react-router-dom']
   }
 });

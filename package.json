@@ -3,15 +3,15 @@
   "version": "1.0.0",
   "description": "Interactive MYP Physics platform for Total Internal Reflection - Criteria A assessment tool",
   "keywords": ["total internal reflection", "fiber optics", "physics", "MYP", "criteria A", "education"],
-  "author": "MakerSapiens",
+  "author": "makersapien",
   "license": "MIT",
-  "homepage": "https://MakerSapiens.github.io/tir-criteria-a/",
+  "homepage": "https://makersapien.github.io/tir-criteria-a/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MakerSapiens/tir-criteria-a.git"
+    "url": "https://github.com/makersapien/tir-criteria-a.git"
   },
   "bugs": {
-    "url": "https://github.com/MakerSapiens/tir-criteria-a/issues"
+    "url": "https://github.com/makersapien/tir-criteria-a/issues"
   },
   "scripts": {
     "dev": "vite",

@@ -20,19 +20,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
 
-      - name: Clear npm cache
-        run: npm cache clean --force
-
-      - name: Delete lock file
-        run: rm -f package-lock.json
-
-      - name: Install specific react-router-dom version
-        run: npm install react-router-dom@6.8.1 --save-exact
-
-      - name: Install Dependencies
-        run: npm install
+      - name: Clean install dependencies
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install
 
       - name: Build
         run: npm run build

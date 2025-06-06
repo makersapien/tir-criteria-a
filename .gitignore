@@ -3,6 +3,12 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build output
+dist/
 
 # Production builds
 dist/
@@ -87,3 +93,9 @@ public/
 
 # TypeScript
 *.tsbuildinfo
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build output
+dist/

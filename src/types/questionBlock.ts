@@ -1,106 +1,35 @@
 // src/types/questionBlock.ts
+// Re-export everything from the integrated question system
 
-export type QuestionType = 'mcq' | 'fill-blank' | 'match-click' | 'short-answer';
+// Re-export from question implementations
+export * from '../components/questions/questionImplementations';
 
-export interface BaseQuestion {
-  id: string;
-  type: QuestionType;
-  level: 2 | 4 | 6 | 8;
-  points: number;
-  question: string;
-  learningPath: 'critical-angle' | 'fiber-optics';
-  strand: 1 | 2 | 3 | 4;
-  concept: string;
-  keywords: string[];
+// Re-export from question system context
+export * from '../contexts/questionSystemContext';
+
+// Re-export from utils (evaluation functions)
+export * from '../utils/integrationFixes';
+
+// Core types that tie everything together
+export type QuestionLevel = 2 | 4 | 6 | 8;
+export type ExperimentType = 'critical-angle' | 'fiber-optics' | 'distance' | 'magnets';
+
+export interface StrandData {
+  strand: number;
+  title: string;
+  description: string;
+  blocks: QuestionBlock[];
 }
-
-export interface MCQQuestion extends BaseQuestion {
-  type: 'mcq';
-  options: {
-    id: string;
-    text: string;
-    isCorrect: boolean;
-    level?: number; // For partial credit
-  }[];
-  explanation: string;
-}
-
-export interface FillBlankQuestion extends BaseQuestion {
-  type: 'fill-blank';
-  text: string; // Text with {blank} placeholders
-  blanks: {
-    id: string;
-    correctAnswers: string[];
-    caseSensitive: boolean;
-    hints?: string[];
-  }[];
-  explanation: string;
-}
-
-export interface MatchClickQuestion extends BaseQuestion {
-  type: 'match-click';
-  leftItems: {
-    id: string;
-    text: string;
-    image?: string;
-  }[];
-  rightItems: {
-    id: string;
-    text: string;
-    image?: string;
-  }[];
-  correctMatches: {
-    leftId: string;
-    rightId: string;
-  }[];
-  explanation: string;
-}
-
-export interface ShortAnswerQuestion extends BaseQuestion {
-  type: 'short-answer';
-  minWords?: number;
-  maxWords?: number;
-  sampleAnswer: string;
-  evaluationCriteria: {
-    requiredKeywords: string[];
-    requiredConcepts: string[];
-    levelDescriptors: {
-      level: number;
-      description: string;
-      keywords: string[];
-    }[];
-  };
-}
-
-export type Question = MCQQuestion | FillBlankQuestion | MatchClickQuestion | ShortAnswerQuestion;
 
 export interface QuestionBlock {
   id: string;
-  level: 2 | 4 | 6 | 8;
+  level: QuestionLevel;
   questions: Question[];
-  unlocked: boolean;
   completed: boolean;
-  score: number; // 0-8 based on performance
+  score: number;
+  unlocked: boolean;
   attempts: number;
   maxAttempts: number;
   completedQuestions: number;
   totalQuestions: number;
-}
-
-export interface QuestionResponse {
-  questionId: string;
-  type: QuestionType;
-  answer: any;
-  isCorrect: boolean;
-  score: number;
-  feedback: string;
-  timestamp: Date;
-}
-
-export interface StrandQuestionData {
-  strand: number;
-  learningPath: 'critical-angle' | 'fiber-optics';
-  title: string;
-  description: string;
-  blocks: QuestionBlock[];
 }

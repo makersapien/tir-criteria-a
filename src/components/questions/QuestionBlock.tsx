@@ -1,8 +1,19 @@
-// src/components/questions/QuestionBlock.tsx - ENHANCED VERSION
+// src/components/questions/QuestionBlock.tsx - ENHANCED VERSION WITH NEW SYSTEM INTEGRATION
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { Question, QuestionResponse, QuestionBlock as QuestionBlockType } from '../../types/questionBlock';
+
+// ✅ Import from the new integrated system
+import { 
+  Question, 
+  QuestionResponse, 
+  QuestionBlock as QuestionBlockType 
+} from '../../types/questionBlock';
+
+// ✅ Import the Universal Question Renderer from the new system
+import { UniversalQuestionRenderer } from './questionImplementations';
+
+// ✅ Import individual components as fallback
 import MCQComponent from './MCQComponent';
 import FillBlankComponent from './FillBlankComponent';
 import MatchClickComponent from './MatchClickComponent';
@@ -14,6 +25,12 @@ interface QuestionBlockProps {
   onUnlock?: (nextLevel: number) => void;
   showSuggestions?: boolean;
   onProgressUpdate?: (blockId: string, currentQuestion: number, totalQuestions: number, currentScore: number) => void;
+  // ✅ Additional props for new system integration
+  currentStudentId?: string;
+  sessionCode?: string;
+  experimentChoice?: 'critical-angle' | 'fiber-optics';
+  syncStatus?: 'idle' | 'saving' | 'success' | 'error';
+  useUniversalRenderer?: boolean; // Option to use new system or fall back to individual components
 }
 
 const QuestionBlock: React.FC<QuestionBlockProps> = ({
@@ -21,7 +38,12 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
   onComplete,
   onUnlock,
   showSuggestions = false,
-  onProgressUpdate
+  onProgressUpdate,
+  currentStudentId,
+  sessionCode,
+  experimentChoice,
+  syncStatus = 'idle',
+  useUniversalRenderer = true // Default to new system
 }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [responses, setResponses] = useState<QuestionResponse[]>([]);
@@ -298,14 +320,90 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
     );
   }
 
-  // ✅ ENHANCED: Active question block with improved UI
+  // ✅ NEW: Enhanced question renderer with integration system support
+  const renderQuestion = () => {
+    if (!currentQuestion) {
+      return (
+        <div className="p-4 text-center text-gray-500">
+          No questions available in this block.
+        </div>
+      );
+    }
+
+    const previousResponse = responses[currentQuestionIndex];
+
+    // ✅ Try to use the Universal Question Renderer from new system first
+    if (useUniversalRenderer) {
+      try {
+        return (
+          <div className="relative">
+            {/* New System Indicator */}
+            <div className="absolute top-0 right-0 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-bl-lg">
+              ✨ Enhanced
+            </div>
+            <UniversalQuestionRenderer
+              question={currentQuestion}
+              onAnswer={handleQuestionResponse}
+              showFeedback={showFeedback}
+              previousResponse={previousResponse}
+            />
+          </div>
+        );
+      } catch (error) {
+        console.warn('Universal renderer failed, falling back to individual components:', error);
+        // Fall through to individual components
+      }
+    }
+
+    // ✅ Fallback to individual components (your original system)
+    return (
+      <div className="relative">
+        {!useUniversalRenderer && (
+          <div className="absolute top-0 right-0 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-bl-lg">
+            ⚡ Legacy
+          </div>
+        )}
+        
+        {currentQuestion.type === 'mcq' && (
+          <MCQComponent
+            question={currentQuestion}
+            onAnswer={handleQuestionResponse}
+            showFeedback={showFeedback}
+          />
+        )}
+        {currentQuestion.type === 'fill-blank' && (
+          <FillBlankComponent
+            question={currentQuestion}
+            onAnswer={handleQuestionResponse}
+            showFeedback={showFeedback}
+          />
+        )}
+        {currentQuestion.type === 'match-click' && (
+          <MatchClickComponent
+            question={currentQuestion}
+            onAnswer={handleQuestionResponse}
+            showFeedback={showFeedback}
+          />
+        )}
+        {currentQuestion.type === 'short-answer' && (
+          <ShortAnswerComponent
+            question={currentQuestion}
+            onAnswer={handleQuestionResponse}
+            showFeedback={showFeedback}
+          />
+        )}
+      </div>
+    );
+  };
+
+  // ✅ ENHANCED: Active question block with improved UI and sync status
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={`rounded-lg bg-gradient-to-r ${getLevelColor(block.level)} text-white border-2 ${getLevelBorderColor(block.level)} overflow-hidden`}
     >
-      {/* ✅ Enhanced Header */}
+      {/* ✅ Enhanced Header with Sync Status */}
       <div className="p-6 pb-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -318,7 +416,22 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
             </div>
           </div>
           <div className="text-right">
-            <div className="text-sm text-white/70">Question</div>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="text-sm text-white/70">Question</div>
+              {/* ✅ Sync Status Indicator */}
+              {syncStatus && (
+                <span className={`px-2 py-1 rounded text-xs ${
+                  syncStatus === 'saving' ? 'bg-yellow-300 text-yellow-800' :
+                  syncStatus === 'success' ? 'bg-green-300 text-green-800' :
+                  syncStatus === 'error' ? 'bg-red-300 text-red-800' :
+                  'bg-white/20 text-white'
+                }`}>
+                  {syncStatus === 'saving' ? '💾' :
+                   syncStatus === 'success' ? '✅' :
+                   syncStatus === 'error' ? '❌' : '💤'}
+                </span>
+              )}
+            </div>
             <div className="text-xl font-bold">
               {currentQuestionIndex + 1}/{block.questions.length}
             </div>
@@ -354,6 +467,11 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
                 Attempts: {attempts}
               </span>
             )}
+            {useUniversalRenderer && (
+              <span className="bg-green-400/30 px-2 py-1 rounded">
+                Enhanced Mode
+              </span>
+            )}
           </div>
           <div className="text-white/70">
             Level {block.level} Challenge
@@ -382,39 +500,12 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
               </span>
             </div>
             <div className="text-sm text-gray-500">
-              {currentQuestion.points} points
+              {currentQuestion.points || currentQuestion.level} points
             </div>
           </div>
 
-          {/* ✅ Render appropriate question component */}
-          {currentQuestion.type === 'mcq' && (
-            <MCQComponent
-              question={currentQuestion}
-              onAnswer={handleQuestionResponse}
-              showFeedback={showFeedback}
-            />
-          )}
-          {currentQuestion.type === 'fill-blank' && (
-            <FillBlankComponent
-              question={currentQuestion}
-              onAnswer={handleQuestionResponse}
-              showFeedback={showFeedback}
-            />
-          )}
-          {currentQuestion.type === 'match-click' && (
-            <MatchClickComponent
-              question={currentQuestion}
-              onAnswer={handleQuestionResponse}
-              showFeedback={showFeedback}
-            />
-          )}
-          {currentQuestion.type === 'short-answer' && (
-            <ShortAnswerComponent
-              question={currentQuestion}
-              onAnswer={handleQuestionResponse}
-              showFeedback={showFeedback}
-            />
-          )}
+          {/* ✅ Render question using new integrated system or fallback */}
+          {renderQuestion()}
 
           {/* ✅ Question Feedback Display */}
           {showFeedback && responses[currentQuestionIndex] && (
@@ -466,9 +557,9 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
             💡 Need a hint?
           </h4>
           <div className="text-sm space-y-1">
-            <p><strong>Key concept:</strong> {currentQuestion.concept}</p>
-            {currentQuestion.keywords && currentQuestion.keywords.length > 0 && (
-              <p><strong>Important terms:</strong> {currentQuestion.keywords.join(', ')}</p>
+            <p><strong>Key concept:</strong> {(currentQuestion as any).concept}</p>
+            {(currentQuestion as any).keywords && (currentQuestion as any).keywords.length > 0 && (
+              <p><strong>Important terms:</strong> {(currentQuestion as any).keywords.join(', ')}</p>
             )}
             <p className="text-yellow-700 mt-2">
               Take your time and think about the fundamental principles involved.

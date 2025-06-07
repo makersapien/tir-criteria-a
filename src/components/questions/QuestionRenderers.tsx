@@ -1,5 +1,5 @@
 // src/components/questions/QuestionRenderers.tsx
-// Central hub for importing and exporting all question components
+// Central hub for importing and exporting all question components - ENHANCED VERSION
 import React from 'react';
 import MCQComponent from './MCQComponent';
 import FillBlankComponent from './FillBlankComponent';
@@ -7,22 +7,188 @@ import MatchClickComponent from './MatchClickComponent';
 import ShortAnswerComponent from './ShortAnswerComponent';
 import { Question, QuestionResponse } from '../../types/questionBlock';
 
-// Base interface for all question renderer props
+// ✅ ENHANCED: Dual interface support for backward compatibility
 export interface QuestionRendererProps {
   question: Question;
   onAnswer: (response: QuestionResponse) => void;
   showFeedback?: boolean;
 }
 
-// Re-export all individual components
-export {
-  MCQComponent as MCQRenderer,
-  FillBlankComponent as FillBlankRenderer,
-  MatchClickComponent as MatchClickRenderer,
-  ShortAnswerComponent as ShortAnswerRenderer
+// ✅ NEW: Enhanced interface for YourResponseSection compatibility
+export interface EnhancedQuestionRendererProps {
+  question: Question;
+  onAnswer: (questionId: string, answer: any, isCorrect: boolean, score: number) => void;
+  showFeedback?: boolean;
+}
+
+// ✅ ENHANCED: Adapter function to convert between interfaces
+const createQuestionResponseAdapter = (
+  enhancedOnAnswer: (questionId: string, answer: any, isCorrect: boolean, score: number) => void
+) => {
+  return (response: QuestionResponse) => {
+    enhancedOnAnswer(response.questionId, response.answer, response.isCorrect, response.score);
+  };
 };
 
-// Additional question types that could be added later
+// ✅ ENHANCED: Individual component wrappers with dual interface support
+export const MCQRenderer: React.FC<QuestionRendererProps | EnhancedQuestionRendererProps> = (props) => {
+  const { question, showFeedback = true } = props;
+  
+  // ✅ Type guard to determine which interface is being used
+  const isEnhancedProps = 'onAnswer' in props && typeof props.onAnswer === 'function' && props.onAnswer.length === 4;
+  
+  if (isEnhancedProps) {
+    const enhancedProps = props as EnhancedQuestionRendererProps;
+    return (
+      <MCQComponent
+        question={question}
+        onAnswer={enhancedProps.onAnswer}
+        showFeedback={showFeedback}
+      />
+    );
+  } else {
+    const standardProps = props as QuestionRendererProps;
+    const adaptedOnAnswer = (questionId: string, answer: any, isCorrect: boolean, score: number) => {
+      const response: QuestionResponse = {
+        questionId,
+        type: question.type,
+        answer,
+        isCorrect,
+        score,
+        feedback: isCorrect ? 'Correct!' : 'Try again!',
+        timestamp: new Date()
+      };
+      standardProps.onAnswer(response);
+    };
+    
+    return (
+      <MCQComponent
+        question={question}
+        onAnswer={adaptedOnAnswer}
+        showFeedback={showFeedback}
+      />
+    );
+  }
+};
+
+export const FillBlankRenderer: React.FC<QuestionRendererProps | EnhancedQuestionRendererProps> = (props) => {
+  const { question, showFeedback = true } = props;
+  
+  const isEnhancedProps = 'onAnswer' in props && typeof props.onAnswer === 'function' && props.onAnswer.length === 4;
+  
+  if (isEnhancedProps) {
+    const enhancedProps = props as EnhancedQuestionRendererProps;
+    return (
+      <FillBlankComponent
+        question={question}
+        onAnswer={enhancedProps.onAnswer}
+        showFeedback={showFeedback}
+      />
+    );
+  } else {
+    const standardProps = props as QuestionRendererProps;
+    const adaptedOnAnswer = (questionId: string, answer: any, isCorrect: boolean, score: number) => {
+      const response: QuestionResponse = {
+        questionId,
+        type: question.type,
+        answer,
+        isCorrect,
+        score,
+        feedback: isCorrect ? 'Great work!' : 'Good effort!',
+        timestamp: new Date()
+      };
+      standardProps.onAnswer(response);
+    };
+    
+    return (
+      <FillBlankComponent
+        question={question}
+        onAnswer={adaptedOnAnswer}
+        showFeedback={showFeedback}
+      />
+    );
+  }
+};
+
+export const MatchClickRenderer: React.FC<QuestionRendererProps | EnhancedQuestionRendererProps> = (props) => {
+  const { question, showFeedback = true } = props;
+  
+  const isEnhancedProps = 'onAnswer' in props && typeof props.onAnswer === 'function' && props.onAnswer.length === 4;
+  
+  if (isEnhancedProps) {
+    const enhancedProps = props as EnhancedQuestionRendererProps;
+    return (
+      <MatchClickComponent
+        question={question}
+        onAnswer={enhancedProps.onAnswer}
+        showFeedback={showFeedback}
+      />
+    );
+  } else {
+    const standardProps = props as QuestionRendererProps;
+    const adaptedOnAnswer = (questionId: string, answer: any, isCorrect: boolean, score: number) => {
+      const response: QuestionResponse = {
+        questionId,
+        type: question.type,
+        answer,
+        isCorrect,
+        score,
+        feedback: isCorrect ? 'Excellent matching!' : 'Good attempt!',
+        timestamp: new Date()
+      };
+      standardProps.onAnswer(response);
+    };
+    
+    return (
+      <MatchClickComponent
+        question={question}
+        onAnswer={adaptedOnAnswer}
+        showFeedback={showFeedback}
+      />
+    );
+  }
+};
+
+export const ShortAnswerRenderer: React.FC<QuestionRendererProps | EnhancedQuestionRendererProps> = (props) => {
+  const { question, showFeedback = true } = props;
+  
+  const isEnhancedProps = 'onAnswer' in props && typeof props.onAnswer === 'function' && props.onAnswer.length === 4;
+  
+  if (isEnhancedProps) {
+    const enhancedProps = props as EnhancedQuestionRendererProps;
+    return (
+      <ShortAnswerComponent
+        question={question}
+        onAnswer={enhancedProps.onAnswer}
+        showFeedback={showFeedback}
+      />
+    );
+  } else {
+    const standardProps = props as QuestionRendererProps;
+    const adaptedOnAnswer = (questionId: string, answer: any, isCorrect: boolean, score: number) => {
+      const response: QuestionResponse = {
+        questionId,
+        type: question.type,
+        answer,
+        isCorrect,
+        score,
+        feedback: isCorrect ? 'Good response!' : 'Consider expanding your answer.',
+        timestamp: new Date()
+      };
+      standardProps.onAnswer(response);
+    };
+    
+    return (
+      <ShortAnswerComponent
+        question={question}
+        onAnswer={adaptedOnAnswer}
+        showFeedback={showFeedback}
+      />
+    );
+  }
+};
+
+// ✅ MAINTAINED: Additional question types that could be added later
 export const TrueFalseRenderer: React.FC<QuestionRendererProps> = ({ question, onAnswer, showFeedback = false }) => {
   // Simple true/false component - can be expanded later
   return (
@@ -59,7 +225,7 @@ export const HotspotRenderer: React.FC<QuestionRendererProps> = ({ question, onA
   );
 };
 
-// Helper function to get the appropriate renderer for a question type
+// ✅ MAINTAINED: Helper function to get the appropriate renderer for a question type
 export const getRendererForQuestionType = (questionType: string) => {
   const rendererMap = {
     'mcq': MCQComponent,
@@ -84,24 +250,63 @@ export const getRendererForQuestionType = (questionType: string) => {
   return rendererMap[questionType.toLowerCase()] || MCQComponent;
 };
 
-// Universal Question Renderer Component
-export const UniversalQuestionRenderer: React.FC<{
-  question: Question;
-  onAnswer: (response: QuestionResponse) => void;
-  showFeedback?: boolean;
-}> = ({ question, onAnswer, showFeedback = false }) => {
-  const RendererComponent = getRendererForQuestionType(question.type);
+// ✅ ENHANCED: Universal Question Renderer Component with dual interface support
+export const UniversalQuestionRenderer: React.FC<QuestionRendererProps | EnhancedQuestionRendererProps> = (props) => {
+  const { question, showFeedback = false } = props;
   
-  return (
-    <RendererComponent
-      question={question}
-      onAnswer={onAnswer}
-      showFeedback={showFeedback}
-    />
-  );
+  // ✅ Determine which renderer to use
+  switch (question.type.toLowerCase()) {
+    case 'mcq':
+    case 'multiple-choice':
+      return <MCQRenderer {...props} />;
+    
+    case 'fill-blank':
+    case 'fill-in-blank':
+      return <FillBlankRenderer {...props} />;
+    
+    case 'short-answer':
+    case 'long-answer':
+      return <ShortAnswerRenderer {...props} />;
+    
+    case 'match-click':
+    case 'matching':
+      return <MatchClickRenderer {...props} />;
+    
+    case 'true-false':
+    case 'boolean':
+      return <TrueFalseRenderer question={question} onAnswer={(props as QuestionRendererProps).onAnswer} showFeedback={showFeedback} />;
+    
+    case 'drag-drop':
+    case 'drag-and-drop':
+      return <DragDropRenderer question={question} onAnswer={(props as QuestionRendererProps).onAnswer} showFeedback={showFeedback} />;
+    
+    case 'ordering':
+    case 'sequence':
+      return <OrderingRenderer question={question} onAnswer={(props as QuestionRendererProps).onAnswer} showFeedback={showFeedback} />;
+    
+    case 'hotspot':
+    case 'image-click':
+    case 'click-image':
+      return <HotspotRenderer question={question} onAnswer={(props as QuestionRendererProps).onAnswer} showFeedback={showFeedback} />;
+    
+    default:
+      console.error('Unknown question type:', question.type);
+      return (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <h4 className="text-red-800 font-semibold mb-2">⚠️ Unknown Question Type</h4>
+          <p className="text-red-700 text-sm">
+            Question type "{question.type}" is not supported.
+          </p>
+          <div className="mt-3 p-3 bg-gray-100 rounded text-xs">
+            <strong>Question Data:</strong>
+            <pre className="mt-1 text-gray-600 max-h-32 overflow-auto">{JSON.stringify(question, null, 2)}</pre>
+          </div>
+        </div>
+      );
+  }
 };
 
-// Validation helper for question data
+// ✅ MAINTAINED: Validation helper for question data
 export const validateQuestionData = (question: any): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
   
@@ -112,7 +317,7 @@ export const validateQuestionData = (question: any): { isValid: boolean; errors:
   if (!question.level) errors.push('Question must have a level');
   
   // Type-specific validation
-  switch (question.type) {
+  switch (question.type.toLowerCase()) {
     case 'mcq':
     case 'multiple-choice':
       if (!question.options || !Array.isArray(question.options)) {
@@ -157,7 +362,7 @@ export const validateQuestionData = (question: any): { isValid: boolean; errors:
   };
 };
 
-// Performance monitoring for question interactions
+// ✅ MAINTAINED: Performance monitoring for question interactions
 export const trackQuestionPerformance = (questionId: string, startTime: number, endTime: number, isCorrect: boolean) => {
   const timeSpent = endTime - startTime;
   const performanceData = {
@@ -169,11 +374,11 @@ export const trackQuestionPerformance = (questionId: string, startTime: number, 
   };
   
   // You can send this to analytics service
-  console.log('Question Performance:', performanceData);
+  console.log('📊 Question Performance:', performanceData);
   return performanceData;
 };
 
-// Accessibility helpers
+// ✅ MAINTAINED: Accessibility helpers
 export const getAriaLabel = (questionType: string, questionNumber: number, totalQuestions: number): string => {
   const typeLabels = {
     'mcq': 'Multiple choice question',
@@ -190,7 +395,7 @@ export const getAriaLabel = (questionType: string, questionNumber: number, total
   return `${typeLabel} ${questionNumber} of ${totalQuestions}`;
 };
 
-// Question difficulty calculator
+// ✅ MAINTAINED: Question difficulty calculator
 export const calculateQuestionDifficulty = (question: any): 'easy' | 'medium' | 'hard' | 'expert' => {
   let difficultyScore = 0;
   
@@ -225,7 +430,7 @@ export const calculateQuestionDifficulty = (question: any): 'easy' | 'medium' | 
   return 'expert';
 };
 
-// Question randomization utilities
+// ✅ MAINTAINED: Question randomization utilities
 export const shuffleOptions = (question: any): any => {
   if (question.type === 'mcq' && question.options) {
     const shuffled = [...question.options];
@@ -238,9 +443,9 @@ export const shuffleOptions = (question: any): any => {
   return question;
 };
 
-// Score calculation utilities
+// ✅ MAINTAINED: Score calculation utilities
 export const calculatePartialCredit = (userAnswer: any, correctAnswer: any, questionType: string): number => {
-  switch (questionType) {
+  switch (questionType.toLowerCase()) {
     case 'fill-blank':
       if (Array.isArray(correctAnswer) && typeof userAnswer === 'object') {
         const correctCount = Object.keys(userAnswer).filter(key => 
@@ -281,7 +486,46 @@ export const calculatePartialCredit = (userAnswer: any, correctAnswer: any, ques
   return 0;
 };
 
-// Export utility functions as a single object
+// ✅ ENHANCED: Question Analytics and Insights
+export const generateQuestionInsights = (responses: QuestionResponse[]): {
+  averageTime: number;
+  successRate: number;
+  commonMistakes: string[];
+  recommendations: string[];
+} => {
+  if (responses.length === 0) {
+    return {
+      averageTime: 0,
+      successRate: 0,
+      commonMistakes: [],
+      recommendations: ['Complete some questions to see insights']
+    };
+  }
+
+  const correctResponses = responses.filter(r => r.isCorrect);
+  const successRate = correctResponses.length / responses.length;
+  
+  const recommendations: string[] = [];
+  if (successRate < 0.5) {
+    recommendations.push('Review the fundamental concepts');
+    recommendations.push('Try easier questions first');
+  } else if (successRate < 0.8) {
+    recommendations.push('Focus on understanding common mistakes');
+    recommendations.push('Practice more questions at this level');
+  } else {
+    recommendations.push('Try more challenging questions');
+    recommendations.push('Help others with similar topics');
+  }
+
+  return {
+    averageTime: 0, // Would calculate from timestamp differences
+    successRate,
+    commonMistakes: [], // Would analyze from incorrect responses
+    recommendations
+  };
+};
+
+// ✅ ENHANCED: Export utility functions as a single object
 export const QuestionUtils = {
   validateQuestionData,
   trackQuestionPerformance,
@@ -289,16 +533,18 @@ export const QuestionUtils = {
   calculateQuestionDifficulty,
   shuffleOptions,
   calculatePartialCredit,
-  getRendererForQuestionType
+  getRendererForQuestionType,
+  generateQuestionInsights,
+  createQuestionResponseAdapter
 };
 
-// Default export with all renderers and utilities
+// ✅ ENHANCED: Default export with all renderers and utilities
 export default {
-  // Core renderers
-  MCQRenderer: MCQComponent,
-  FillBlankRenderer: FillBlankComponent,
-  MatchClickRenderer: MatchClickComponent,
-  ShortAnswerRenderer: ShortAnswerComponent,
+  // Core renderers (with dual interface support)
+  MCQRenderer,
+  FillBlankRenderer,
+  MatchClickRenderer,
+  ShortAnswerRenderer,
   
   // Future renderers
   TrueFalseRenderer,
@@ -317,5 +563,11 @@ export default {
   validateQuestionData,
   calculateQuestionDifficulty,
   shuffleOptions,
-  calculatePartialCredit
+  calculatePartialCredit,
+  trackQuestionPerformance,
+  getAriaLabel,
+  generateQuestionInsights,
+  
+  // Interface adapters
+  createQuestionResponseAdapter
 };

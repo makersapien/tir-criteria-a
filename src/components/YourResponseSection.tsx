@@ -1,4 +1,4 @@
-// src/components/YourResponseSection.tsx - MAIN COMPONENT
+// src/components/YourResponseSection.tsx - COMPLETE ENHANCED VERSION
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
@@ -12,7 +12,7 @@ interface YourResponseSectionProps {
   experimentChoice: 'critical-angle' | 'fiber-optics';
   currentStudentId: string;
   sessionCode: string;
-  onProgressUpdate: (strand: number, level: number, score: number) => void;
+  onProgressUpdate: (strand: number, level: number, score: number) => void; // ✅ CRITICAL: Progress callback
 }
 
 const YourResponseSection: React.FC<YourResponseSectionProps> = ({
@@ -20,7 +20,7 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
   experimentChoice,
   currentStudentId,
   sessionCode,
-  onProgressUpdate
+  onProgressUpdate // ✅ CRITICAL: Progress callback
 }) => {
   const [strandData, setStrandData] = useState<StrandQuestionData | null>(null);
   const [completedBlocks, setCompletedBlocks] = useState<{ [blockId: string]: { score: number; responses: QuestionResponse[] } }>({});
@@ -38,107 +38,128 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
     currentStrand,
   });
 
-  // Load question data for current strand
+  // ✅ CRITICAL FIX: Enhanced progress calculation and immediate callback
+  const calculateAndUpdateProgress = (blockId: string, blockResponses: QuestionResponse[]) => {
+    if (blockResponses.length === 0) return 0;
+
+    // Calculate average score for this block
+    const totalScore = blockResponses.reduce((sum, resp) => sum + resp.score, 0);
+    const averageScore = totalScore / blockResponses.length;
+    
+    // Convert to 0-8 scale (question scores are typically 0-level, where level is 2,4,6,8)
+    const level = parseInt(blockId.split('level')[1]) || 2;
+    const normalizedScore = Math.min(8, Math.round(averageScore));
+    
+    console.log('🎯 QUESTION PROGRESS CALCULATION:', {
+      blockId,
+      responses: blockResponses.length,
+      totalScore,
+      averageScore,
+      level,
+      normalizedScore,
+      strand: currentStrand
+    });
+
+    // ✅ CRITICAL: Immediately call progress update
+    onProgressUpdate(currentStrand, level, normalizedScore);
+    
+    return normalizedScore;
+  };
+
+  // ✅ CRITICAL FIX: Load question data with better error handling
   useEffect(() => {
-    try {
-      const data = (questionData as any)[experimentChoice]?.[`strand${currentStrand}`];
-      if (data) {
-        const blocks: QuestionBlockType[] = [2, 4, 6, 8].map(level => {
-          const questions = data[`level${level}`] || generateQuestionsForLevel(currentStrand, experimentChoice, level as 2 | 4 | 6 | 8);
-          return {
-            id: `strand${currentStrand}_level${level}`,
-            level: level as 2 | 4 | 6 | 8,
-            questions,
-            unlocked: true, // ALL LEVELS ALWAYS UNLOCKED
-            completed: false,
-            score: 0,
-            attempts: 0,
-            maxAttempts: 5,
-            completedQuestions: 0,
-            totalQuestions: questions.length
-          };
-        });
-
-        const strandInfo: StrandQuestionData = {
-          strand: currentStrand,
-          learningPath: experimentChoice,
-          title: `Strand ${currentStrand} Interactive Questions`,
-          description: getStrandDescription(currentStrand),
-          blocks
-        };
-
-        setStrandData(strandInfo);
-      }
-    } catch (error) {
-      console.error('Error loading question data:', error);
-      // Fallback to generated questions if no data file
-      const blocks: QuestionBlockType[] = [2, 4, 6, 8].map(level => {
-        const questions = generateQuestionsForLevel(currentStrand, experimentChoice, level as 2 | 4 | 6 | 8);
-        return {
-          id: `strand${currentStrand}_level${level}`,
-          level: level as 2 | 4 | 6 | 8,
-          questions,
-          unlocked: true,
-          completed: false,
-          score: 0,
-          attempts: 0,
-          maxAttempts: 5,
-          completedQuestions: 0,
-          totalQuestions: questions.length
-        };
-      });
-
-      const strandInfo: StrandQuestionData = {
-        strand: currentStrand,
-        learningPath: experimentChoice,
-        title: `Strand ${currentStrand} Interactive Questions`,
-        description: getStrandDescription(currentStrand),
-        blocks
-      };
-
-      setStrandData(strandInfo);
-    }
-  }, [currentStrand, experimentChoice]);
-
-  // Load saved responses
-  useEffect(() => {
-    const loadSavedResponses = async () => {
+    const loadQuestionData = () => {
       try {
-        const savedResponses = await loadResponses();
-        setResponses(savedResponses);
+        console.log('📚 LOADING QUESTION DATA:', { experimentChoice, currentStrand });
         
-        // Update completed blocks based on saved responses
-        if (strandData) {
-          const updatedCompletedBlocks: { [blockId: string]: { score: number; responses: QuestionResponse[] } } = {};
-          
-          strandData.blocks.forEach(block => {
-            const blockResponses = Object.values(savedResponses).filter(
-              response => response.questionId.startsWith(block.id)
-            );
-            
-            if (blockResponses.length > 0) {
-              const totalScore = blockResponses.reduce((sum, resp) => sum + resp.score, 0);
-              const averageScore = totalScore / blockResponses.length;
-              const blockScore = Math.round(averageScore * block.level);
-              
-              updatedCompletedBlocks[block.id] = {
-                score: blockScore,
-                responses: blockResponses
-              };
-            }
+        const data = (questionData as any)[experimentChoice]?.[`strand${currentStrand}`];
+        
+        if (data) {
+          const blocks: QuestionBlockType[] = [2, 4, 6, 8].map(level => {
+            const questions = data[`level${level}`] || [];
+            return {
+              id: `strand${currentStrand}_level${level}`,
+              level: level as 2 | 4 | 6 | 8,
+              questions,
+              unlocked: true, // ALL LEVELS ALWAYS UNLOCKED
+              completed: false,
+              score: 0,
+              attempts: 0,
+              maxAttempts: 5,
+              completedQuestions: 0,
+              totalQuestions: questions.length
+            };
           });
-          
-          setCompletedBlocks(updatedCompletedBlocks);
+
+          const strandInfo: StrandQuestionData = {
+            strand: currentStrand,
+            learningPath: experimentChoice,
+            title: `Strand ${currentStrand} Interactive Questions`,
+            description: getStrandDescription(currentStrand),
+            blocks
+          };
+
+          console.log('✅ QUESTION DATA LOADED:', { blocks: blocks.length, totalQuestions: blocks.reduce((sum, b) => sum + b.totalQuestions, 0) });
+          setStrandData(strandInfo);
+        } else {
+          console.warn('⚠️ NO QUESTION DATA FOUND for:', experimentChoice, `strand${currentStrand}`);
+          // Create fallback data
+          setStrandData({
+            strand: currentStrand,
+            learningPath: experimentChoice,
+            title: `Strand ${currentStrand} Interactive Questions`,
+            description: getStrandDescription(currentStrand),
+            blocks: []
+          });
         }
       } catch (error) {
-        console.error('Error loading responses:', error);
+        console.error('💥 ERROR LOADING QUESTION DATA:', error);
+        setStrandData(null);
       }
     };
 
-    if (currentStudentId && sessionCode && strandData) {
-      loadSavedResponses();
-    }
-  }, [currentStudentId, sessionCode, strandData, loadResponses]);
+    loadQuestionData();
+  }, [currentStrand, experimentChoice]);
+
+  // ✅ CRITICAL FIX: Load saved responses and update progress immediately
+  useEffect(() => {
+    const loadSavedResponses = async () => {
+      if (!currentStudentId || !sessionCode || !strandData) return;
+
+      try {
+        console.log('📥 LOADING SAVED RESPONSES for strand:', currentStrand);
+        const savedResponses = await loadResponses();
+        setResponses(savedResponses);
+        
+        // Update completed blocks and trigger progress updates
+        const updatedCompletedBlocks: { [blockId: string]: { score: number; responses: QuestionResponse[] } } = {};
+        
+        strandData.blocks.forEach(block => {
+          const blockResponses = Object.values(savedResponses).filter(
+            response => response.questionId.startsWith(block.id)
+          );
+          
+          if (blockResponses.length > 0) {
+            console.log('🔄 RESTORING BLOCK PROGRESS:', block.id, blockResponses.length, 'responses');
+            const blockScore = calculateAndUpdateProgress(block.id, blockResponses);
+            
+            updatedCompletedBlocks[block.id] = {
+              score: blockScore,
+              responses: blockResponses
+            };
+          }
+        });
+        
+        setCompletedBlocks(updatedCompletedBlocks);
+        console.log('✅ SAVED RESPONSES LOADED:', Object.keys(savedResponses).length, 'responses');
+        
+      } catch (error) {
+        console.error('💥 ERROR LOADING SAVED RESPONSES:', error);
+      }
+    };
+
+    loadSavedResponses();
+  }, [currentStudentId, sessionCode, strandData, currentStrand, loadResponses]);
 
   const getStrandDescription = (strand: number): string => {
     const descriptions = {
@@ -155,14 +176,20 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
     
     const block = strandData.blocks.find(b => b.level === level);
     if (block && block.questions.length > 0) {
+      console.log('🚀 STARTING LEVEL:', level, 'with', block.questions.length, 'questions');
       setCurrentBlock(block);
       setCurrentQuestionIndex(0);
       setShowResults(false);
+    } else {
+      console.warn('⚠️ NO QUESTIONS FOUND FOR LEVEL:', level);
     }
   };
 
+  // ✅ ENHANCED: Handle question responses with immediate progress update
   const handleAnswer = async (questionId: string, answer: any, isCorrect: boolean, score: number) => {
     if (!currentBlock) return;
+
+    console.log('📝 QUESTION ANSWERED:', { questionId, isCorrect, score, currentStrand });
 
     const response: QuestionResponse = {
       questionId,
@@ -180,66 +207,59 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
     // Update local responses
     setResponses(prev => ({ ...prev, [questionId]: response }));
 
+    // Update completed blocks immediately
+    setCompletedBlocks(prev => {
+      const allBlockResponses = [...(prev[currentBlock.id]?.responses || []), response];
+      const blockScore = calculateAndUpdateProgress(currentBlock.id, allBlockResponses);
+      
+      return {
+        ...prev,
+        [currentBlock.id]: {
+          score: blockScore,
+          responses: allBlockResponses
+        }
+      };
+    });
+
     // Move to next question or finish block
     if (currentQuestionIndex < currentBlock.questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
-      // Block completed - calculate final score
-      const allBlockResponses = [...(completedBlocks[currentBlock.id]?.responses || []), response];
-      const totalScore = allBlockResponses.reduce((sum, resp) => sum + resp.score, 0);
-      const averageScore = totalScore / allBlockResponses.length;
-      const blockScore = Math.round(averageScore * currentBlock.level);
+      // Block completed
+      setCurrentBlock(null);
+      setShowResults(true);
       
-      completeBlock(currentBlock.id, allBlockResponses, blockScore);
-    }
-  };
-
-  const completeBlock = (blockId: string, responses: QuestionResponse[], averageScore: number) => {
-    setCompletedBlocks(prev => ({
-      ...prev,
-      [blockId]: { score: averageScore, responses }
-    }));
-
-    onProgressUpdate(currentStrand, parseInt(blockId.split('level')[1]), averageScore);
-
-    // Celebration for good scores
-    if (averageScore >= 6) {
+      // Celebration for block completion
       confetti({
-        particleCount: 150,
+        particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
         colors: ['#9333ea', '#a855f7', '#c084fc', '#ddd6fe']
       });
-    } else if (averageScore >= 4) {
-      confetti({
-        particleCount: 80,
-        spread: 60,
-        origin: { y: 0.6 },
-        colors: ['#f59e0b', '#fbbf24', '#fcd34d']
-      });
     }
-
-    setCurrentBlock(null);
-    setShowResults(true);
   };
 
+  // Calculate overall progress for this strand
   const calculateOverallProgress = (): number => {
-    if (!strandData) return 0;
+    if (!strandData || Object.keys(completedBlocks).length === 0) return 0;
     
-    const totalBlocks = strandData.blocks.length;
-    const completedCount = Object.keys(completedBlocks).length;
-    if (completedCount === 0) return 0;
+    // Get the highest level completed
+    const completedLevels = Object.keys(completedBlocks).map(blockId => {
+      const level = parseInt(blockId.split('level')[1]);
+      const score = completedBlocks[blockId].score;
+      return { level, score };
+    });
     
-    const averageScore = Object.values(completedBlocks).reduce((sum, block) => sum + block.score, 0) / completedCount;
-    return Math.min(8, Math.round(averageScore));
+    if (completedLevels.length === 0) return 0;
+    
+    // Return the highest score achieved
+    const maxScore = Math.max(...completedLevels.map(cl => cl.score));
+    return Math.min(8, maxScore);
   };
 
   const getLevelStatus = (level: number) => {
     const blockId = `strand${currentStrand}_level${level}`;
-    const isCompleted = completedBlocks[blockId];
-    
-    if (isCompleted) return 'completed';
-    return 'available'; // Always available
+    return completedBlocks[blockId] ? 'completed' : 'available';
   };
 
   const getLevelColor = (level: number) => {
@@ -323,6 +343,18 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* ✅ Development debug info */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="p-3 bg-blue-50 border border-blue-200 rounded text-xs">
+          <div className="font-bold text-blue-800 mb-1">🔧 QUESTION SYSTEM DEBUG:</div>
+          <div>Current Strand: {currentStrand}</div>
+          <div>Overall Progress: {overallProgress}/8</div>
+          <div>Completed Blocks: {Object.keys(completedBlocks).length}</div>
+          <div>Total Responses: {Object.keys(responses).length}</div>
+          <div>Sync Status: {syncStatus}</div>
+        </div>
+      )}
+
       {/* Header with Progress */}
       <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg shadow-sm border-2 border-purple-200 p-6">
         <div className="flex justify-between items-start mb-4">
@@ -556,38 +588,22 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
           </div>
         </motion.div>
       )}
+
+      {/* Help Section */}
+      <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+        <h4 className="font-semibold text-blue-800 mb-2 flex items-center">
+          💡 How This Works
+        </h4>
+        <ul className="text-blue-700 text-sm space-y-1">
+          <li>• <strong>All levels are unlocked</strong> - you can attempt any level at any time</li>
+          <li>• <strong>Higher levels = more points</strong> - Level 8 questions are worth more than Level 2</li>
+          <li>• <strong>Your progress is automatically saved</strong> - come back anytime to continue</li>
+          <li>• <strong>You can retry levels</strong> - improve your score by attempting levels multiple times</li>
+          <li>• <strong>Questions adapt to your learning path</strong> - content matches your chosen experiment</li>
+        </ul>
+      </div>
     </div>
   );
-};
-
-// Helper function to generate questions when no data file exists
-const generateQuestionsForLevel = (
-  strand: number,
-  experimentChoice: 'critical-angle' | 'fiber-optics',
-  level: 2 | 4 | 6 | 8
-): Question[] => {
-  // This would contain your comprehensive question generation logic
-  // For now, returning a simplified version - you can expand this
-  return [
-    {
-      id: `${strand}-${level}-q1`,
-      type: 'mcq' as const,
-      level,
-      points: level / 2,
-      question: `Level ${level} question for strand ${strand} (${experimentChoice})`,
-      learningPath: experimentChoice,
-      strand: strand as 1 | 2 | 3 | 4,
-      concept: 'TIR concepts',
-      keywords: ['physics', 'optics'],
-      options: [
-        { id: 'a', text: 'Option A (Correct)', isCorrect: true },
-        { id: 'b', text: 'Option B', isCorrect: false },
-        { id: 'c', text: 'Option C', isCorrect: false },
-        { id: 'd', text: 'Option D', isCorrect: false },
-      ],
-      explanation: 'This is a placeholder explanation for the correct answer.',
-    }
-  ];
 };
 
 export default YourResponseSection;

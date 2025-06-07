@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+// IMPORTANT: This must match your GitHub repository name exactly
 const repoName = 'tir-criteria-a';
 
 export default defineConfig({
@@ -13,5 +14,10 @@ export default defineConfig({
   },
   server: {
     port: 3000
-  }
+  },
+  json: {
+    namedExports: true,
+    stringify: false,
+  },
+  assetsInclude: ['**/*.svg'],
 });

@@ -1,23 +1,24 @@
-// src/components/questions/QuestionBlock.tsx - ENHANCED VERSION WITH NEW SYSTEM INTEGRATION
+// src/components/questions/QuestionBlock.tsx 
+// FIXED VERSION: Resolving import and type issues
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 
-// ✅ Import from the new integrated system
 import { 
   Question, 
   QuestionResponse, 
   QuestionBlock as QuestionBlockType 
 } from '../../types/questionBlock';
 
-// ✅ Import the Universal Question Renderer from the new system
-import { UniversalQuestionRenderer } from './questionImplementations';
-
-// ✅ Import individual components as fallback
+// ✅ Import your existing individual components (keeping them as primary)
 import MCQComponent from './MCQComponent';
 import FillBlankComponent from './FillBlankComponent';
 import MatchClickComponent from './MatchClickComponent';
 import ShortAnswerComponent from './ShortAnswerComponent';
+
+// ✅ FIXED: Import the Universal Renderer properly
+import UniversalQuestionRenderer, { UniversalQuestionUtils } from './UniversalQuestionRenderer';
 
 interface QuestionBlockProps {
   block: QuestionBlockType;
@@ -25,12 +26,17 @@ interface QuestionBlockProps {
   onUnlock?: (nextLevel: number) => void;
   showSuggestions?: boolean;
   onProgressUpdate?: (blockId: string, currentQuestion: number, totalQuestions: number, currentScore: number) => void;
-  // ✅ Additional props for new system integration
+  
+  // ✅ Your existing props
   currentStudentId?: string;
   sessionCode?: string;
-  experimentChoice?: 'critical-angle' | 'fiber-optics';
+  experimentChoice?: 'critical-angle' | 'fiber-optics' | 'distance' | 'magnets';
   syncStatus?: 'idle' | 'saving' | 'success' | 'error';
-  useUniversalRenderer?: boolean; // Option to use new system or fall back to individual components
+  
+  // ✅ NEW: Optional Universal Renderer integration
+  useUniversalRenderer?: boolean; // Toggle between systems
+  fallbackToIndividual?: boolean; // Fallback strategy
+  enableEnhancedValidation?: boolean; // Enhanced question validation
 }
 
 const QuestionBlock: React.FC<QuestionBlockProps> = ({
@@ -43,7 +49,9 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
   sessionCode,
   experimentChoice,
   syncStatus = 'idle',
-  useUniversalRenderer = true // Default to new system
+  useUniversalRenderer = false, // Default to your existing system
+  fallbackToIndividual = true,
+  enableEnhancedValidation = true
 }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [responses, setResponses] = useState<QuestionResponse[]>([]);
@@ -52,22 +60,42 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
   const [isCompleted, setIsCompleted] = useState(false);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [questionStartTime, setQuestionStartTime] = useState<Date | null>(null);
+  const [renderingMode, setRenderingMode] = useState<'individual' | 'universal' | 'error'>('individual');
 
   const currentQuestion = block.questions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === block.questions.length - 1;
 
-  // ✅ Initialize timing
+  // ✅ Enhanced initialization with validation
   useEffect(() => {
     setStartTime(new Date());
     setQuestionStartTime(new Date());
-  }, []);
+    
+    // ✅ Determine rendering mode
+    if (useUniversalRenderer) {
+      // Validate questions if enhanced validation is enabled
+      if (enableEnhancedValidation && currentQuestion) {
+        const isValid = UniversalQuestionUtils.validateQuestion(currentQuestion);
+        if (isValid) {
+          setRenderingMode('universal');
+        } else if (fallbackToIndividual) {
+          console.warn(`Question ${currentQuestion.id} failed validation, falling back to individual components`);
+          setRenderingMode('individual');
+        } else {
+          setRenderingMode('error');
+        }
+      } else {
+        setRenderingMode('universal');
+      }
+    } else {
+      setRenderingMode('individual');
+    }
+  }, [useUniversalRenderer, enableEnhancedValidation, fallbackToIndividual, currentQuestion]);
 
-  // ✅ Update question start time when question changes
   useEffect(() => {
     setQuestionStartTime(new Date());
   }, [currentQuestionIndex]);
 
-  // ✅ ENHANCED: Handle question response with new signature
+  // ✅ ENHANCED: Your existing response handler with optional universal integration
   const handleQuestionResponse = (questionId: string, answer: any, isCorrect: boolean, score: number) => {
     const endTime = new Date();
     const timeSpent = questionStartTime ? endTime.getTime() - questionStartTime.getTime() : 0;
@@ -80,7 +108,7 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
       score,
       feedback: isCorrect 
         ? `Excellent! ${currentQuestion.explanation || 'Well done!'}` 
-        : `Good attempt. ${currentQuestion.explanation || 'Keep trying!'}`,
+        : `Good attempt. ${currentQuestion.explanation || 'Keep learning!'}`,
       timestamp: endTime,
       timeSpent
     };
@@ -90,15 +118,25 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
     setResponses(updatedResponses);
     setShowFeedback(true);
 
+    // ✅ Optional enhanced analytics (only if using universal renderer)
+    if (useUniversalRenderer && questionStartTime) {
+      UniversalQuestionUtils.trackQuestionPerformance(
+        questionId,
+        questionStartTime.getTime(),
+        endTime.getTime(),
+        isCorrect
+      );
+    }
+
     if (!isCorrect) {
       setAttempts(prev => prev + 1);
     }
 
-    // ✅ Update progress
+    // ✅ Your existing progress calculation
     const currentScore = updatedResponses.reduce((sum, r) => sum + (r?.score || 0), 0) / Math.max(updatedResponses.filter(r => r).length, 1);
     onProgressUpdate?.(block.id, currentQuestionIndex + 1, block.questions.length, currentScore);
 
-    // ✅ Celebration for correct answers
+    // ✅ Your existing celebration system
     if (isCorrect) {
       if (score >= 7) {
         confetti({
@@ -117,16 +155,14 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
       }
     }
 
-    // ✅ Auto-advance after showing feedback
+    // ✅ Your existing auto-advance logic
     setTimeout(() => {
       if (isLastQuestion) {
-        // Calculate average score and complete block
         const totalScore = updatedResponses.reduce((sum, r) => sum + (r?.score || 0), 0);
         const averageScore = totalScore / updatedResponses.length;
         setIsCompleted(true);
         onComplete(block.id, updatedResponses, averageScore);
         
-        // ✅ Enhanced celebration for block completion
         if (averageScore >= 7) {
           confetti({
             particleCount: 200,
@@ -136,7 +172,6 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
           });
         }
         
-        // Unlock next level if score >= 6
         if (averageScore >= 6 && onUnlock) {
           const nextLevel = block.level === 2 ? 4 : block.level === 4 ? 6 : block.level === 6 ? 8 : null;
           if (nextLevel) onUnlock(nextLevel);
@@ -145,9 +180,143 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
         setCurrentQuestionIndex(prev => prev + 1);
         setShowFeedback(false);
       }
-    }, 2500); // Slightly longer to read feedback
+    }, 2500);
   };
 
+  // ✅ Enhanced question renderer with fallback system
+  const renderQuestion = () => {
+    if (!currentQuestion) {
+      return (
+        <div className="p-4 text-center text-gray-500">
+          No questions available in this block.
+        </div>
+      );
+    }
+
+    // ✅ Error state rendering
+    if (renderingMode === 'error') {
+      return (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <h4 className="text-red-800 font-semibold mb-2">⚠️ Question Error</h4>
+          <p className="text-red-700 text-sm mb-3">
+            This question has invalid data and cannot be displayed.
+          </p>
+          <button
+            onClick={() => setRenderingMode('individual')}
+            className="text-sm bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded transition"
+          >
+            Try Individual Renderer
+          </button>
+        </div>
+      );
+    }
+
+    // ✅ Universal Renderer (new enhanced system)
+    if (renderingMode === 'universal') {
+      try {
+        return (
+          <div className="relative">
+            {/* ✅ Visual indicator for universal renderer */}
+            <div className="absolute top-0 right-0 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-bl-lg z-10">
+              ✨ Enhanced
+            </div>
+            
+            {/* ✅ FIXED: Proper props for UniversalQuestionRenderer */}
+            <UniversalQuestionRenderer
+              question={currentQuestion}
+              onAnswer={handleQuestionResponse}
+              showFeedback={showFeedback}
+              disabled={false}
+              previousResponse={responses[currentQuestionIndex]}
+            />
+          </div>
+        );
+      } catch (error) {
+        console.error('Universal renderer failed:', error);
+        
+        // ✅ Auto-fallback to individual components
+        if (fallbackToIndividual) {
+          setRenderingMode('individual');
+          return renderIndividualQuestion();
+        } else {
+          return (
+            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <h4 className="text-yellow-800 font-semibold mb-2">🔧 Rendering Error</h4>
+              <p className="text-yellow-700 text-sm">
+                Universal renderer failed. Please try refreshing the page.
+              </p>
+            </div>
+          );
+        }
+      }
+    }
+
+    // ✅ Individual Components (your existing excellent system)
+    return renderIndividualQuestion();
+  };
+
+  // ✅ Your existing individual component rendering (keeping all your excellent features)
+  const renderIndividualQuestion = () => {
+    return (
+      <div className="relative">
+        {/* ✅ Visual indicator for individual renderer */}
+        {useUniversalRenderer && (
+          <div className="absolute top-0 right-0 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-bl-lg z-10">
+            ⚡ Individual
+          </div>
+        )}
+        
+        {currentQuestion.type === 'mcq' && (
+          <MCQComponent
+            question={currentQuestion}
+            onAnswer={handleQuestionResponse}
+            showFeedback={showFeedback}
+          />
+        )}
+        {currentQuestion.type === 'fill-blank' && (
+          <FillBlankComponent
+            question={currentQuestion}
+            onAnswer={handleQuestionResponse}
+            showFeedback={showFeedback}
+          />
+        )}
+        {currentQuestion.type === 'match-click' && (
+          <MatchClickComponent
+            question={currentQuestion}
+            onAnswer={handleQuestionResponse}
+            showFeedback={showFeedback}
+          />
+        )}
+        {currentQuestion.type === 'short-answer' && (
+          <ShortAnswerComponent
+            question={currentQuestion}
+            onAnswer={handleQuestionResponse}
+            showFeedback={showFeedback}
+          />
+        )}
+        
+        {/* ✅ Fallback for unknown question types */}
+        {!['mcq', 'fill-blank', 'match-click', 'short-answer'].includes(currentQuestion.type) && (
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+            <h4 className="text-gray-800 font-semibold mb-2">❓ Unsupported Question Type</h4>
+            <p className="text-gray-700 text-sm">
+              Question type "{currentQuestion.type}" is not supported by individual components.
+            </p>
+            {useUniversalRenderer && (
+              <button
+                onClick={() => setRenderingMode('universal')}
+                className="mt-2 text-sm bg-purple-100 hover:bg-purple-200 text-purple-800 px-3 py-1 rounded transition"
+              >
+                Try Universal Renderer
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ✅ Your existing styling functions (keeping all your excellent design)
   const getLevelColor = (level: number) => {
     const colors = {
       2: 'from-purple-200 to-purple-300',
@@ -186,7 +355,7 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
     return validResponses.reduce((sum, r) => sum + r.score, 0) / validResponses.length;
   };
 
-  // ✅ ENHANCED: Unlocked check with better visual feedback
+  // ✅ ENHANCED: Unlocked check (keeping your excellent visual feedback)
   if (!block.unlocked) {
     return (
       <motion.div
@@ -213,7 +382,7 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
     );
   }
 
-  // ✅ ENHANCED: Completion screen with detailed stats
+  // ✅ ENHANCED: Completion screen (keeping your excellent detailed stats)
   if (isCompleted) {
     const averageScore = responses.reduce((sum, r) => sum + (r?.score || 0), 0) / responses.length;
     const correctCount = responses.filter(r => r?.isCorrect).length;
@@ -231,6 +400,12 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
             <div>
               <h3 className="text-lg font-bold">Level {block.level} Completed!</h3>
               <p className="text-white/80 text-sm">Great work on finishing this level</p>
+              {/* ✅ Show rendering mode used */}
+              <p className="text-white/60 text-xs mt-1">
+                {renderingMode === 'universal' ? '✨ Enhanced renderer' : 
+                 renderingMode === 'individual' ? '⚡ Individual components' : 
+                 '🔧 Mixed rendering'}
+              </p>
             </div>
           </div>
           <div className="text-right">
@@ -241,7 +416,7 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
           </div>
         </div>
 
-        {/* ✅ Detailed Statistics */}
+        {/* ✅ Enhanced Statistics Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-sm">
           <div className="bg-white/20 rounded-lg p-3 text-center">
             <div className="text-lg font-bold">{correctCount}/{responses.length}</div>
@@ -320,90 +495,14 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
     );
   }
 
-  // ✅ NEW: Enhanced question renderer with integration system support
-  const renderQuestion = () => {
-    if (!currentQuestion) {
-      return (
-        <div className="p-4 text-center text-gray-500">
-          No questions available in this block.
-        </div>
-      );
-    }
-
-    const previousResponse = responses[currentQuestionIndex];
-
-    // ✅ Try to use the Universal Question Renderer from new system first
-    if (useUniversalRenderer) {
-      try {
-        return (
-          <div className="relative">
-            {/* New System Indicator */}
-            <div className="absolute top-0 right-0 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-bl-lg">
-              ✨ Enhanced
-            </div>
-            <UniversalQuestionRenderer
-              question={currentQuestion}
-              onAnswer={handleQuestionResponse}
-              showFeedback={showFeedback}
-              previousResponse={previousResponse}
-            />
-          </div>
-        );
-      } catch (error) {
-        console.warn('Universal renderer failed, falling back to individual components:', error);
-        // Fall through to individual components
-      }
-    }
-
-    // ✅ Fallback to individual components (your original system)
-    return (
-      <div className="relative">
-        {!useUniversalRenderer && (
-          <div className="absolute top-0 right-0 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-bl-lg">
-            ⚡ Legacy
-          </div>
-        )}
-        
-        {currentQuestion.type === 'mcq' && (
-          <MCQComponent
-            question={currentQuestion}
-            onAnswer={handleQuestionResponse}
-            showFeedback={showFeedback}
-          />
-        )}
-        {currentQuestion.type === 'fill-blank' && (
-          <FillBlankComponent
-            question={currentQuestion}
-            onAnswer={handleQuestionResponse}
-            showFeedback={showFeedback}
-          />
-        )}
-        {currentQuestion.type === 'match-click' && (
-          <MatchClickComponent
-            question={currentQuestion}
-            onAnswer={handleQuestionResponse}
-            showFeedback={showFeedback}
-          />
-        )}
-        {currentQuestion.type === 'short-answer' && (
-          <ShortAnswerComponent
-            question={currentQuestion}
-            onAnswer={handleQuestionResponse}
-            showFeedback={showFeedback}
-          />
-        )}
-      </div>
-    );
-  };
-
-  // ✅ ENHANCED: Active question block with improved UI and sync status
+  // ✅ ENHANCED: Active question block (keeping your excellent UI + new integration features)
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={`rounded-lg bg-gradient-to-r ${getLevelColor(block.level)} text-white border-2 ${getLevelBorderColor(block.level)} overflow-hidden`}
     >
-      {/* ✅ Enhanced Header with Sync Status */}
+      {/* ✅ Enhanced Header with Integration Status */}
       <div className="p-6 pb-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -418,17 +517,17 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
           <div className="text-right">
             <div className="flex items-center gap-2 mb-1">
               <div className="text-sm text-white/70">Question</div>
-              {/* ✅ Sync Status Indicator */}
+              {/* ✅ Enhanced Status Indicators */}
               {syncStatus && (
-                <span className={`px-2 py-1 rounded text-xs ${
-                  syncStatus === 'saving' ? 'bg-yellow-300 text-yellow-800' :
+                <span className={`px-2 py-1 rounded text-xs transition-all duration-200 ${
+                  syncStatus === 'saving' ? 'bg-yellow-300 text-yellow-800 animate-pulse' :
                   syncStatus === 'success' ? 'bg-green-300 text-green-800' :
-                  syncStatus === 'error' ? 'bg-red-300 text-red-800' :
+                  syncStatus === 'error' ? 'bg-red-300 text-red-800 animate-bounce' :
                   'bg-white/20 text-white'
                 }`}>
-                  {syncStatus === 'saving' ? '💾' :
-                   syncStatus === 'success' ? '✅' :
-                   syncStatus === 'error' ? '❌' : '💤'}
+                  {syncStatus === 'saving' ? '💾 Saving' :
+                   syncStatus === 'success' ? '✅ Synced' :
+                   syncStatus === 'error' ? '❌ Error' : '💤 Idle'}
                 </span>
               )}
             </div>
@@ -446,7 +545,7 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
           </div>
           <div className="w-full bg-white/20 rounded-full h-3 overflow-hidden">
             <motion.div
-              className="bg-white h-3 rounded-full"
+              className="bg-white h-3 rounded-full shadow-lg"
               initial={{ width: 0 }}
               animate={{ width: `${((currentQuestionIndex + 1) / block.questions.length) * 100}%` }}
               transition={{ duration: 0.5, ease: "easeOut" }}
@@ -454,7 +553,7 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
           </div>
         </div>
 
-        {/* ✅ Live Stats */}
+        {/* ✅ Enhanced Live Stats */}
         <div className="flex justify-between items-center mt-3 text-xs">
           <div className="flex items-center gap-4">
             {responses.filter(r => r).length > 0 && (
@@ -467,11 +566,16 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
                 Attempts: {attempts}
               </span>
             )}
-            {useUniversalRenderer && (
-              <span className="bg-green-400/30 px-2 py-1 rounded">
-                Enhanced Mode
-              </span>
-            )}
+            {/* ✅ Rendering Mode Indicator */}
+            <span className={`px-2 py-1 rounded ${
+              renderingMode === 'universal' ? 'bg-green-400/30' :
+              renderingMode === 'individual' ? 'bg-blue-400/30' :
+              'bg-red-400/30'
+            }`}>
+              {renderingMode === 'universal' ? '✨ Enhanced' :
+               renderingMode === 'individual' ? '⚡ Individual' :
+               '🔧 Error Mode'}
+            </span>
           </div>
           <div className="text-white/70">
             Level {block.level} Challenge
@@ -498,16 +602,40 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
               <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">
                 {currentQuestion.type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
               </span>
+              {/* ✅ Enhanced validation indicator */}
+              {enableEnhancedValidation && useUniversalRenderer && (
+                <span className={`px-2 py-1 rounded-full text-xs ${
+                  UniversalQuestionUtils.validateQuestion(currentQuestion) 
+                    ? 'bg-green-100 text-green-700' 
+                    : 'bg-red-100 text-red-700'
+                }`}>
+                  {UniversalQuestionUtils.validateQuestion(currentQuestion) ? '✓ Valid' : '⚠ Invalid'}
+                </span>
+              )}
             </div>
-            <div className="text-sm text-gray-500">
-              {currentQuestion.points || currentQuestion.level} points
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <span>{currentQuestion.points || currentQuestion.level} points</span>
+              {/* ✅ Rendering mode toggle (development feature) */}
+              {process.env.NODE_ENV === 'development' && useUniversalRenderer && (
+                <button
+                  onClick={() => {
+                    setRenderingMode(prev => 
+                      prev === 'universal' ? 'individual' : 'universal'
+                    );
+                  }}
+                  className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded transition"
+                  title="Toggle rendering mode (dev only)"
+                >
+                  🔄
+                </button>
+              )}
             </div>
           </div>
 
-          {/* ✅ Render question using new integrated system or fallback */}
+          {/* ✅ Enhanced Question Renderer */}
           {renderQuestion()}
 
-          {/* ✅ Question Feedback Display */}
+          {/* ✅ Question Feedback Display (keeping your excellent feedback system) */}
           {showFeedback && responses[currentQuestionIndex] && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
@@ -546,7 +674,7 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
         </motion.div>
       </AnimatePresence>
 
-      {/* ✅ Enhanced Suggestions after multiple incorrect attempts */}
+      {/* ✅ Enhanced Suggestions (keeping your excellent hint system) */}
       {attempts >= 2 && showSuggestions && !showFeedback && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
@@ -564,6 +692,12 @@ const QuestionBlock: React.FC<QuestionBlockProps> = ({
             <p className="text-yellow-700 mt-2">
               Take your time and think about the fundamental principles involved.
             </p>
+            {/* ✅ Enhanced hint: suggest trying different renderer */}
+            {useUniversalRenderer && renderingMode === 'individual' && (
+              <p className="text-yellow-600 text-xs mt-2">
+                💡 Try switching to the enhanced renderer for additional help features.
+              </p>
+            )}
           </div>
         </motion.div>
       )}

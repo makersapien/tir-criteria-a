@@ -13,7 +13,7 @@ import { useQuestionStrandSync } from '../../hooks/useQuestionStrandSync';
 
 // ✅ Import question components (existing)
 import QuestionBlockComponent from '../questions/QuestionBlock';
-import UniversalQuestionRenderer, { UniversalQuestionUtils } from '../questions/UniversalQuestionRenderer';
+import { UniversalQuestionUtils } from '../questions/UniversalQuestionRenderer';
 import type { QuestionBlock as QuestionBlockType } from '../../types/questionBlock';
 
 // ✅ Import data (existing)
@@ -77,7 +77,7 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
   debugMode = process.env.NODE_ENV === 'development'
 }) => {
   // ✅ Keep existing state
-  const { strandProgress, setStrandProgress } = useStrandContext();
+  const { setStrandProgress } = useStrandContext();
   const questionSystemContext = useQuestionSystem() as QuestionSystemContextType;
 
   const [activeQuestionBlock, setActiveQuestionBlock] = useState<QuestionBlockType | null>(null);
@@ -138,10 +138,9 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
   }, [currentStrand, experimentChoice, useUniversalRenderer, enableEnhancedValidation]);
 
   // ✅ Keep existing handlers
-  const handleBlockCompletion = async (blockId: string, responses: any[]) => {
+  // ✅ FIXED: Correct handler signature for QuestionBlock.tsx component
+  const handleBlockCompletion = async (blockId: string, responses: any[], averageScore: number) => {
     try {
-      const totalScore = responses.reduce((sum, response) => sum + (response.score || 0), 0);
-      const averageScore = responses.length > 0 ? totalScore / responses.length : 0;
       const level = parseInt(blockId.split('level')[1]) || 2;
       
       if (questionSystemContext?.updateQuestionProgress) {

@@ -1,8 +1,14 @@
 // src/components/YourResponse/Header/YourResponseHeader.tsx
-// 🎯 EXTRACTED HEADER MODULE - Main header with progress and status indicators
-
 import React, { useState } from 'react';
 import PerformanceInsights from './PerformanceInsights';
+
+// ✅ FIXED: Define the performance insights type properly
+interface PerformanceInsightsType {
+  averageScore: number;
+  completedLevels: number;
+  universalUsage: number;
+  trend: 'excellent' | 'good' | 'needs-improvement';
+}
 
 interface YourResponseHeaderProps {
   currentStrand: number;
@@ -13,12 +19,7 @@ interface YourResponseHeaderProps {
   syncStatus: 'saving' | 'success' | 'error' | 'idle';
   enableEnhancedValidation?: boolean;
   showPerformanceAnalytics?: boolean;
-  performanceInsights?: {
-    averageScore: number;
-    completedLevels: number;
-    universalUsage: number;
-    trend: 'excellent' | 'good' | 'needs-improvement';
-  } | null;
+  performanceInsights?: PerformanceInsightsType | null;
   debugMode?: boolean;
 }
 
@@ -34,21 +35,18 @@ const YourResponseHeader: React.FC<YourResponseHeaderProps> = ({
   performanceInsights,
   debugMode = false
 }) => {
-  // ✅ Local state for performance insights toggle (default: hidden)
   const [showInsights, setShowInsights] = useState(false);
-  // ✅ Helper function for experiment descriptions
+
   const getExperimentDescription = () => {
     return experimentChoice === 'critical-angle' 
       ? 'Master critical angle principles and total internal reflection'
       : 'Explore fiber optics and light transmission technology';
   };
 
-  // ✅ Helper function for learning path display
   const getLearningPathName = () => {
     return experimentChoice === 'critical-angle' ? 'Critical Angles' : 'Fiber Optics';
   };
 
-  // ✅ Helper function for sync status display
   const getSyncStatusDisplay = () => {
     const statusConfig = {
       saving: { icon: '💾', text: 'Saving...', className: 'bg-yellow-100 text-yellow-800' },
@@ -64,7 +62,7 @@ const YourResponseHeader: React.FC<YourResponseHeaderProps> = ({
 
   return (
     <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg shadow-sm border-2 border-purple-200 p-6">
-      {/* ✅ Debug panel (only in debug mode) */}
+      {/* Debug panel */}
       {debugMode && (
         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-xs">
           <div className="font-bold text-blue-800 mb-1">🔧 HEADER MODULE DEBUG:</div>
@@ -88,9 +86,8 @@ const YourResponseHeader: React.FC<YourResponseHeaderProps> = ({
         </div>
       )}
 
-      {/* ✅ Main header content */}
+      {/* Main header content */}
       <div className="flex justify-between items-start mb-4">
-        {/* ✅ Left side - Title and description */}
         <div>
           <h3 className="text-2xl font-bold text-purple-800">
             Strand {currentStrand} Interactive Questions
@@ -105,7 +102,6 @@ const YourResponseHeader: React.FC<YourResponseHeaderProps> = ({
             {getExperimentDescription()}
           </p>
           
-          {/* ✅ Status indicators */}
           <div className="mt-2 flex items-center gap-4 text-sm flex-wrap">
             <span className="text-purple-700">
               Learning Path: <strong>{getLearningPathName()}</strong>
@@ -129,7 +125,7 @@ const YourResponseHeader: React.FC<YourResponseHeaderProps> = ({
           </div>
         </div>
 
-        {/* ✅ Right side - Progress score */}
+        {/* Right side - Progress score */}
         <div className="text-right">
           <div className="text-4xl font-bold text-purple-600">{overallProgress}/8</div>
           <div className="text-sm text-purple-500 font-medium">Overall Score</div>
@@ -139,7 +135,7 @@ const YourResponseHeader: React.FC<YourResponseHeaderProps> = ({
             </div>
           )}
           
-          {/* ✅ Performance insights toggle button (only show if analytics are available) */}
+          {/* Performance insights toggle button */}
           {showPerformanceAnalytics && performanceInsights && (
             <button
               onClick={() => setShowInsights(!showInsights)}
@@ -152,9 +148,14 @@ const YourResponseHeader: React.FC<YourResponseHeaderProps> = ({
         </div>
       </div>
 
-      {/* ✅ Performance insights panel (conditional + toggleable) */}
+      {/* Performance insights panel */}
       {showPerformanceAnalytics && performanceInsights && showInsights && (
-        <PerformanceInsights insights={performanceInsights} />
+        <PerformanceInsights
+          currentStrand={currentStrand}
+          experimentChoice={experimentChoice}
+          sessionCode="demo"
+          currentStudentId="demo-student"
+        />
       )}
     </div>
   );

@@ -1,5 +1,3 @@
-// src/components/YourResponse/Tips/Suggestions.tsx
-// ✅ FIXED VERSION - No TypeScript errors
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SuggestionsProps } from './types';
@@ -16,14 +14,12 @@ const Suggestions: React.FC<SuggestionsProps> = ({
   const isCollapsed = onToggleCollapsed ? collapsed : localCollapsed;
   const toggleCollapsed = onToggleCollapsed || setLocalCollapsed;
 
-  // Don't render if no suggestions
   if (!suggestions || suggestions.length === 0) {
     return null;
   }
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-      {/* ✅ Header */}
       <div 
         className="p-4 border-b border-gray-100 cursor-pointer flex items-center justify-between hover:bg-gray-50 transition-colors"
         onClick={() => toggleCollapsed(!isCollapsed)}
@@ -51,7 +47,6 @@ const Suggestions: React.FC<SuggestionsProps> = ({
         </motion.div>
       </div>
 
-      {/* ✅ Suggestions Content */}
       <AnimatePresence>
         {!isCollapsed && (
           <motion.div
@@ -79,7 +74,6 @@ const Suggestions: React.FC<SuggestionsProps> = ({
                 ))}
               </div>
 
-              {/* ✅ Footer info */}
               <div className="mt-4 pt-3 border-t border-gray-100">
                 <div className="text-xs text-gray-600 text-center">
                   Tips tailored for {experimentChoice === 'critical-angle' ? 'Critical Angle' : 'Fiber Optics'} • Strand {currentStrand}

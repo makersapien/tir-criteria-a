@@ -1,252 +1,7 @@
-// src/utils/integrationFixes.ts - DEBUG VERSION to find the actual issue
+// src/utils/integrationFixes.ts - CLEAN VERSION: Data folder only, no hardcoded fallback
 
-// ✅ TEMPORARY: Let's hardcode the data directly to bypass import issues
-const HARDCODED_DATA = {
-  "critical-angle": {
-    "strand1": {
-      "level2": [
-        {
-          "id": "ca_s1_l2_mcq1",
-          "type": "mcq",
-          "level": 2,
-          "points": 2,
-          "question": "What happens when light travels from a dense medium to a less dense medium?",
-          "learningPath": "critical-angle",
-          "strand": 1,
-          "concept": "basic light behavior",
-          "keywords": ["refraction", "medium", "light"],
-          "options": [
-            {
-              "id": "a",
-              "text": "Light always reflects back",
-              "isCorrect": false
-            },
-            {
-              "id": "b", 
-              "text": "Light bends away from the normal",
-              "isCorrect": true
-            },
-            {
-              "id": "c",
-              "text": "Light travels in a straight line",
-              "isCorrect": false
-            },
-            {
-              "id": "d",
-              "text": "Light disappears",
-              "isCorrect": false
-            }
-          ],
-          "explanation": "When light travels from a dense medium (like glass) to a less dense medium (like air), it bends away from the normal according to Snell's law."
-        },
-        {
-          "id": "ca_s1_l2_fill1",
-          "type": "fill-blank",
-          "level": 2,
-          "points": 2,
-          "question": "Fill in the blanks about light behavior:",
-          "learningPath": "critical-angle",
-          "strand": 1,
-          "concept": "refraction basics",
-          "keywords": ["refraction", "normal", "angle"],
-          "text": "When light changes direction as it passes from one medium to another, this process is called {blank}. The imaginary line perpendicular to the surface is called the {blank}.",
-          "blanks": [
-            {
-              "id": "blank1",
-              "correctAnswers": ["refraction"],
-              "caseSensitive": false,
-              "hints": ["Think about light bending"]
-            },
-            {
-              "id": "blank2", 
-              "correctAnswers": ["normal"],
-              "caseSensitive": false,
-              "hints": ["Perpendicular line to surface"]
-            }
-          ],
-          "explanation": "Refraction is the bending of light when it passes between different media. The normal is the reference line used to measure angles of incidence and refraction."
-        }
-      ],
-      "level4": [
-        {
-          "id": "ca_s1_l4_mcq1",
-          "type": "mcq",
-          "level": 4,
-          "points": 4,
-          "question": "The critical angle is the angle of incidence at which:",
-          "learningPath": "critical-angle",
-          "strand": 1,
-          "concept": "critical angle definition",
-          "keywords": ["critical angle", "total internal reflection", "angle of refraction"],
-          "options": [
-            {
-              "id": "a",
-              "text": "Light is completely absorbed",
-              "isCorrect": false
-            },
-            {
-              "id": "b",
-              "text": "The angle of refraction is 90°",
-              "isCorrect": true
-            },
-            {
-              "id": "c",
-              "text": "Light travels parallel to the surface",
-              "isCorrect": false,
-              "level": 3
-            },
-            {
-              "id": "d",
-              "text": "Refraction stops completely",
-              "isCorrect": false
-            }
-          ],
-          "explanation": "The critical angle is defined as the angle of incidence for which the angle of refraction is exactly 90°. Beyond this angle, total internal reflection occurs."
-        }
-      ],
-      "level6": [
-        {
-          "id": "ca_s1_l6_mcq1",
-          "type": "mcq",
-          "level": 6,
-          "points": 6,
-          "question": "Calculate the critical angle for glass (n=1.5) to air (n=1.0):",
-          "learningPath": "critical-angle",
-          "strand": 1,
-          "concept": "critical angle calculation",
-          "keywords": ["critical angle", "calculation", "sin"],
-          "options": [
-            {
-              "id": "a",
-              "text": "30°",
-              "isCorrect": false
-            },
-            {
-              "id": "b",
-              "text": "41.8°",
-              "isCorrect": true
-            },
-            {
-              "id": "c",
-              "text": "45°",
-              "isCorrect": false
-            },
-            {
-              "id": "d",
-              "text": "60°",
-              "isCorrect": false
-            }
-          ],
-          "explanation": "Using sin(θc) = n₂/n₁ = 1.0/1.5 = 0.667, so θc = sin⁻¹(0.667) = 41.8°"
-        }
-      ],
-      "level8": [
-        {
-          "id": "ca_s1_l8_short1",
-          "type": "short-answer",
-          "level": 8,
-          "points": 8,
-          "question": "Explain why diamonds sparkle using total internal reflection principles.",
-          "learningPath": "critical-angle",
-          "strand": 1,
-          "concept": "advanced TIR applications",
-          "keywords": ["diamond", "brilliance", "critical angle", "total internal reflection"],
-          "minWords": 30,
-          "maxWords": 80,
-          "sampleAnswer": "Diamond has a very high refractive index (2.42), creating a small critical angle of about 24°. This means light entering the diamond is easily trapped through multiple total internal reflections, bouncing around inside before emerging with brilliant sparkle.",
-          "evaluationCriteria": {
-            "requiredKeywords": ["high refractive index", "small critical angle", "total internal reflection", "trapped"],
-            "requiredConcepts": ["light trapping", "multiple reflections", "brilliance"]
-          }
-        }
-      ]
-    },
-    "strand2": {
-      "level2": [
-        {
-          "id": "ca_s2_l2_mcq1",
-          "type": "mcq",
-          "level": 2,
-          "points": 2,
-          "question": "When does total internal reflection occur?",
-          "learningPath": "critical-angle",
-          "strand": 2,
-          "concept": "TIR conditions",
-          "keywords": ["total internal reflection", "critical angle"],
-          "options": [
-            {
-              "id": "a",
-              "text": "When light hits any surface",
-              "isCorrect": false
-            },
-            {
-              "id": "b", 
-              "text": "When the incident angle exceeds the critical angle",
-              "isCorrect": true
-            },
-            {
-              "id": "c",
-              "text": "When light travels very fast",
-              "isCorrect": false
-            },
-            {
-              "id": "d",
-              "text": "When surfaces are very smooth",
-              "isCorrect": false
-            }
-          ],
-          "explanation": "TIR occurs when light from a denser medium hits the interface at an angle greater than the critical angle."
-        }
-      ],
-      "level4": [],
-      "level6": [],
-      "level8": []
-    }
-  },
-  "fiber-optics": {
-    "strand1": {
-      "level2": [
-        {
-          "id": "fo_s1_l2_mcq1",
-          "type": "mcq",
-          "level": 2,
-          "points": 2,
-          "question": "What principle allows optical fibers to work?",
-          "learningPath": "fiber-optics",
-          "strand": 1,
-          "concept": "fiber basics",
-          "keywords": ["optical fiber", "total internal reflection"],
-          "options": [
-            {
-              "id": "a",
-              "text": "Light amplification",
-              "isCorrect": false
-            },
-            {
-              "id": "b",
-              "text": "Total internal reflection",
-              "isCorrect": true
-            },
-            {
-              "id": "c",
-              "text": "Light absorption",
-              "isCorrect": false
-            },
-            {
-              "id": "d",
-              "text": "Light diffraction",
-              "isCorrect": false
-            }
-          ],
-          "explanation": "Optical fibers use total internal reflection to guide light along the core."
-        }
-      ],
-      "level4": [],
-      "level6": [],
-      "level8": []
-    }
-  }
-};
+// ✅ Import from your data folder
+import questionDataRaw from '../data/questionData.json';
 
 // Keep all your existing types...
 export interface BaseQuestion {
@@ -304,6 +59,11 @@ export interface ShortAnswerQuestion extends BaseQuestion {
   evaluationCriteria: {
     requiredKeywords: string[];
     requiredConcepts: string[];
+    levelDescriptors?: {
+      level: number;
+      description: string;
+      keywords: string[];
+    }[];
   };
 }
 
@@ -341,7 +101,7 @@ export interface StrandData {
   blocks: QuestionBlock[];
 }
 
-// ✅ FIXED: Use hardcoded data to eliminate import issues
+// ✅ CLEAN MAIN FUNCTION - Data folder only
 export const generateStrandData = (
   strandNumber: number,
   learningPath: 'critical-angle' | 'fiber-optics',
@@ -349,53 +109,32 @@ export const generateStrandData = (
 ): StrandData => {
   const strandKey = `strand${strandNumber}`;
   
-  // ✅ Use hardcoded data - this WILL work
-  const dataSource = HARDCODED_DATA;
-  const pathData = dataSource[learningPath]?.[strandKey];
+  console.log(`🔍 Loading ${learningPath} ${strandKey} from data folder...`);
   
-  console.log('🔍 GENERATING STRAND DATA V3 (HARDCODED):', {
-    strandNumber,
-    learningPath,
-    strandKey,
-    hasDataSource: !!dataSource,
-    hasLearningPath: !!dataSource[learningPath],
-    hasPathData: !!pathData,
-    availableLevels: pathData ? Object.keys(pathData) : [],
-    dataSourceKeys: Object.keys(dataSource),
-    learningPathKeys: dataSource[learningPath] ? Object.keys(dataSource[learningPath]) : [],
-    fullDataStructure: {
-      criticalAngleKeys: Object.keys(dataSource['critical-angle']),
-      strand1Keys: dataSource['critical-angle']['strand1'] ? Object.keys(dataSource['critical-angle']['strand1']) : [],
-      level2Questions: dataSource['critical-angle']['strand1']?.['level2']?.length || 0
-    }
-  });
+  // ✅ Use data folder (we know it works!)
+  const pathData = questionDataRaw?.[learningPath]?.[strandKey];
   
   if (!pathData) {
-    console.warn(`❌ No question data found for ${learningPath} ${strandKey}`);
+    console.warn(`❌ No data found for ${learningPath} ${strandKey}`);
+    console.log('Available data:', {
+      learningPaths: Object.keys(questionDataRaw || {}),
+      availableStrands: questionDataRaw?.[learningPath] ? Object.keys(questionDataRaw[learningPath]) : []
+    });
     return createEmptyStrand(strandNumber, learningPath);
   }
   
-  // ✅ Create blocks with the hardcoded questions
+  // ✅ Create blocks with all levels unlocked
   const blocks: QuestionBlock[] = [2, 4, 6, 8].map(level => {
     const levelKey = `level${level}`;
     const questions = pathData[levelKey] || [];
     
-    console.log(`📊 Loading ${learningPath} ${strandKey} ${levelKey}:`, {
-      questionCount: questions.length,
-      firstQuestionId: questions[0]?.id,
-      questionTypes: questions.map((q: any) => q.type),
-      sampleQuestion: questions[0] ? {
-        id: questions[0].id,
-        type: questions[0].type,
-        question: questions[0].question?.substring(0, 50) + '...'
-      } : 'none'
-    });
+    console.log(`📚 ${learningPath} ${strandKey} level${level}: ${questions.length} questions`);
     
     return {
       id: `${strandKey}_level${level}`,
       level: level as 2 | 4 | 6 | 8,
       questions,
-      unlocked: true,
+      unlocked: true, // ✅ ALL LEVELS UNLOCKED
       completed: false,
       score: 0,
       attempts: 0,
@@ -413,17 +152,7 @@ export const generateStrandData = (
     blocks
   };
   
-  console.log('✅ Generated strand data V3:', {
-    strand: result.strand,
-    title: result.title,
-    totalBlocks: result.blocks.length,
-    totalQuestions: result.blocks.reduce((sum, block) => sum + block.totalQuestions, 0),
-    questionsPerLevel: result.blocks.map(block => ({
-      level: block.level,
-      count: block.totalQuestions,
-      firstQuestionId: block.questions[0]?.id
-    }))
-  });
+  console.log(`✅ Generated ${result.title}: ${result.blocks.reduce((sum, block) => sum + block.totalQuestions, 0)} total questions`);
   
   return result;
 };
@@ -485,7 +214,7 @@ export const getStrandDescription = (
     || `Strand ${strand} content`;
 };
 
-// Keep all your existing evaluation functions exactly as they are...
+// ✅ EVALUATION FUNCTIONS WITH CORRECT LEVEL-BASED SCORING
 export const evaluateMCQ = (
   question: MCQQuestion,
   selectedOptionId: string
@@ -501,10 +230,13 @@ export const evaluateMCQ = (
   }
   
   const isCorrect = selectedOption.isCorrect;
-  const score = isCorrect ? question.level : (selectedOption.level || 0);
+  // ✅ CORRECT: Level 2 = max 2 points, Level 4 = max 4 points, etc.
+  const score = isCorrect ? question.level : 0;
   const feedback = isCorrect 
     ? `Correct! ${question.explanation}`
     : `Not quite. ${question.explanation}`;
+  
+  console.log(`📊 MCQ evaluated: Level ${question.level}, Correct: ${isCorrect}, Score: ${score}/${question.level}`);
   
   return { isCorrect, score, feedback };
 };
@@ -527,17 +259,20 @@ export const evaluateFillBlank = (
   });
   
   const percentage = correctCount / totalBlanks;
-  let score = 0;
   
+  // ✅ CORRECT: Level-based scoring - max score = question level
+  let score = 0;
   if (percentage >= 0.9) score = question.level;
-  else if (percentage >= 0.7) score = Math.max(question.level - 1, 0);
-  else if (percentage >= 0.5) score = Math.max(question.level - 2, 0);
-  else if (percentage >= 0.3) score = Math.max(question.level - 3, 0);
+  else if (percentage >= 0.7) score = Math.floor(question.level * 0.8);
+  else if (percentage >= 0.5) score = Math.floor(question.level * 0.6);
+  else if (percentage >= 0.3) score = Math.floor(question.level * 0.4);
   
   const isCorrect = percentage >= 0.7;
   const feedback = isCorrect
     ? `Great work! ${question.explanation}`
     : `Good effort. ${question.explanation}`;
+  
+  console.log(`📊 Fill-blank evaluated: Level ${question.level}, ${correctCount}/${totalBlanks} correct, Score: ${score}/${question.level}`);
   
   return { isCorrect, score, feedback };
 };
@@ -556,17 +291,20 @@ export const evaluateMatchClick = (
   });
   
   const percentage = correctCount / question.correctMatches.length;
-  let score = 0;
   
+  // ✅ CORRECT: Level-based scoring - max score = question level
+  let score = 0;
   if (percentage >= 0.9) score = question.level;
-  else if (percentage >= 0.7) score = Math.max(question.level - 1, 0);
-  else if (percentage >= 0.5) score = Math.max(question.level - 2, 0);
-  else if (percentage >= 0.3) score = Math.max(question.level - 3, 0);
+  else if (percentage >= 0.7) score = Math.floor(question.level * 0.8);
+  else if (percentage >= 0.5) score = Math.floor(question.level * 0.6);
+  else if (percentage >= 0.3) score = Math.floor(question.level * 0.4);
   
   const isCorrect = percentage >= 0.7;
   const feedback = isCorrect
     ? `Excellent matching! ${question.explanation}`
     : `Good attempt. ${question.explanation}`;
+  
+  console.log(`📊 Match-click evaluated: Level ${question.level}, ${correctCount}/${question.correctMatches.length} correct, Score: ${score}/${question.level}`);
   
   return { isCorrect, score, feedback };
 };
@@ -589,7 +327,7 @@ export const evaluateShortAnswer = async (
   if (question.maxWords && words > question.maxWords) {
     return {
       isCorrect: false,
-      score: Math.max(question.level - 2, 0),
+      score: Math.floor(question.level * 0.5),
       feedback: `Answer too long. Maximum ${question.maxWords} words allowed.`
     };
   }
@@ -605,12 +343,15 @@ export const evaluateShortAnswer = async (
   const keywordScore = (keywordMatches / Math.max(question.evaluationCriteria.requiredKeywords.length, 1)) * 0.6;
   const conceptScore = (conceptMatches / Math.max(question.evaluationCriteria.requiredConcepts.length, 1)) * 0.4;
   
+  // ✅ CORRECT: Level-based scoring - max score = question level
   const totalScore = Math.round((keywordScore + conceptScore) * question.level);
-  const isCorrect = totalScore >= Math.max(question.level - 2, 4);
+  const isCorrect = totalScore >= Math.ceil(question.level * 0.6);
   
   const feedback = isCorrect
     ? 'Good response! You addressed the key concepts.'
     : 'Consider including more scientific terminology and key concepts.';
+  
+  console.log(`📊 Short-answer evaluated: Level ${question.level}, Keywords: ${keywordMatches}, Concepts: ${conceptMatches}, Score: ${totalScore}/${question.level}`);
   
   return { isCorrect, score: totalScore, feedback };
 };

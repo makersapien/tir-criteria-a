@@ -1,6 +1,6 @@
 // src/components/YourResponseSection.tsx
 // FULLY INTEGRATED VERSION: Combining your existing excellent system with UniversalQuestionRenderer
-// ✅ ALL ISSUES FIXED: Progressive locking removed, TypeScript errors resolved
+// ✅ ALL ISSUES FIXED: Progressive locking removed, TypeScript errors resolved, CLEAN TIPS INTERFACE
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -82,6 +82,9 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
   const [performanceData, setPerformanceData] = useState<any[]>([]);
   // ✅ FIX 1: Changed to store validation objects instead of just boolean
   const [validationResults, setValidationResults] = useState<Record<string, { isValid: boolean; errors: string[]; warnings?: string[]; }>>({});
+  
+  // ✅ NEW: State for clean tips interface
+  const [expandedTipLevel, setExpandedTipLevel] = useState<string | null>(null);
 
   // ✅ Use your existing sync hook (keeping all your sync functionality)
   const { syncStatus, saveResponse, loadResponses } = useQuestionStrandSync({
@@ -317,6 +320,38 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
     };
   };
 
+  // ✅ Helper function to safely extract tip data
+  const extractTipInfo = (tipData: any) => {
+    if (typeof tipData === 'string') {
+      return {
+        tipText: tipData,
+        commandTerms: [],
+        guidance: '',
+        examples: [],
+        isComplex: false
+      };
+    }
+    
+    if (tipData && typeof tipData === 'object' && tipData !== null) {
+      const obj = tipData as any;
+      return {
+        tipText: obj.tip || String(tipData),
+        commandTerms: Array.isArray(obj.commandTerms) ? obj.commandTerms : [],
+        guidance: obj.guidance || '',
+        examples: Array.isArray(obj.examples) ? obj.examples : [],
+        isComplex: Boolean(obj.tip)
+      };
+    }
+    
+    return {
+      tipText: String(tipData || ''),
+      commandTerms: [],
+      guidance: '',
+      examples: [],
+      isComplex: false
+    };
+  };
+
   // ✅ Loading state (keeping your existing design)
   if (!strandQuestionData) {
     return (
@@ -450,18 +485,104 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
           </div>
         )}
 
-        {/* ✅ Tips section (keeping your existing system) */}
+        {/* ✅ CLEAN Tips section with clickable expansion */}
         {Object.keys(tips).length > 0 && (
           <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-4">
-            <h4 className="font-bold text-yellow-800 mb-2 flex items-center">
+            <h4 className="font-bold text-yellow-800 mb-3 flex items-center">
               💡 Tips for Success
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-yellow-700">
-              {Object.entries(tips).map(([level, tip]) => (
-                <div key={level}>
-                  <strong>{level.replace('-', '-')}:</strong> {String(tip)}
-                </div>
-              ))}
+            
+            {/* Compact overview with clickable rows */}
+            <div className="space-y-2">
+              {Object.entries(tips).map(([level, tipData]) => {
+                const isExpanded = expandedTipLevel === level;
+                const { tipText, commandTerms, guidance, examples, isComplex } = extractTipInfo(tipData);
+                const shortTip = tipText.length > 60 ? tipText.substring(0, 60) + '...' : tipText;
+                
+                return (
+                  <div key={level} className="border border-yellow-200 rounded-lg bg-white">
+                    {/* Clickable header */}
+                    <button
+                      onClick={() => setExpandedTipLevel(isExpanded ? null : level)}
+                      className="w-full px-4 py-3 text-left hover:bg-yellow-50 focus:outline-none transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <span className="bg-yellow-200 px-2 py-1 rounded text-xs font-bold text-yellow-800">
+                            {level.replace('level', 'Level ')}
+                          </span>
+                          <span 
+                            className="text-sm text-yellow-700"
+                            dangerouslySetInnerHTML={{ 
+                              __html: shortTip.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                            }} 
+                          />
+                        </div>
+                        <span className={`transform transition-transform text-yellow-600 ${
+                          isExpanded ? 'rotate-180' : ''
+                        }`}>
+                          ▼
+                        </span>
+                      </div>
+                    </button>
+                    
+                    {/* Expandable content */}
+                    {isExpanded && (
+                      <div className="px-4 pb-4 border-t border-yellow-100">
+                        <div className="pt-3 space-y-3">
+                          {/* Full tip */}
+                          <div>
+                            <span className="font-medium text-sm text-yellow-800">Full Tip: </span>
+                            <div 
+                              className="text-sm text-yellow-700 mt-1"
+                              dangerouslySetInnerHTML={{ 
+                                __html: tipText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                              }} 
+                            />
+                          </div>
+                          
+                          {/* Command terms - only show if they exist */}
+                          {commandTerms.length > 0 && (
+                            <div>
+                              <span className="font-medium text-sm text-yellow-800">Command Terms: </span>
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {commandTerms.map((term, idx) => (
+                                  <span 
+                                    key={idx} 
+                                    className="bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded text-xs"
+                                  >
+                                    {term}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Guidance - only show if it exists */}
+                          {guidance && (
+                            <div>
+                              <span className="font-medium text-sm text-yellow-800">Guidance: </span>
+                              <p className="text-sm text-yellow-700 mt-1">{guidance}</p>
+                            </div>
+                          )}
+                          
+                          {/* Examples - only show if they exist */}
+                          {examples.length > 0 && (
+                            <div>
+                              <span className="font-medium text-sm text-yellow-800">Examples: </span>
+                              <ul className="list-disc list-inside mt-1 text-sm text-yellow-700">
+                                {examples.map((example, idx) => (
+                                  <li key={idx}>{example}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -815,15 +936,15 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
               <div className="text-green-600">✅ JSON Files</div>
             </div>
             <div>
-              <div className="font-semibold text-gray-700">Progressive Locking</div>
-              <div className="text-green-600">✅ Disabled</div>
+              <div className="font-semibold text-gray-700">Tips Interface</div>
+              <div className="text-green-600">✅ Clean & Clickable</div>
             </div>
           </div>
           
           <div className="mt-3 pt-3 border-t border-gray-300">
             <div className="text-xs text-gray-600">
               <strong>🎉 All Issues Fixed:</strong> Progressive locking removed ✅, Level-based scoring implemented ✅, 
-              Data folder working ✅, TypeScript errors resolved ✅, Enhanced validation working ✅.
+              Data folder working ✅, TypeScript errors resolved ✅, Enhanced validation working ✅, Clean tips interface ✅.
             </div>
           </div>
         </div>

@@ -1,7 +1,6 @@
 {
   "critical-angle": {
     "strand1": {
-      "name": "TIR Principles & Laws",
       "level2": {
         "tip": "📚 **Define** total internal reflection using simple, clear language. **State** the basic conditions when it happens.",
         "commandTerms": ["define", "state", "list"],
@@ -28,7 +27,6 @@
       }
     },
     "strand2": {
-      "name": "Understanding TIR Phenomena",
       "level2": {
         "tip": "👀 **Identify** when TIR happens. **State** that it occurs above the critical angle.",
         "commandTerms": ["identify", "state", "recognize"],
@@ -55,7 +53,6 @@
       }
     },
     "strand3": {
-      "name": "Real-World Applications", 
       "level2": {
         "tip": "📝 **List** common applications of TIR. **Give** examples like fiber optics and diamonds.",
         "commandTerms": ["list", "give", "name"],
@@ -82,7 +79,6 @@
       }
     },
     "strand4": {
-      "name": "Analysis & Problem Solving",
       "level2": {
         "tip": "🧮 **Calculate** using given formulas and values. **Show** your mathematical work clearly.",
         "commandTerms": ["calculate", "show", "compute"],
@@ -111,7 +107,6 @@
   },
   "fiber-optics": {
     "strand1": {
-      "name": "Fiber Optic Principles",
       "level2": {
         "tip": "🔍 **Identify** the main parts of optical fibers: core and cladding. **State** their basic functions.",
         "commandTerms": ["identify", "state", "name"],
@@ -138,7 +133,6 @@
       }
     },
     "strand2": {
-      "name": "Fiber Optic Technology",
       "level2": {
         "tip": "🔌 **List** components of fiber optic systems: light sources, fibers, detectors. **Name** their functions.",
         "commandTerms": ["list", "name", "identify"],
@@ -165,7 +159,6 @@
       }
     },
     "strand3": {
-      "name": "Applications & Impact",
       "level2": {
         "tip": "📱 **List** where fiber optics are used: internet, medical, sensing. **Give** specific examples.",
         "commandTerms": ["list", "give", "mention"],
@@ -192,7 +185,6 @@
       }
     },
     "strand4": {
-      "name": "Design & Innovation",
       "level2": {
         "tip": "🛠️ **Identify** basic design factors in fiber systems. **State** simple requirements.",
         "commandTerms": ["identify", "state", "recognize"],
@@ -216,47 +208,6 @@
         "commandTerms": ["evaluate", "synthesize", "innovate"],
         "guidance": "Consider cutting-edge developments. Address complex system-level challenges.",
         "examples": ["Evaluate new fiber designs", "Synthesize solutions for next-generation networks"]
-      }
-    }
-  },
-  "general": {
-    "commandTermGuidance": {
-      "define": "Give a precise meaning or explanation of a term, concept, or phenomenon",
-      "describe": "Give a detailed account including characteristics and features", 
-      "explain": "Give a detailed account including reasons or causes",
-      "analyze": "Break down complex information into parts and examine relationships",
-      "evaluate": "Make an appraisal by weighing up strengths and limitations",
-      "calculate": "Obtain a numerical answer showing relevant working",
-      "identify": "Provide an answer from a number of possibilities or recognize and state briefly",
-      "state": "Give a specific name, value, or brief answer without explanation",
-      "list": "Give a sequence of brief answers with no explanation",
-      "compare": "Give an account of similarities and differences",
-      "contrast": "Give an account of differences only",
-      "discuss": "Offer a considered and balanced review of a topic",
-      "justify": "Give valid reasons or evidence to support an answer",
-      "predict": "Give an expected result based on available information",
-      "synthesize": "Combine different ideas or information to create something new"
-    },
-    "levelProgression": {
-      "levels1-2": {
-        "focus": "Recall and basic understanding",
-        "language": "Simple, clear statements using basic vocabulary",
-        "expectations": "Factual knowledge, simple definitions, basic examples"
-      },
-      "levels3-4": {
-        "focus": "Comprehension and application", 
-        "language": "Appropriate scientific terminology with clear explanations",
-        "expectations": "Understanding concepts, describing processes, simple problem-solving"
-      },
-      "levels5-6": {
-        "focus": "Analysis and synthesis",
-        "language": "Sophisticated scientific language with detailed explanations",
-        "expectations": "Complex problem-solving, connecting multiple concepts, mathematical applications"
-      },
-      "levels7-8": {
-        "focus": "Evaluation and creation",
-        "language": "Advanced scientific discourse with critical analysis",
-        "expectations": "Critical thinking, evaluating evidence, designing solutions, predicting outcomes"
       }
     }
   }

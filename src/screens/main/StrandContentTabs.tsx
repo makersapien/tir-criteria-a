@@ -8,7 +8,7 @@ import RichEditor from '../../components/RichEditor';
 import { evaluateStrand } from '../../utils/evaluateStrand';
 import strandTips from '../../data/strandTips.json';
 import MagnetFieldSimulator from './TIRsimulation';
-import YourResponseSection from '../../components/YourResponseSection';
+import YourResponseSection from '../../components/YourResponse';
 import { supabase } from '../../lib/supabaseClient';
 
 interface StrandContentTabsProps {

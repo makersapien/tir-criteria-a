@@ -1,23 +1,38 @@
 // src/components/YourResponse/index.tsx
-// 🛠️ SAFE VERSION - Minimal changes to avoid errors
+// 🎯 FIXED MODULAR VERSION - No TypeScript errors
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 
-// ✅ Your existing imports
+// ✅ Import contexts and hooks (existing)
 import { useStrandContext } from '../../contexts/StrandContext';
 import { useQuestionSystem } from '../../contexts/questionSystemContext';
 import { generateStrandData } from '../../utils/integrationFixes';
 import { useQuestionStrandSync } from '../../hooks/useQuestionStrandSync';
+
+// ✅ Import question components (existing)
 import QuestionBlockComponent from '../questions/QuestionBlock';
 import UniversalQuestionRenderer, { UniversalQuestionUtils } from '../questions/UniversalQuestionRenderer';
 import type { QuestionBlock as QuestionBlockType } from '../../types/questionBlock';
 
-// ✅ Import data
+// ✅ Import data (existing)
 import questionData from '../../data/questionData.json';
 import strandTips from '../../data/strandTips.json';
 import suggestions from '../../data/suggestions.json';
+
+// ✅ Import modular components - FIXED
+import YourResponseHeader from './Header/YourResponseHeader';
+import LevelSelector from './LevelSelection/LevelSelector';
+import { StrandTips, Suggestions } from './Tips';
+
+// ✅ FIXED: Define performance insights type properly
+interface PerformanceInsights {
+  averageScore: number;
+  completedLevels: number;
+  universalUsage: number;
+  trend: 'excellent' | 'good' | 'needs-improvement';
+}
 
 // ✅ Keep existing interface
 interface YourResponseSectionProps {
@@ -61,7 +76,7 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
   autoSyncEnabled = true,
   debugMode = process.env.NODE_ENV === 'development'
 }) => {
-  // ✅ Your existing state
+  // ✅ Keep existing state
   const { strandProgress, setStrandProgress } = useStrandContext();
   const questionSystemContext = useQuestionSystem() as QuestionSystemContextType;
 
@@ -72,7 +87,11 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
   const [performanceData, setPerformanceData] = useState<any[]>([]);
   const [validationResults, setValidationResults] = useState<Record<string, { isValid: boolean; errors: string[]; warnings?: string[]; }>>({});
 
-  // ✅ Your existing sync hook
+  // ✅ UI state for collapsible sections
+  const [tipsCollapsed, setTipsCollapsed] = useState(true);
+  const [suggestionsCollapsed, setSuggestionsCollapsed] = useState(true);
+
+  // ✅ Keep existing sync hook
   const { syncStatus, saveResponse, loadResponses } = useQuestionStrandSync({
     studentId: currentStudentId,
     experiment: experimentChoice,
@@ -81,7 +100,7 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
     currentStrand,
   });
 
-  // ✅ Data loading
+  // ✅ Keep existing data loading logic
   useEffect(() => {
     const loadStrandData = async () => {
       try {
@@ -118,7 +137,7 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
     loadStrandData();
   }, [currentStrand, experimentChoice, useUniversalRenderer, enableEnhancedValidation]);
 
-  // ✅ Your existing handlers
+  // ✅ Keep existing handlers
   const handleBlockCompletion = async (blockId: string, responses: any[]) => {
     try {
       const totalScore = responses.reduce((sum, response) => sum + (response.score || 0), 0);
@@ -177,6 +196,7 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
     setShowResults(false);
   };
 
+  // ✅ Keep existing helper functions
   const getBlockStatus = (level: number) => {
     const blockId = `strand${currentStrand}_level${level}`;
     const strandData = questionSystemContext?.questionSystem?.strands?.[currentStrand];
@@ -197,6 +217,42 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
     return Math.min(8, maxScore);
   };
 
+  // ✅ Get data for modular components (exactly like original)
+  const getCurrentTips = () => {
+    try {
+      const strandKey = `strand${currentStrand}`;
+      return strandTips[experimentChoice]?.[strandKey] || {};
+    } catch (error) {
+      console.error('❌ Error loading tips:', error);
+      return {};
+    }
+  };
+
+  const getCurrentSuggestions = () => {
+    try {
+      return suggestions[experimentChoice]?.[`strand${currentStrand}`] || [];
+    } catch (error) {
+      console.error('❌ Error loading suggestions:', error);
+      return [];
+    }
+  };
+
+  // ✅ FIXED: Properly typed performance insights function
+  const getPerformanceInsights = (): PerformanceInsights | null => {
+    if (performanceData.length === 0) return null;
+    
+    const avgScore = performanceData.reduce((sum, p) => sum + p.score, 0) / performanceData.length;
+    const completedLevels = performanceData.length;
+    const universalUsage = performanceData.filter(p => p.renderingMode === 'universal').length;
+    
+    return {
+      averageScore: Math.round(avgScore * 10) / 10,
+      completedLevels,
+      universalUsage,
+      trend: avgScore > 6 ? 'excellent' : avgScore > 4 ? 'good' : 'needs-improvement'
+    };
+  };
+
   // ✅ Loading state
   if (!strandQuestionData) {
     return (
@@ -208,108 +264,76 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
   }
 
   const overallProgress = calculateOverallProgress();
-
-  // ✅ Color scheme for levels
-  const levelColors = {
-    2: { base: 'bg-emerald-500 border-emerald-600 text-white hover:bg-emerald-600', completed: 'bg-emerald-600' },
-    4: { base: 'bg-blue-500 border-blue-600 text-white hover:bg-blue-600', completed: 'bg-blue-600' },
-    6: { base: 'bg-purple-500 border-purple-600 text-white hover:bg-purple-600', completed: 'bg-purple-600' },
-    8: { base: 'bg-rose-500 border-rose-600 text-white hover:bg-rose-600', completed: 'bg-rose-600' }
-  };
+  const tips = getCurrentTips();
+  const currentSuggestions = getCurrentSuggestions();
+  const insights = getPerformanceInsights();
 
   return (
     <div className="space-y-6">
-      {/* ✅ Debug info */}
+      {/* ✅ Debug info (modular) */}
       {debugMode && (
         <div className="p-3 bg-blue-50 border border-blue-200 rounded text-xs">
-          <div className="font-bold text-blue-800 mb-1">🔧 SAFE MODULAR VERSION:</div>
+          <div className="font-bold text-blue-800 mb-1">🔧 MODULAR VERSION STATUS:</div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            <div>Status: ✅ Working</div>
+            <div>✅ Header Module: Extracted</div>
+            <div>✅ Level Selector: Extracted</div>
+            <div>✅ Tips Module: Using real data</div>
+            <div>✅ Suggestions: Using real data</div>
             <div>Progress: {overallProgress}/8</div>
             <div>Mode: {renderingMode}</div>
             <div>Sync: {syncStatus}</div>
+            <div>Tips Available: {Object.keys(tips).length > 0 ? 'Yes' : 'No'}</div>
           </div>
         </div>
       )}
 
-      {/* ✅ Compact Header */}
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg shadow-sm border-2 border-purple-200 p-6">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h3 className="text-2xl font-bold text-purple-800">
-              Strand {currentStrand} Interactive Questions
-              {useUniversalRenderer && (
-                <span className="ml-2 text-sm bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                  ✨ Enhanced
-                </span>
-              )}
-            </h3>
-            <p className="text-purple-600 mt-2 text-lg">
-              {experimentChoice === 'critical-angle' 
-                ? 'Master critical angle principles and total internal reflection'
-                : 'Explore fiber optics and light transmission technology'
-              }
-            </p>
-          </div>
-          <div className="text-right">
-            <div className="text-4xl font-bold text-purple-600">{overallProgress}/8</div>
-            <div className="text-sm text-purple-500 font-medium">Overall Score</div>
-          </div>
-        </div>
-      </div>
+      {/* ✅ Modular Header Component */}
+      <YourResponseHeader
+        currentStrand={currentStrand}
+        experimentChoice={experimentChoice}
+        overallProgress={overallProgress}
+        useUniversalRenderer={useUniversalRenderer}
+        renderingMode={renderingMode}
+        syncStatus={syncStatus}
+        enableEnhancedValidation={enableEnhancedValidation}
+        showPerformanceAnalytics={showPerformanceAnalytics}
+        performanceInsights={insights}
+        debugMode={debugMode}
+      />
 
-      {/* ✅ Compact Colorful Level Selector */}
-      <div className="bg-white rounded-lg p-4 border border-purple-200">
-        <div className="flex items-center justify-between mb-3">
-          <h4 className="font-bold text-purple-700">🎯 Select Question Level</h4>
-          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-            All Levels Unlocked
-          </span>
-        </div>
+      {/* ✅ Modular Level Selector Component */}
+      <LevelSelector
+        currentStrand={currentStrand}
+        strandQuestionData={strandQuestionData}
+        enableEnhancedValidation={enableEnhancedValidation}
+        validationResults={validationResults}
+        onStartQuestionBlock={startQuestionBlock}
+        getBlockStatus={getBlockStatus}
+        debugMode={debugMode}
+      />
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-          {([2, 4, 6, 8] as const).map(level => {
-            const status = getBlockStatus(level);
-            const block = strandQuestionData.blocks?.find((b: any) => b.level === level);
-            const totalQuestions = block?.questions?.length || 0;
-            const isCompleted = status === 'completed';
-            const colors = levelColors[level];
-            
-            return (
-              <motion.button
-                key={level}
-                onClick={() => startQuestionBlock(level)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={`p-3 rounded-lg border-2 font-bold transition-all duration-300 ${
-                  isCompleted ? colors.completed : colors.base
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="text-left">
-                    <div className="text-lg font-bold">Level {level}</div>
-                    <div className="text-xs opacity-90">
-                      {isCompleted ? 'Completed' : `${totalQuestions} questions`}
-                    </div>
-                  </div>
-                  <div className="text-2xl">
-                    {isCompleted ? '🏆' : level === 2 ? '🟢' : level === 4 ? '🔵' : level === 6 ? '🟣' : '🔴'}
-                  </div>
-                </div>
-              </motion.button>
-            );
-          })}
-        </div>
+      {/* ✅ Modular Tips Component (using real data) */}
+      {Object.keys(tips).length > 0 && (
+        <StrandTips
+          currentStrand={currentStrand}
+          experimentChoice={experimentChoice}
+          collapsed={tipsCollapsed}
+          onToggleCollapsed={(collapsed: boolean) => setTipsCollapsed(collapsed)}
+        />
+      )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-gray-600 border-t border-gray-200 pt-3">
-          <div><strong>Level 2:</strong> Basic recall and simple understanding</div>
-          <div><strong>Level 4:</strong> Application in familiar contexts</div>
-          <div><strong>Level 6:</strong> Analysis and evaluation in new contexts</div>
-          <div><strong>Level 8:</strong> Synthesis and creation of understanding</div>
-        </div>
-      </div>
+      {/* ✅ Modular Suggestions Component (using real data) */}
+      {currentSuggestions.length > 0 && (
+        <Suggestions
+          currentStrand={currentStrand}
+          experimentChoice={experimentChoice}
+          suggestions={currentSuggestions}
+          collapsed={suggestionsCollapsed}
+          onToggleCollapsed={(collapsed: boolean) => setSuggestionsCollapsed(collapsed)}
+        />
+      )}
 
-      {/* ✅ Active Question Block */}
+      {/* ✅ Active Question Block (keep existing logic) */}
       <AnimatePresence mode="wait">
         {activeQuestionBlock && (
           <motion.div
@@ -341,6 +365,31 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ✅ Results Section (if needed) */}
+      {showResults && insights && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-green-50 rounded-lg p-6 border border-green-200"
+        >
+          <h4 className="text-lg font-bold text-green-800 mb-3 flex items-center gap-2">
+            🌟 Excellent Progress!
+            <span className="ml-3 text-lg">🌟</span>
+          </h4>
+          <p className="text-green-700 mb-4 text-lg">
+            Great work! You can try the next level or retry this one for an even better score.
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowResults(false)}
+              className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium"
+            >
+              Continue Learning
+            </button>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 };

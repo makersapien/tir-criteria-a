@@ -7,10 +7,11 @@ const StrandTips: React.FC<StrandTipsProps> = ({
   currentStrand,
   experimentChoice,
   currentLevel,
-  collapsed = true,
+  collapsed = false, // Default to expanded for better UX
   onToggleCollapsed
 }) => {
   const [localCollapsed, setLocalCollapsed] = useState(collapsed);
+  const [activeTipLevel, setActiveTipLevel] = useState<2 | 4 | 6 | 8>(2);
 
   const isCollapsed = onToggleCollapsed ? collapsed : localCollapsed;
   const toggleCollapsed = onToggleCollapsed || setLocalCollapsed;
@@ -30,162 +31,180 @@ const StrandTips: React.FC<StrandTipsProps> = ({
   const tipLevels = [2, 4, 6, 8].filter(level => {
     const levelKey = `level${level}`;
     return tips[levelKey] && (!currentLevel || level <= currentLevel);
-  });
+  }) as (2 | 4 | 6 | 8)[];
 
   if (tipLevels.length === 0) {
     return null;
   }
 
-  const getTipColor = (level: number) => {
-    const colors: Record<number, string> = {
-      2: 'bg-green-50 border-green-200 text-green-800',
-      4: 'bg-blue-50 border-blue-200 text-blue-800',
-      6: 'bg-purple-50 border-purple-200 text-purple-800',
-      8: 'bg-rose-50 border-rose-200 text-rose-800'
+  // ✅ NEW: Get level colors for consistent theming
+  const getLevelColors = (level: 2 | 4 | 6 | 8) => {
+    const colorMap = {
+      2: { bg: 'bg-emerald-500', text: 'text-emerald-700', light: 'bg-emerald-50', border: 'border-emerald-300' },
+      4: { bg: 'bg-blue-500', text: 'text-blue-700', light: 'bg-blue-50', border: 'border-blue-300' },
+      6: { bg: 'bg-purple-500', text: 'text-purple-700', light: 'bg-purple-50', border: 'border-purple-300' },
+      8: { bg: 'bg-rose-500', text: 'text-rose-700', light: 'bg-rose-50', border: 'border-rose-300' }
     };
-    return colors[level] || 'bg-gray-50 border-gray-200 text-gray-800';
+    return colorMap[level];
   };
 
-  const getLevelIcon = (level: number) => {
-    const icons: Record<number, string> = {
-      2: '🌱',
-      4: '🔧',
-      6: '⚗️',
-      8: '🏆'
-    };
-    return icons[level] || '💡';
-  };
+  // Set default active level to first available
+  React.useEffect(() => {
+    if (tipLevels.length > 0 && !tipLevels.includes(activeTipLevel)) {
+      setActiveTipLevel(tipLevels[0]);
+    }
+  }, [tipLevels, activeTipLevel]);
+
+  const activeTipData = tips[`level${activeTipLevel}`] as any;
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-      <div 
-        className="p-4 border-b border-gray-100 cursor-pointer flex items-center justify-between hover:bg-gray-50 transition-colors"
-        onClick={() => toggleCollapsed(!isCollapsed)}
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
-            💡
+    <div className="bg-white rounded-lg border border-yellow-200 shadow-sm mb-6">
+      {/* ✅ NEW: Header with horizontal tabs */}
+      <div className="px-4 py-3 border-b border-yellow-200 bg-gradient-to-r from-yellow-50 to-amber-50">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">💡</span>
+            <h3 className="font-semibold text-yellow-800">Tips for Success</h3>
           </div>
-          <div>
-            <h3 className="font-semibold text-gray-800">
-              Tips & Guidance - Strand {currentStrand}
-            </h3>
-            <p className="text-sm text-gray-600">
-              {tipLevels.length} level{tipLevels.length !== 1 ? 's' : ''} of guidance available
-              {currentLevel && ` (Level ${currentLevel} and below)`}
-            </p>
-          </div>
+          
+          {/* Optional collapse toggle */}
+          <button
+            onClick={() => toggleCollapsed(!isCollapsed)}
+            className="text-xs bg-yellow-100 hover:bg-yellow-200 text-yellow-700 px-2 py-1 rounded transition-colors"
+          >
+            {isCollapsed ? 'Show Tips' : 'Hide Tips'}
+          </button>
         </div>
         
-        <motion.div
-          animate={{ rotate: isCollapsed ? 0 : 180 }}
-          transition={{ duration: 0.2 }}
-          className="text-gray-400"
-        >
-          ▼
-        </motion.div>
+        {/* ✅ NEW: Horizontal Tabs */}
+        {!isCollapsed && (
+          <div className="flex gap-1">
+            {tipLevels.map((level) => {
+              const colors = getLevelColors(level);
+              const isActive = activeTipLevel === level;
+              
+              return (
+                <button
+                  key={level}
+                  onClick={() => setActiveTipLevel(level)}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                    isActive 
+                      ? `${colors.bg} text-white shadow-sm` 
+                      : `bg-white text-gray-600 hover:${colors.light} hover:${colors.text} border border-gray-200`
+                  }`}
+                >
+                  Level {level}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
+      {/* ✅ NEW: Single Active Tip Content Panel */}
       <AnimatePresence>
-        {!isCollapsed && (
+        {!isCollapsed && activeTipData && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="overflow-hidden"
+            key={activeTipLevel}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="p-4"
           >
-            <div className="p-4 space-y-4">
-              {tipLevels.map((level, index) => {
-                const levelKey = `level${level}`;
-                const tipData = tips[levelKey] as any;
-                
-                if (!tipData) return null;
-
-                return (
-                  <motion.div
-                    key={level}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className={`p-4 rounded-lg border-l-4 ${getTipColor(level)}`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <span className="text-xl">{getLevelIcon(level)}</span>
-                      
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="font-bold text-sm">Level {level}</span>
-                          <span className="text-xs bg-white/50 px-2 py-1 rounded">
-                            {level === 2 ? 'Foundation' : level === 4 ? 'Application' : level === 6 ? 'Analysis' : 'Mastery'}
-                          </span>
-                        </div>
-
-                        {tipData.tip && (
-                          <div className="mb-3">
-                            <p className="text-sm font-medium mb-1">Key Guidance:</p>
-                            <div 
-                              className="text-sm opacity-90"
-                              dangerouslySetInnerHTML={{ __html: tipData.tip }}
-                            />
-                          </div>
-                        )}
-
-                        {tipData.commandTerms && Array.isArray(tipData.commandTerms) && tipData.commandTerms.length > 0 && (
-                          <div className="mb-2">
-                            <p className="text-xs font-medium mb-1">Command Terms:</p>
-                            <div className="flex flex-wrap gap-1">
-                              {tipData.commandTerms.map((term: string, idx: number) => (
-                                <span
-                                  key={idx}
-                                  className="px-2 py-1 bg-white/60 rounded text-xs font-medium"
-                                >
-                                  {term}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {tipData.guidance && (
-                          <div className="mb-2">
-                            <p className="text-xs font-medium mb-1">Strategy:</p>
-                            <p className="text-xs opacity-80">{tipData.guidance}</p>
-                          </div>
-                        )}
-
-                        {tipData.examples && Array.isArray(tipData.examples) && tipData.examples.length > 0 && (
-                          <div>
-                            <p className="text-xs font-medium mb-1">Examples:</p>
-                            <ul className="list-disc list-inside text-xs opacity-80 space-y-1">
-                              {tipData.examples.slice(0, 2).map((example: string, idx: number) => (
-                                <li key={idx}>{example}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-
-            <div className="px-4 pb-4">
-              <div className="pt-3 border-t border-gray-100">
-                <div className="flex items-center justify-between text-xs text-gray-600">
-                  <span>
-                    {tipLevels.length} level{tipLevels.length !== 1 ? 's' : ''} of guidance
+            <div className={`p-4 rounded-lg ${getLevelColors(activeTipLevel).light} ${getLevelColors(activeTipLevel).border} border`}>
+              {/* Level header */}
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xl">
+                  {activeTipLevel === 2 ? '🌱' : activeTipLevel === 4 ? '🔧' : activeTipLevel === 6 ? '⚗️' : '🏆'}
+                </span>
+                <div>
+                  <span className={`font-bold text-sm ${getLevelColors(activeTipLevel).text}`}>
+                    Level {activeTipLevel}
                   </span>
-                  <span>
-                    Experiment: {experimentChoice === 'critical-angle' ? 'Critical Angle' : 'Fiber Optics'}
+                  <span className="ml-2 text-xs bg-white/60 px-2 py-1 rounded">
+                    {activeTipLevel === 2 ? 'Foundation' : 
+                     activeTipLevel === 4 ? 'Application' : 
+                     activeTipLevel === 6 ? 'Analysis' : 'Mastery'}
                   </span>
                 </div>
               </div>
+
+              {/* Tip content */}
+              {activeTipData.tip && (
+                <div className="mb-3">
+                  <p className={`text-sm font-medium mb-2 ${getLevelColors(activeTipLevel).text}`}>
+                    Key Guidance:
+                  </p>
+                  <div 
+                    className="text-sm text-gray-700 leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: activeTipData.tip }}
+                  />
+                </div>
+              )}
+
+              {/* Command terms */}
+              {activeTipData.commandTerms && Array.isArray(activeTipData.commandTerms) && activeTipData.commandTerms.length > 0 && (
+                <div className="mb-3">
+                  <p className={`text-xs font-medium mb-2 ${getLevelColors(activeTipLevel).text}`}>
+                    Command Terms:
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {activeTipData.commandTerms.map((term: string, idx: number) => (
+                      <span
+                        key={idx}
+                        className="px-2 py-1 bg-white rounded text-xs font-medium border"
+                      >
+                        {term}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Strategy */}
+              {activeTipData.guidance && (
+                <div className="mb-3">
+                  <p className={`text-xs font-medium mb-2 ${getLevelColors(activeTipLevel).text}`}>
+                    Strategy:
+                  </p>
+                  <p className="text-xs text-gray-600">{activeTipData.guidance}</p>
+                </div>
+              )}
+
+              {/* Examples */}
+              {activeTipData.examples && Array.isArray(activeTipData.examples) && activeTipData.examples.length > 0 && (
+                <div>
+                  <p className={`text-xs font-medium mb-2 ${getLevelColors(activeTipLevel).text}`}>
+                    Examples:
+                  </p>
+                  <ul className="list-disc list-inside text-xs text-gray-600 space-y-1">
+                    {activeTipData.examples.slice(0, 2).map((example: string, idx: number) => (
+                      <li key={idx}>{example}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ✅ KEEP: Footer info (when expanded) */}
+      {!isCollapsed && (
+        <div className="px-4 pb-4">
+          <div className="pt-3 border-t border-gray-100">
+            <div className="flex items-center justify-between text-xs text-gray-600">
+              <span>
+                {tipLevels.length} level{tipLevels.length !== 1 ? 's' : ''} of guidance
+              </span>
+              <span>
+                {experimentChoice === 'critical-angle' ? 'Critical Angle' : 'Fiber Optics'} • Strand {currentStrand}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

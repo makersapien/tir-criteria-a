@@ -1,5 +1,5 @@
+// ===== WORLD-CLASS UI: YourResponseSection - Using Modular Components =====
 // src/components/YourResponse/index.tsx
-// 🎯 FIXED MODULAR VERSION - No TypeScript errors
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -88,7 +88,7 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
   const [validationResults, setValidationResults] = useState<Record<string, { isValid: boolean; errors: string[]; warnings?: string[]; }>>({});
 
   // ✅ UI state for collapsible sections
-  const [tipsCollapsed, setTipsCollapsed] = useState(true);
+  const [tipsCollapsed, setTipsCollapsed] = useState(false); // Start with tips expanded
   const [suggestionsCollapsed, setSuggestionsCollapsed] = useState(true);
 
   // ✅ Keep existing sync hook
@@ -138,7 +138,6 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
   }, [currentStrand, experimentChoice, useUniversalRenderer, enableEnhancedValidation]);
 
   // ✅ Keep existing handlers
-  // ✅ FIXED: Correct handler signature for QuestionBlock.tsx component
   const handleBlockCompletion = async (blockId: string, responses: any[], averageScore: number) => {
     try {
       const level = parseInt(blockId.split('level')[1]) || 2;
@@ -257,7 +256,10 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-        <span className="ml-3 text-purple-600 font-medium">Loading questions...</span>
+        <span className="ml-3 text-purple-600 font-medium">
+          Loading interactive questions...
+          {useUniversalRenderer && <span className="text-xs block text-purple-500">✨ Enhanced mode</span>}
+        </span>
       </div>
     );
   }
@@ -269,23 +271,6 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* ✅ Debug info (modular) */}
-      {debugMode && (
-        <div className="p-3 bg-blue-50 border border-blue-200 rounded text-xs">
-          <div className="font-bold text-blue-800 mb-1">🔧 MODULAR VERSION STATUS:</div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            <div>✅ Header Module: Extracted</div>
-            <div>✅ Level Selector: Extracted</div>
-            <div>✅ Tips Module: Using real data</div>
-            <div>✅ Suggestions: Using real data</div>
-            <div>Progress: {overallProgress}/8</div>
-            <div>Mode: {renderingMode}</div>
-            <div>Sync: {syncStatus}</div>
-            <div>Tips Available: {Object.keys(tips).length > 0 ? 'Yes' : 'No'}</div>
-          </div>
-        </div>
-      )}
-
       {/* ✅ Modular Header Component */}
       <YourResponseHeader
         currentStrand={currentStrand}
@@ -300,6 +285,16 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
         debugMode={debugMode}
       />
 
+      {/* ✅ Modular Tips Component (using real data) - HORIZONTAL TABS */}
+      {Object.keys(tips).length > 0 && (
+        <StrandTips
+          currentStrand={currentStrand}
+          experimentChoice={experimentChoice}
+          collapsed={tipsCollapsed}
+          onToggleCollapsed={(collapsed: boolean) => setTipsCollapsed(collapsed)}
+        />
+      )}
+
       {/* ✅ Modular Level Selector Component */}
       <LevelSelector
         currentStrand={currentStrand}
@@ -310,16 +305,6 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
         getBlockStatus={getBlockStatus}
         debugMode={debugMode}
       />
-
-      {/* ✅ Modular Tips Component (using real data) */}
-      {Object.keys(tips).length > 0 && (
-        <StrandTips
-          currentStrand={currentStrand}
-          experimentChoice={experimentChoice}
-          collapsed={tipsCollapsed}
-          onToggleCollapsed={(collapsed: boolean) => setTipsCollapsed(collapsed)}
-        />
-      )}
 
       {/* ✅ Modular Suggestions Component (using real data) */}
       {currentSuggestions.length > 0 && (
@@ -332,7 +317,7 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
         />
       )}
 
-      {/* ✅ Active Question Block (keep existing logic) */}
+      {/* ✅ Active Question Block (keep existing logic) - ENHANCED FOCUS AREA */}
       <AnimatePresence mode="wait">
         {activeQuestionBlock && (
           <motion.div
@@ -340,14 +325,29 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
+            className="relative"
           >
-            <div className="relative">
-              <button
-                onClick={() => setActiveQuestionBlock(null)}
-                className="absolute top-4 right-4 z-10 p-2 bg-gray-200 hover:bg-gray-300 rounded-full text-gray-600 hover:text-gray-800 transition-colors"
-              >
-                ✕
-              </button>
+            {/* Enhanced close button */}
+            <button
+              onClick={() => setActiveQuestionBlock(null)}
+              className="absolute top-4 right-4 z-10 p-2 bg-red-100 hover:bg-red-200 rounded-full text-red-600 hover:text-red-800 transition-colors shadow-md"
+              title="Close questions"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            {/* Student Focus Area - Enhanced visual treatment */}
+            <div className="bg-white rounded-xl border-4 border-purple-300 shadow-xl overflow-hidden">
+              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4">
+                <h3 className="text-lg font-bold">
+                  🎯 Level {activeQuestionBlock.level} Questions - Active Learning Zone
+                </h3>
+                <p className="text-purple-100 text-sm">
+                  Complete the questions below to improve your understanding
+                </p>
+              </div>
               
               <QuestionBlockComponent
                 block={activeQuestionBlock}
@@ -388,6 +388,31 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
             </button>
           </div>
         </motion.div>
+      )}
+
+      {/* ✅ DEBUG INFO - Completely hidden from students, collapsible in development */}
+      {debugMode && (
+        <details className="mt-4">
+          <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700 p-2 bg-gray-50 rounded">
+            🔧 Developer Debug Information
+          </summary>
+          <div className="p-3 bg-gray-50 border border-gray-200 rounded text-xs text-gray-600 font-mono mt-1">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <div>✅ Header Module: Extracted</div>
+              <div>✅ Level Selector: Extracted</div>
+              <div>✅ Tips Module: Using real data (Horizontal)</div>
+              <div>✅ Suggestions: Using real data</div>
+              <div>Current Strand: {currentStrand}</div>
+              <div>Overall Progress: {overallProgress}/8</div>
+              <div>Sync Status: {syncStatus}</div>
+              <div>Rendering Mode: {renderingMode}</div>
+              <div>Universal Renderer: {useUniversalRenderer ? 'Enabled' : 'Disabled'}</div>
+              <div>Enhanced Validation: {enableEnhancedValidation ? 'On' : 'Off'}</div>
+              <div>Performance Tracking: {showPerformanceAnalytics ? 'On' : 'Off'}</div>
+              <div>Tips Available: {Object.keys(tips).length > 0 ? 'Yes' : 'No'}</div>
+            </div>
+          </div>
+        </details>
       )}
     </div>
   );

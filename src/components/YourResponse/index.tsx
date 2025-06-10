@@ -138,7 +138,8 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
   }, [currentStrand, experimentChoice, useUniversalRenderer, enableEnhancedValidation]);
 
   // ✅ Keep existing handlers
-  const handleBlockCompletion = async (blockId: string, responses: any[], averageScore: number) => {
+// ✅ FIXED: handleBlockCompletion function with correct saveResponse usage
+const handleBlockCompletion = async (blockId: string, responses: any[], averageScore: number) => {
     try {
       const level = parseInt(blockId.split('level')[1]) || 2;
       
@@ -156,9 +157,24 @@ const YourResponseSection: React.FC<YourResponseSectionProps> = ({
           colors: ['#10b981', '#34d399', '#6ee7b7']
         });
       }
-
+  
+      // ✅ FIXED: saveResponse expects individual QuestionResponse objects, not bulk data
       if (autoSyncEnabled) {
-        await saveResponse(blockId, { responses, score: averageScore, level, timestamp: new Date() });
+        // Save each individual response using the correct signature
+        for (const response of responses) {
+          // Ensure response matches QuestionResponse interface
+          const questionResponse = {
+            questionId: response.questionId || `${blockId}_${response.id || 'question'}`,
+            type: response.type || 'unknown',
+            answer: response.answer,
+            isCorrect: response.isCorrect || false,
+            score: response.score || 0,
+            feedback: response.feedback || '',
+            timestamp: response.timestamp || new Date(),
+          };
+          
+          await saveResponse(questionResponse);
+        }
       }
       
     } catch (error) {

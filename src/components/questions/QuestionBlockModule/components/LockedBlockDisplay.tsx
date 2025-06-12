@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { QuestionBlock } from '../../../../utils/integrationFixes';
+import { QuestionBlock } from '../types/questionBlock';
 
 interface LockedBlockDisplayProps {
   block: QuestionBlock;

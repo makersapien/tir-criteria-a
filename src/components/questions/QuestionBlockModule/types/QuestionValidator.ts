@@ -1,8 +1,8 @@
 // 📁 src/components/questions/QuestionBlock/services/validation/QuestionValidator.ts
 // =====================================
 // Absorbed from UniversalQuestionRenderer.tsx
-import { Question } from '../types/questionBlock';
-import { ValidationResult, ValidationConfig } from '../types/validation';
+import { Question } from './questionBlock';
+import { ValidationResult, ValidationConfig } from './validation';
 
 export class QuestionValidator {
   // 🎯 Basic validation (absorbed from multiple files)

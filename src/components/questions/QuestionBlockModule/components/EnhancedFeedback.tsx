@@ -3,13 +3,13 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Question, QuestionResponse } from '../../../../utils/integrationFixes';
+import { Question, QuestionResponse } from '../types/questionBlock';
 
 interface EnhancedFeedbackProps {
   currentResponse: QuestionResponse | null;
   currentQuestion: Question;
   showFeedback: boolean;
-  isLastQuestion: boolean;
+  isLastQuestion: boolean;  // ✅ Should be boolean, not function
   onContinue: () => void;
   disabled?: boolean;
 }

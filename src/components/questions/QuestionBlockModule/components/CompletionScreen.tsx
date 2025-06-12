@@ -3,8 +3,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { QuestionBlock } from '../types/questionBlock';
-import { QuestionResponse } from '../types/questionBlock';
+import { QuestionBlock, QuestionResponse } from '../types/questionBlock';
 
 interface CompletionScreenProps {
   block: QuestionBlock;

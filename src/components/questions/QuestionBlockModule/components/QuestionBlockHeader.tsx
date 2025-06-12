@@ -3,8 +3,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { QuestionBlock } from '../types/questionBlock';
-import { QuestionResponse } from '../types/questionBlock';
+import { QuestionBlock, QuestionResponse } from '../types/questionBlock';
 
 interface QuestionBlockHeaderProps {
   block: QuestionBlock;
@@ -14,8 +13,8 @@ interface QuestionBlockHeaderProps {
   renderingMode: 'individual' | 'universal' | 'error';
   syncStatus?: 'idle' | 'saving' | 'success' | 'error';
   experimentChoice?: string;
-  getCurrentAverageScore: () => number;
-  getCompletionRate: () => number;
+  getCurrentAverageScore: () => number;  // ✅ Function that returns number
+  getCompletionRate: () => number;       // ✅ Function that returns number
   onModeToggle?: () => void;
   enableDevControls?: boolean;
 }

@@ -5,18 +5,24 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 
-// ✅ CORRECT - Single import from the module
-import {
+// ✅ Phase 1: Modular Hooks & Services (DONE) - Using barrel exports
+import { 
   useQuestionBlockState,
-  useQuestionBlockLogic,
-  useQuestionBlockEffects,
+  useQuestionBlockLogic, 
+  useQuestionBlockEffects
+} from './QuestionBlockModule/hooks';
+
+// ✅ Phase 2: Extracted UI Components (NEW) - Using barrel exports
+import {
   LockedBlockDisplay,
   CompletionScreen,
   QuestionBlockHeader,
   QuestionContainer,
-  EnhancedFeedback,
-  QuestionBlock as QuestionBlockType
-} from './QuestionBlock';  // ← Points to QuestionBlock/index.ts
+  EnhancedFeedback
+} from './QuestionBlockModule/components';
+
+// Types - Using barrel exports
+import { QuestionBlock as QuestionBlockType } from './QuestionBlockModule/types';
 
 interface QuestionBlockProps {
   block: QuestionBlockType;
@@ -73,6 +79,11 @@ const QuestionBlock: React.FC<QuestionBlockProps> = (props) => {
     return 'text-red-600';
   };
 
+  // ✅ FIXED: Create wrapper functions that call the selector functions with proper arguments
+  const getCurrentAverageScore = () => selectors.averageScore();
+  const getCompletionRate = () => selectors.completionRate(block.questions.length);
+  const isLastQuestion = selectors.isLastQuestion(block.questions.length);
+
   // ✅ PHASE 2: Pure Component Orchestration (86% size reduction!)
   
   // 🔒 Locked State
@@ -119,8 +130,8 @@ const QuestionBlock: React.FC<QuestionBlockProps> = (props) => {
         renderingMode={state.renderingMode}
         syncStatus={props.syncStatus}
         experimentChoice={props.experimentChoice}
-        getCurrentAverageScore={selectors.getCurrentAverageScore}
-        getCompletionRate={selectors.getCompletionRate}
+        getCurrentAverageScore={getCurrentAverageScore}
+        getCompletionRate={getCompletionRate}
         onModeToggle={logic.handleRenderingModeToggle}
         enableDevControls={process.env.NODE_ENV === 'development'}
       />
@@ -145,7 +156,7 @@ const QuestionBlock: React.FC<QuestionBlockProps> = (props) => {
         currentResponse={state.responses[state.currentQuestionIndex]}
         currentQuestion={logic.currentQuestion}
         showFeedback={state.showFeedback}
-        isLastQuestion={selectors.isLastQuestion}
+        isLastQuestion={isLastQuestion}
         onContinue={logic.handleContinue}
         disabled={false}
       />
@@ -155,7 +166,7 @@ const QuestionBlock: React.FC<QuestionBlockProps> = (props) => {
         {state.showFeedback && state.responses[state.currentQuestionIndex] && (
           <span>
             Question {state.currentQuestionIndex + 1} of {block.questions.length} {state.responses[state.currentQuestionIndex].isCorrect ? 'answered correctly' : 'answered incorrectly'}. 
-            {!selectors.isLastQuestion ? 'Moving to next question.' : 'Completing level.'}
+            {!isLastQuestion ? 'Moving to next question.' : 'Completing level.'}
           </span>
         )}
       </div>

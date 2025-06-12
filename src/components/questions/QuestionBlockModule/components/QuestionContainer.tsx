@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Question, QuestionResponse } from '../../../../utils/integrationFixes';
+import { Question, QuestionResponse } from '../types/questionBlock';
 
 // Import individual question components (adjust paths as needed)
 import { MCQComponent, FillBlankComponent, MatchClickComponent, ShortAnswerComponent } from '../../questionImplementations';

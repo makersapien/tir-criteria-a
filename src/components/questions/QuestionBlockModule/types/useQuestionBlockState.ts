@@ -1,5 +1,5 @@
 import { useState, useReducer, useMemo } from 'react';
-import { QuestionResponse } from '../types/questionBlock';
+import { QuestionResponse } from './questionBlock';
 
 // 🎯 State shape - consolidated from 15+ useState hooks
 interface QuestionBlockState {

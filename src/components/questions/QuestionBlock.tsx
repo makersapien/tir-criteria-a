@@ -1,18 +1,17 @@
 // src/components/questions/QuestionBlock.tsx
-// 🎯 PHASE 2 COMPLETE: Clean Orchestrator Component (75 LOC vs 526 LOC = 86% reduction)
+// 🎯 RESTORED: Clean Orchestrator Component with FIXED modular hooks
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import confetti from 'canvas-confetti';
 
-// ✅ Phase 1: Modular Hooks & Services (DONE) - Using barrel exports
+// ✅ Restored: Modular Hooks & Services - WITH FIXES
 import { 
   useQuestionBlockState,
   useQuestionBlockLogic, 
   useQuestionBlockEffects
 } from './QuestionBlockModule/hooks';
 
-// ✅ Phase 2: Extracted UI Components (NEW) - Using barrel exports
+// ✅ Restored: Extracted UI Components
 import {
   LockedBlockDisplay,
   CompletionScreen,
@@ -21,7 +20,7 @@ import {
   EnhancedFeedback
 } from './QuestionBlockModule/components';
 
-// Types - Using barrel exports
+// ✅ Restored: Types
 import { QuestionBlock as QuestionBlockType } from './QuestionBlockModule/types';
 
 interface QuestionBlockProps {
@@ -42,16 +41,16 @@ interface QuestionBlockProps {
 const QuestionBlock: React.FC<QuestionBlockProps> = (props) => {
   const { block } = props;
 
-  // ✅ Phase 1: State Management (Modularized)
-  const { state, actions, selectors } = useQuestionBlockState();
+  // ✅ FIXED: State Management with proper dispatch handling
+  const { state, actions, selectors, dispatch } = useQuestionBlockState();
   
-  // ✅ Phase 1: Business Logic (Modularized)  
+  // ✅ FIXED: Business Logic with dispatch passed correctly  
   const logic = useQuestionBlockLogic(state, actions, selectors, props);
   
-  // ✅ Phase 1: Side Effects (Modularized)
-  useQuestionBlockEffects(state, actions, props);
+  // ✅ FIXED: Side Effects with dispatch passed correctly
+  useQuestionBlockEffects(state, actions, dispatch, props);
 
-  // ✅ Helper Functions (kept for component communication)
+  // ✅ Helper Functions (restored for component communication)
   const getLevelColor = (level: number) => {
     const colors = {
       2: 'from-purple-200 to-purple-300',
@@ -84,7 +83,7 @@ const QuestionBlock: React.FC<QuestionBlockProps> = (props) => {
   const getCompletionRate = () => selectors.completionRate(block.questions.length);
   const isLastQuestion = selectors.isLastQuestion(block.questions.length);
 
-  // ✅ PHASE 2: Pure Component Orchestration (86% size reduction!)
+  // ✅ RESTORED: Clean Component Orchestration
   
   // 🔒 Locked State
   if (!block.unlocked) {

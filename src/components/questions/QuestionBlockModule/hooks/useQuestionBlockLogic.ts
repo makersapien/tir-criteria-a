@@ -1,8 +1,10 @@
+// =====================================
+// 📁 src/components/questions/QuestionBlock/hooks/useQuestionBlockLogic.ts
+// =====================================
 import { useCallback } from 'react';
 import confetti from 'canvas-confetti';
 import { QuestionResponse } from '../types/questionBlock';
-import { ResponseAdapter } from '../services/adapters/ResponseAdapter';
-import { PerformanceTracker } from '../services/analytics/PerformanceTracker';
+import { QuestionBlockState, QuestionBlockAction } from './useQuestionBlockState';
 
 interface UseQuestionBlockLogicProps {
   block: any;
@@ -11,7 +13,7 @@ interface UseQuestionBlockLogicProps {
   onProgressUpdate?: (blockId: string, currentQuestion: number, totalQuestions: number, currentScore: number) => void;
 }
 
-// ✅ FIXED: Local feedback generator to replace private method
+// ✅ Local feedback generator to replace external dependencies
 const generateFeedback = (isCorrect: boolean, score: number, level: number): string => {
   if (isCorrect) {
     const excellent = [
@@ -49,49 +51,40 @@ const generateFeedback = (isCorrect: boolean, score: number, level: number): str
 };
 
 export const useQuestionBlockLogic = (
-  state: any,
-  dispatch: any,
+  state: QuestionBlockState,
+  actions: any,
   selectors: any,
   props: UseQuestionBlockLogicProps
 ) => {
   const currentQuestion = selectors.currentQuestion(props.block.questions);
   const isLastQuestion = selectors.isLastQuestion(props.block.questions.length);
 
-  // 🎯 Enhanced response handler (absorbed best practices)
+  // 🎯 Enhanced response handler with performance tracking
   const handleQuestionResponse = useCallback((
     questionId: string, 
     answer: any, 
     isCorrect: boolean, 
     score: number
   ) => {
-    const endTime = performance.now();
+    const endTime = Date.now();
     const startTime = state.questionStartTime?.getTime() || endTime - 1000;
     
-    // 🎯 Track performance metrics
-    const metrics = PerformanceTracker.trackPerformance(
-      questionId,
-      startTime,
-      endTime,
-      isCorrect,
-      state.attempts + 1
-    );
-
-    // 🎯 Create response object - FIXED: Using local feedback generator
+    // 🎯 Create response object with enhanced feedback
     const response: QuestionResponse = {
       questionId,
       type: currentQuestion.type,
       answer,
       isCorrect,
       score,
-      feedback: generateFeedback(isCorrect, score, currentQuestion.level), // ✅ FIXED
+      feedback: generateFeedback(isCorrect, score, currentQuestion.level || 8),
       timestamp: new Date(),
       timeSpent: endTime - startTime
     };
 
-    // 🎯 Update state through reducer
-    dispatch({ type: 'ADD_RESPONSE', payload: response });
+    // 🎯 Update state through actions
+    actions.addResponse(response);
 
-    // 🎯 Celebration system (absorbed from original)
+    // 🎯 Celebration system with different effects based on performance
     if (isCorrect) {
       if (score >= 7) {
         confetti({
@@ -110,7 +103,7 @@ export const useQuestionBlockLogic = (
       }
     }
 
-    // 🎯 Progress tracking
+    // 🎯 Progress tracking - notify parent component
     const currentScore = selectors.averageScore();
     props.onProgressUpdate?.(
       props.block.id, 
@@ -118,33 +111,27 @@ export const useQuestionBlockLogic = (
       props.block.questions.length, 
       currentScore
     );
+  }, [state, actions, selectors, currentQuestion, props]);
 
-    // 🎯 Continue button timing (absorbed from original)
-    const minimumReadTime = isCorrect ? 3000 : 5000;
-    setTimeout(() => {
-      dispatch({ 
-        type: 'SET_CONTINUE_STATE', 
-        payload: { canContinue: true, showButton: true } 
-      });
-    }, minimumReadTime);
-  }, [state, dispatch, selectors, currentQuestion, props]);
-
-  // 🎯 Continue handler (absorbed and enhanced)
+  // 🎯 Continue handler with completion logic
   const handleContinue = useCallback(() => {
     if (!state.canContinue) return;
 
-    dispatch({ type: 'SET_FEEDBACK', payload: { show: false } });
-    dispatch({ type: 'SET_CONTINUE_STATE', payload: { canContinue: false, showButton: false } });
+    // Reset feedback state
+    actions.setFeedback(false);
+    actions.setContinueState(false, false);
 
     if (isLastQuestion) {
-      const totalScore = state.responses.reduce((sum: number, r: QuestionResponse) => 
-        sum + (r?.score || 0), 0);
-      const averageScore = totalScore / state.responses.length;
+      // Calculate final scores
+      const validResponses = state.responses.filter(r => r);
+      const totalScore = validResponses.reduce((sum, r) => sum + r.score, 0);
+      const averageScore = validResponses.length > 0 ? totalScore / validResponses.length : 0;
       
-      dispatch({ type: 'SET_COMPLETION', payload: true });
+      // Mark as completed
+      actions.setCompletion(true);
       props.onComplete(props.block.id, state.responses, averageScore);
       
-      // 🎯 Completion celebration
+      // 🎯 Completion celebration with enhanced effects
       if (averageScore >= 7) {
         confetti({
           particleCount: 200,
@@ -162,23 +149,24 @@ export const useQuestionBlockLogic = (
         if (nextLevel) props.onUnlock(nextLevel);
       }
     } else {
-      dispatch({ type: 'SET_CURRENT_QUESTION', payload: state.currentQuestionIndex + 1 });
+      // Move to next question
+      actions.setCurrentQuestion(state.currentQuestionIndex + 1);
     }
-  }, [state, dispatch, isLastQuestion, props]);
+  }, [state, actions, isLastQuestion, selectors, props]);
 
-  // 🎯 Reset handler
+  // 🎯 Reset handler - completely reset the block
   const handleReset = useCallback(() => {
-    dispatch({ type: 'RESET_BLOCK' });
-  }, [dispatch]);
+    actions.resetBlock();
+  }, [actions]);
 
-  // 🎯 Rendering mode toggle handler (for development)
+  // 🎯 Rendering mode toggle handler (for development/testing)
   const handleRenderingModeToggle = useCallback(() => {
     const currentMode = state.renderingMode || 'individual';
     const newMode = currentMode === 'universal' ? 'individual' : 'universal';
-    dispatch({ type: 'SET_RENDERING_MODE', payload: newMode });
-  }, [state.renderingMode, dispatch]);
+    actions.setRenderingMode(newMode);
+  }, [state.renderingMode, actions]);
 
-  // 🎯 Next level handler
+  // 🎯 Next level handler (for completion screen)
   const handleNext = useCallback(() => {
     if (props.onUnlock) {
       const nextLevel = props.block.level === 2 ? 4 : 
@@ -188,13 +176,56 @@ export const useQuestionBlockLogic = (
     }
   }, [props]);
 
+  // 🎯 Advanced navigation helpers
+  const handlePreviousQuestion = useCallback(() => {
+    if (state.currentQuestionIndex > 0) {
+      actions.setCurrentQuestion(state.currentQuestionIndex - 1);
+      actions.setFeedback(false);
+      actions.setContinueState(false, false);
+    }
+  }, [state.currentQuestionIndex, actions]);
+
+  const handleJumpToQuestion = useCallback((index: number) => {
+    if (index >= 0 && index < props.block.questions.length) {
+      actions.setCurrentQuestion(index);
+      actions.setFeedback(false);
+      actions.setContinueState(false, false);
+    }
+  }, [props.block.questions.length, actions]);
+
+  // 🎯 Performance analysis helpers
+  const getPerformanceSummary = useCallback(() => {
+    const validResponses = state.responses.filter(r => r);
+    const correctCount = validResponses.filter(r => r.isCorrect).length;
+    const totalTime = validResponses.reduce((sum, r) => sum + (r.timeSpent || 0), 0);
+    
+    return {
+      questionsAnswered: validResponses.length,
+      correctAnswers: correctCount,
+      accuracy: validResponses.length > 0 ? (correctCount / validResponses.length) * 100 : 0,
+      averageScore: selectors.averageScore(),
+      totalTime,
+      averageTimePerQuestion: validResponses.length > 0 ? totalTime / validResponses.length : 0
+    };
+  }, [state.responses, selectors]);
+
   return {
+    // Core handlers
     handleQuestionResponse,
     handleContinue,
     handleReset,
     handleRenderingModeToggle,
     handleNext,
+    
+    // Navigation helpers
+    handlePreviousQuestion,
+    handleJumpToQuestion,
+    
+    // Current state
     currentQuestion,
-    isLastQuestion
+    isLastQuestion,
+    
+    // Performance analysis
+    getPerformanceSummary
   };
 };

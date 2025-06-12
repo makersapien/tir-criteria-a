@@ -17,18 +17,18 @@ export interface QuestionBlockState {
   startTime: Date | null;
   questionStartTime: Date | null;
   
-  // Enhanced feedback flow (absorbed from original QuestionBlock)
+  // Enhanced feedback flow
   feedbackAcknowledged: boolean;
   canContinue: boolean;
   showContinueButton: boolean;
   currentResponse: QuestionResponse | null;
   learningQuote: string;
   
-  // Rendering system (absorbed from UniversalQuestionRenderer)
+  // Rendering system
   renderingMode: 'individual' | 'universal' | 'error';
   validationResult: any;
   
-  // Performance tracking (NEW enhancement)
+  // Performance tracking
   sessionMetrics: {
     questionsAttempted: number;
     totalTime: number;
@@ -274,73 +274,10 @@ export const useQuestionBlockState = () => {
       dispatch({ type: 'RESET_BLOCK' })
   }), []);
   
-  // 🎯 Advanced state utilities
-  const utilities = useMemo(() => ({
-    // Navigation helpers
-    canGoNext: (totalQuestions: number) => 
-      state.currentQuestionIndex < totalQuestions - 1,
-    
-    canGoPrevious: () => 
-      state.currentQuestionIndex > 0,
-    
-    // Progress helpers
-    getQuestionStatus: (questionIndex: number) => {
-      if (questionIndex > state.currentQuestionIndex) return 'upcoming';
-      if (questionIndex === state.currentQuestionIndex) return 'current';
-      if (state.responses[questionIndex]) return 'completed';
-      return 'skipped';
-    },
-    
-    // Performance analysis
-    getPerformanceTrend: () => {
-      if (state.responses.length < 3) return 'insufficient-data';
-      
-      const recent = state.responses.slice(-3).filter(r => r);
-      const earlier = state.responses.slice(0, -3).filter(r => r);
-      
-      if (recent.length === 0 || earlier.length === 0) return 'insufficient-data';
-      
-      const recentAvg = recent.reduce((sum, r) => sum + r.score, 0) / recent.length;
-      const earlierAvg = earlier.reduce((sum, r) => sum + r.score, 0) / earlier.length;
-      
-      if (recentAvg > earlierAvg + 1) return 'improving';
-      if (recentAvg < earlierAvg - 1) return 'declining';
-      return 'stable';
-    },
-    
-    // Time management
-    getTimeSpentOnCurrentQuestion: () => {
-      if (!state.questionStartTime) return 0;
-      return Date.now() - state.questionStartTime.getTime();
-    },
-    
-    getTotalSessionTime: () => {
-      if (!state.startTime) return 0;
-      return Date.now() - state.startTime.getTime();
-    }
-  }), [state]);
-  
   return {
     state,
-    dispatch,
+    dispatch, // ✅ CRITICAL: Expose dispatch for effects hook
     selectors,
-    actions,
-    utilities
+    actions
   };
-};
-
-// 🎯 Hook for question-specific state
-export const useQuestionState = (questionIndex: number) => {
-  const { state, selectors } = useQuestionBlockState();
-  
-  return useMemo(() => ({
-    response: state.responses[questionIndex],
-    isCompleted: !!state.responses[questionIndex],
-    isCurrent: state.currentQuestionIndex === questionIndex,
-    isPast: questionIndex < state.currentQuestionIndex,
-    isFuture: questionIndex > state.currentQuestionIndex,
-    status: questionIndex > state.currentQuestionIndex ? 'upcoming' :
-            questionIndex === state.currentQuestionIndex ? 'current' :
-            state.responses[questionIndex] ? 'completed' : 'skipped'
-  }), [state, questionIndex]);
 };

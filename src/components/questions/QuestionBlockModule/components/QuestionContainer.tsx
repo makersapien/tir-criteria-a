@@ -1,15 +1,22 @@
 // src/components/questions/QuestionBlock/components/QuestionContainer.tsx
-// 🧠 QUESTION CONTAINER - Extracted UI Component (110 LOC → Standalone)
+// 🧠 QUESTION CONTAINER - FIXED TYPE ISSUES
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Question, QuestionResponse } from '../types/questionBlock';
+import { 
+  Question, 
+  QuestionResponse,
+  MCQQuestion,
+  FillBlankQuestion,
+  MatchClickQuestion,
+  ShortAnswerQuestion
+} from '../types/questionBlock';
 
-// Import individual question components (adjust paths as needed)
-import { MCQComponent, FillBlankComponent, MatchClickComponent, ShortAnswerComponent } from '../../questionImplementations';
-
-// Import Universal Renderer (adjust path as needed)
-// import UniversalQuestionRenderer, { UniversalQuestionUtils } from '../../UniversalQuestionRenderer';
+// ✅ FIXED: Import individual question components with correct paths
+import MCQComponent from '../../MCQComponent';
+import FillBlankComponent from '../../FillBlankComponent';
+import MatchClickComponent from '../../MatchClickComponent';
+import ShortAnswerComponent from '../../ShortAnswerComponent';
 
 interface QuestionContainerProps {
   question: Question;
@@ -18,11 +25,11 @@ interface QuestionContainerProps {
   previousResponse?: QuestionResponse;
   disabled?: boolean;
   showFeedback?: boolean;
-  renderingMode: 'individual' | 'universal' | 'error';
+  renderingMode: 'standard' | 'universal' | 'error';
   useUniversalRenderer?: boolean;
   enableEnhancedValidation?: boolean;
   fallbackToIndividual?: boolean;
-  onRenderingModeChange?: (mode: 'individual' | 'universal' | 'error') => void;
+  onRenderingModeChange?: (mode: 'standard' | 'universal' | 'error') => void;
 }
 
 export const QuestionContainer: React.FC<QuestionContainerProps> = ({
@@ -38,10 +45,26 @@ export const QuestionContainer: React.FC<QuestionContainerProps> = ({
   fallbackToIndividual = true,
   onRenderingModeChange
 }) => {
-  // Individual component renderer
+  // ✅ FIXED: Type guards to ensure proper typing
+  const isMCQQuestion = (q: Question): q is MCQQuestion => {
+    return q.type === 'mcq' && 'options' in q;
+  };
+
+  const isFillBlankQuestion = (q: Question): q is FillBlankQuestion => {
+    return q.type === 'fill-blank' && ('text' in q || 'blanks' in q);
+  };
+
+  const isMatchClickQuestion = (q: Question): q is MatchClickQuestion => {
+    return q.type === 'match-click' && 'items' in q;
+  };
+
+  const isShortAnswerQuestion = (q: Question): q is ShortAnswerQuestion => {
+    return q.type === 'short-answer' && 'question' in q;
+  };
+
+  // ✅ FIXED: Individual component renderer with proper type casting
   const renderIndividualQuestion = () => {
-    const commonProps = {
-      question,
+    const baseProps = {
       onAnswer,
       showFeedback,
       disabled,
@@ -50,13 +73,53 @@ export const QuestionContainer: React.FC<QuestionContainerProps> = ({
 
     switch (question.type) {
       case 'mcq':
-        return <MCQComponent {...commonProps} />;
+        if (isMCQQuestion(question)) {
+          return (
+            <MCQComponent 
+              {...baseProps}
+              question={question} // Now properly typed as MCQQuestion
+            />
+          );
+        } else {
+          return renderQuestionTypeError('MCQ', 'options array');
+        }
+
       case 'fill-blank':
-        return <FillBlankComponent {...commonProps} />;
+        if (isFillBlankQuestion(question)) {
+          return (
+            <FillBlankComponent 
+              {...baseProps}
+              question={question} // Now properly typed as FillBlankQuestion
+            />
+          );
+        } else {
+          return renderQuestionTypeError('Fill-in-the-blank', 'text and blanks');
+        }
+
       case 'match-click':
-        return <MatchClickComponent {...commonProps} />;
+        if (isMatchClickQuestion(question)) {
+          return (
+            <MatchClickComponent 
+              {...baseProps}
+              question={question} // Now properly typed as MatchClickQuestion
+            />
+          );
+        } else {
+          return renderQuestionTypeError('Match-click', 'items array');
+        }
+
       case 'short-answer':
-        return <ShortAnswerComponent {...commonProps} />;
+        if (isShortAnswerQuestion(question)) {
+          return (
+            <ShortAnswerComponent 
+              {...baseProps}
+              question={question} // Now properly typed as ShortAnswerQuestion
+            />
+          );
+        } else {
+          return renderQuestionTypeError('Short answer', 'question text');
+        }
+
       default:
         return (
           <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
@@ -77,7 +140,29 @@ export const QuestionContainer: React.FC<QuestionContainerProps> = ({
     }
   };
 
-  // Universal renderer with error handling
+  // ✅ ADDED: Helper function for type mismatch errors
+  const renderQuestionTypeError = (expectedType: string, missingProperty: string) => {
+    return (
+      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <h4 className="text-yellow-800 font-semibold mb-2">⚠️ Question Type Mismatch</h4>
+        <p className="text-yellow-700 text-sm mb-3">
+          This question is marked as "{expectedType}" but is missing required property: {missingProperty}
+        </p>
+        <div className="text-xs text-yellow-600 bg-yellow-100 p-2 rounded font-mono">
+          Question ID: {question.id}<br/>
+          Type: {question.type}<br/>
+          Available properties: {Object.keys(question).join(', ')}
+        </div>
+        {enableEnhancedValidation && (
+          <div className="mt-2 text-xs text-yellow-700">
+            💡 Enable question validation to catch these issues earlier
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ✅ ENHANCED: Universal renderer with better fallback
   const renderUniversalQuestion = () => {
     try {
       return (
@@ -87,11 +172,32 @@ export const QuestionContainer: React.FC<QuestionContainerProps> = ({
             ✨ Enhanced
           </div>
           
-          {/* Note: UniversalQuestionRenderer would be imported when available */}
+          {/* ✅ ENHANCED: Fallback to individual components with notification */}
           <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-blue-800 text-sm">
-              Universal renderer is being prepared. Using individual components for now.
-            </p>
+            <div className="flex items-start gap-2 mb-3">
+              <span className="text-blue-600 text-lg">ℹ️</span>
+              <div>
+                <h4 className="text-blue-800 font-semibold mb-1">Universal Renderer</h4>
+                <p className="text-blue-700 text-sm">
+                  Enhanced rendering with type-safe individual components.
+                </p>
+              </div>
+            </div>
+            
+            {/* Render the individual component within the universal container */}
+            <div className="bg-white rounded p-4 border">
+              {renderIndividualQuestion()}
+            </div>
+            
+            {/* ✅ ADDED: Fallback button */}
+            <div className="mt-3 text-center">
+              <button
+                onClick={() => onRenderingModeChange?.('standard')}
+                className="text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1 rounded transition"
+              >
+                Switch to Standard Mode
+              </button>
+            </div>
           </div>
         </div>
       );
@@ -100,7 +206,7 @@ export const QuestionContainer: React.FC<QuestionContainerProps> = ({
       
       // Auto-fallback to individual components
       if (fallbackToIndividual) {
-        onRenderingModeChange?.('individual');
+        onRenderingModeChange?.('standard');
         return renderIndividualQuestion();
       } else {
         return (
@@ -124,10 +230,10 @@ export const QuestionContainer: React.FC<QuestionContainerProps> = ({
           This question has invalid data and cannot be displayed.
         </p>
         <button
-          onClick={() => onRenderingModeChange?.('individual')}
+          onClick={() => onRenderingModeChange?.('standard')}
           className="text-sm bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded transition"
         >
-          Try Individual Renderer
+          Try Standard Renderer
         </button>
       </div>
     );
@@ -153,7 +259,7 @@ export const QuestionContainer: React.FC<QuestionContainerProps> = ({
       return renderUniversalQuestion();
     }
 
-    // Individual components (default)
+    // Individual components (default/standard)
     return renderIndividualQuestion();
   };
 
@@ -180,12 +286,32 @@ export const QuestionContainer: React.FC<QuestionContainerProps> = ({
               {question.type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </span>
             
-            {/* Validation Indicator */}
-            {enableEnhancedValidation && useUniversalRenderer && (
+            {/* ✅ ENHANCED: Rendering mode indicator */}
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+              renderingMode === 'universal' ? 'bg-green-100 text-green-700' :
+              renderingMode === 'standard' ? 'bg-blue-100 text-blue-700' :
+              'bg-red-100 text-red-700'
+            }`}>
+              {renderingMode === 'universal' ? '✨ Enhanced' :
+               renderingMode === 'standard' ? '⚡ Standard' :
+               '⚠ Error'}
+            </span>
+            
+            {/* Type validation indicator */}
+            {enableEnhancedValidation && (
               <span className={`px-2 py-1 rounded-full text-xs ${
-                question.id ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                (question.type === 'mcq' && isMCQQuestion(question)) ||
+                (question.type === 'fill-blank' && isFillBlankQuestion(question)) ||
+                (question.type === 'match-click' && isMatchClickQuestion(question)) ||
+                (question.type === 'short-answer' && isShortAnswerQuestion(question))
+                  ? 'bg-green-100 text-green-700' 
+                  : 'bg-red-100 text-red-700'
               }`}>
-                {question.id ? '✓ Valid' : '⚠ Invalid'}
+                {(question.type === 'mcq' && isMCQQuestion(question)) ||
+                 (question.type === 'fill-blank' && isFillBlankQuestion(question)) ||
+                 (question.type === 'match-click' && isMatchClickQuestion(question)) ||
+                 (question.type === 'short-answer' && isShortAnswerQuestion(question))
+                  ? '✓ Valid Type' : '⚠ Type Mismatch'}
               </span>
             )}
           </div>
@@ -198,7 +324,7 @@ export const QuestionContainer: React.FC<QuestionContainerProps> = ({
             {process.env.NODE_ENV === 'development' && useUniversalRenderer && onRenderingModeChange && (
               <button
                 onClick={() => {
-                  const newMode = renderingMode === 'universal' ? 'individual' : 'universal';
+                  const newMode = renderingMode === 'universal' ? 'standard' : 'universal';
                   onRenderingModeChange(newMode);
                 }}
                 className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded transition"

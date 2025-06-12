@@ -1,18 +1,17 @@
-// src/types/questionBlock.ts
-// Re-export everything from the integrated question system
+// src/types/questionBlock.ts - MINIMAL FIX
+import type {
+  Question,
+  QuestionBlock as SystemQuestionBlock,
+  QuestionResponse,
+  QuestionLevel,
+} from './questionSystem';
 
-// Re-export from question implementations
-export * from '../components/questions/questionImplementations';
-
-// Re-export from question system context
-export * from '../contexts/questionSystemContext';
-
-// Re-export from utils (evaluation functions)
-export * from '../utils/integrationFixes';
-
-// Core types that tie everything together
-export type QuestionLevel = 2 | 4 | 6 | 8;
+// Re-export core types
+export type { Question, QuestionResponse, QuestionLevel };
 export type ExperimentType = 'critical-angle' | 'fiber-optics' | 'distance' | 'magnets';
+
+// Main interfaces
+export interface QuestionBlock extends SystemQuestionBlock {}
 
 export interface StrandData {
   strand: number;
@@ -21,15 +20,6 @@ export interface StrandData {
   blocks: QuestionBlock[];
 }
 
-export interface QuestionBlock {
-  id: string;
-  level: QuestionLevel;
-  questions: Question[];
-  completed: boolean;
-  score: number;
-  unlocked: boolean;
-  attempts: number;
-  maxAttempts: number;
-  completedQuestions: number;
-  totalQuestions: number;
-}
+// App-specific types
+export type RenderingMode = 'standard' | 'universal' | 'hybrid';
+export type SyncStatus = 'idle' | 'saving' | 'success' | 'error';

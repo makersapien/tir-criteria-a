@@ -5,10 +5,19 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 
-// ✅ Clean barrel exports (3 lines)
-import { useQuestionBlockState, useQuestionBlockLogic, useQuestionBlockEffects } from './QuestionBlock/hooks';
-import { LockedBlockDisplay, CompletionScreen, QuestionBlockHeader, QuestionContainer, EnhancedFeedback } from './components';
-import { QuestionBlock as QuestionBlockType } from './QuestionBlock/types';
+// ✅ CORRECT - Single import from the module
+import {
+  useQuestionBlockState,
+  useQuestionBlockLogic,
+  useQuestionBlockEffects,
+  LockedBlockDisplay,
+  CompletionScreen,
+  QuestionBlockHeader,
+  QuestionContainer,
+  EnhancedFeedback,
+  QuestionBlock as QuestionBlockType
+} from './QuestionBlock';  // ← Points to QuestionBlock/index.ts
+
 interface QuestionBlockProps {
   block: QuestionBlockType;
   onComplete: (blockId: string, responses: any[], averageScore: number) => void;

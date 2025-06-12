@@ -2,21 +2,13 @@
 // =====================================
 // Main exports for the QuestionBlock module
 
-// 🎯 Hooks
-export { useQuestionBlockState } from './hooks/useQuestionBlockState';
-export { useQuestionBlockLogic } from './hooks/useQuestionBlockLogic';
-export { useQuestionBlockEffects } from './hooks/useQuestionBlockEffects';
+// Main component
+export { default as QuestionBlock } from '../QuestionBlock';
 
-// 🎯 Services
-export { QuestionValidator } from './types/QuestionValidator';
-export { ResponseAdapter } from './services/adapters/ResponseAdapter';
-export { PerformanceTracker } from './services/analytics/PerformanceTracker';
-
-// 🎯 Utilities
-export { questionBlockUtils } from './utils/questionBlockUtils';
-export { LEARNING_QUOTES, getRandomLearningQuote } from './constants/learningQuotes';
-
-// 🎯 Types
-export type { Question, QuestionResponse, QuestionBlock } from './types/questionBlock';
-export type { ValidationResult, ValidationConfig } from './types/validation';
-export type { QuestionMetrics, LearningInsights } from './types/analytics';
+// Sub-modules (if needed externally)
+export * from './components';
+export * from './hooks';
+export * from './types';
+export * from './services';
+export * from './utils';
+export * from './constants';

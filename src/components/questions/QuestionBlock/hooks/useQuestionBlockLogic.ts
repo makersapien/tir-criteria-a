@@ -11,6 +11,43 @@ interface UseQuestionBlockLogicProps {
   onProgressUpdate?: (blockId: string, currentQuestion: number, totalQuestions: number, currentScore: number) => void;
 }
 
+// ✅ FIXED: Local feedback generator to replace private method
+const generateFeedback = (isCorrect: boolean, score: number, level: number): string => {
+  if (isCorrect) {
+    const excellent = [
+      'Outstanding work! You truly understand this concept.',
+      'Brilliant! Your mastery of this topic is impressive.',
+      'Exceptional performance! Keep up the excellent work.',
+      'Perfect! You\'ve demonstrated deep understanding.',
+      'Excellent! Your analytical skills are sharp.'
+    ];
+    
+    const good = [
+      'Great job! You\'re doing well with this material.',
+      'Nice work! You\'re building solid understanding.',
+      'Good effort! You\'re on the right track.',
+      'Well done! Keep practicing and you\'ll master this.',
+      'Solid work! Your progress is encouraging.'
+    ];
+    
+    if (score >= level * 0.85) {
+      return excellent[Math.floor(Math.random() * excellent.length)];
+    } else {
+      return good[Math.floor(Math.random() * good.length)];
+    }
+  } else {
+    const encouraging = [
+      'Good attempt! Learning takes practice - keep going.',
+      'Nice try! Review the concepts and try again.',
+      'Keep working on it! You\'re building understanding.',
+      'Good effort! Consider reviewing the key concepts.',
+      'Don\'t give up! Learning is a process.'
+    ];
+    
+    return encouraging[Math.floor(Math.random() * encouraging.length)];
+  }
+};
+
 export const useQuestionBlockLogic = (
   state: any,
   dispatch: any,
@@ -39,14 +76,14 @@ export const useQuestionBlockLogic = (
       state.attempts + 1
     );
 
-    // 🎯 Create response object
+    // 🎯 Create response object - FIXED: Using local feedback generator
     const response: QuestionResponse = {
       questionId,
       type: currentQuestion.type,
       answer,
       isCorrect,
       score,
-      feedback: ResponseAdapter.generateFeedback(isCorrect, score, currentQuestion.level),
+      feedback: generateFeedback(isCorrect, score, currentQuestion.level), // ✅ FIXED
       timestamp: new Date(),
       timeSpent: endTime - startTime
     };
@@ -134,10 +171,29 @@ export const useQuestionBlockLogic = (
     dispatch({ type: 'RESET_BLOCK' });
   }, [dispatch]);
 
+  // 🎯 Rendering mode toggle handler (for development)
+  const handleRenderingModeToggle = useCallback(() => {
+    const currentMode = state.renderingMode || 'individual';
+    const newMode = currentMode === 'universal' ? 'individual' : 'universal';
+    dispatch({ type: 'SET_RENDERING_MODE', payload: newMode });
+  }, [state.renderingMode, dispatch]);
+
+  // 🎯 Next level handler
+  const handleNext = useCallback(() => {
+    if (props.onUnlock) {
+      const nextLevel = props.block.level === 2 ? 4 : 
+                       props.block.level === 4 ? 6 : 
+                       props.block.level === 6 ? 8 : null;
+      if (nextLevel) props.onUnlock(nextLevel);
+    }
+  }, [props]);
+
   return {
     handleQuestionResponse,
     handleContinue,
     handleReset,
+    handleRenderingModeToggle,
+    handleNext,
     currentQuestion,
     isLastQuestion
   };

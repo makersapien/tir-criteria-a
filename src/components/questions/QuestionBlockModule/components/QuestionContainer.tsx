@@ -3,6 +3,8 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// ✅ MODULAR: Import types from the updated QuestionBlockModule types (now includes explanation)
 import { 
   Question, 
   QuestionResponse,
@@ -10,7 +12,7 @@ import {
   FillBlankQuestion,
   MatchClickQuestion,
   ShortAnswerQuestion
-} from '../types/questionBlock';
+} from '../types/questionBlock'; // Use the updated modular types with explanation
 
 // ✅ FIXED: Import individual question components with correct paths
 import MCQComponent from '../../MCQComponent';
@@ -45,9 +47,9 @@ export const QuestionContainer: React.FC<QuestionContainerProps> = ({
   fallbackToIndividual = true,
   onRenderingModeChange
 }) => {
-  // ✅ FIXED: Type guards to ensure proper typing
+  // ✅ ENHANCED: Type guards to ensure proper typing
   const isMCQQuestion = (q: Question): q is MCQQuestion => {
-    return q.type === 'mcq' && 'options' in q;
+    return q.type === 'mcq' && 'options' in q && Array.isArray((q as any).options);
   };
 
   const isFillBlankQuestion = (q: Question): q is FillBlankQuestion => {
@@ -55,14 +57,14 @@ export const QuestionContainer: React.FC<QuestionContainerProps> = ({
   };
 
   const isMatchClickQuestion = (q: Question): q is MatchClickQuestion => {
-    return q.type === 'match-click' && 'items' in q;
+    return q.type === 'match-click' && ('leftItems' in q && 'rightItems' in q);
   };
 
   const isShortAnswerQuestion = (q: Question): q is ShortAnswerQuestion => {
-    return q.type === 'short-answer' && 'question' in q;
+    return q.type === 'short-answer' && 'evaluationCriteria' in q;
   };
 
-  // ✅ FIXED: Individual component renderer with proper type casting
+  // ✅ ENHANCED: Individual component renderer with better type casting and error handling
   const renderIndividualQuestion = () => {
     const baseProps = {
       onAnswer,
@@ -71,91 +73,109 @@ export const QuestionContainer: React.FC<QuestionContainerProps> = ({
       previousResponse
     };
 
-    switch (question.type) {
-      case 'mcq':
-        if (isMCQQuestion(question)) {
-          return (
-            <MCQComponent 
-              {...baseProps}
-              question={question} // Now properly typed as MCQQuestion
-            />
-          );
-        } else {
-          return renderQuestionTypeError('MCQ', 'options array');
-        }
+    try {
+      switch (question.type) {
+        case 'mcq':
+          if (isMCQQuestion(question)) {
+            return (
+              <MCQComponent 
+                {...baseProps}
+                question={question} // Now properly typed as MCQQuestion with explanation
+              />
+            );
+          } else {
+            return renderQuestionTypeError('MCQ', 'options array');
+          }
 
-      case 'fill-blank':
-        if (isFillBlankQuestion(question)) {
-          return (
-            <FillBlankComponent 
-              {...baseProps}
-              question={question} // Now properly typed as FillBlankQuestion
-            />
-          );
-        } else {
-          return renderQuestionTypeError('Fill-in-the-blank', 'text and blanks');
-        }
+        case 'fill-blank':
+          if (isFillBlankQuestion(question)) {
+            return (
+              <FillBlankComponent 
+                {...baseProps}
+                question={question} // Now properly typed as FillBlankQuestion with explanation
+              />
+            );
+          } else {
+            return renderQuestionTypeError('Fill-in-the-blank', 'text and blanks');
+          }
 
-      case 'match-click':
-        if (isMatchClickQuestion(question)) {
-          return (
-            <MatchClickComponent 
-              {...baseProps}
-              question={question} // Now properly typed as MatchClickQuestion
-            />
-          );
-        } else {
-          return renderQuestionTypeError('Match-click', 'items array');
-        }
+        case 'match-click':
+          if (isMatchClickQuestion(question)) {
+            return (
+              <MatchClickComponent 
+                {...baseProps}
+                question={question} // Now properly typed as MatchClickQuestion with explanation
+              />
+            );
+          } else {
+            return renderQuestionTypeError('Match-click', 'leftItems and rightItems arrays');
+          }
 
-      case 'short-answer':
-        if (isShortAnswerQuestion(question)) {
-          return (
-            <ShortAnswerComponent 
-              {...baseProps}
-              question={question} // Now properly typed as ShortAnswerQuestion
-            />
-          );
-        } else {
-          return renderQuestionTypeError('Short answer', 'question text');
-        }
+        case 'short-answer':
+          if (isShortAnswerQuestion(question)) {
+            return (
+              <ShortAnswerComponent 
+                {...baseProps}
+                question={question} // Now properly typed as ShortAnswerQuestion with explanation
+              />
+            );
+          } else {
+            return renderQuestionTypeError('Short answer', 'evaluationCriteria');
+          }
 
-      default:
-        return (
-          <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-            <h4 className="text-gray-800 font-semibold mb-2">❓ Unsupported Question Type</h4>
-            <p className="text-gray-700 text-sm">
-              Question type "{(question as any).type || 'unknown'}" is not supported by individual components.
-            </p>
-            {useUniversalRenderer && (
-              <button
-                onClick={() => onRenderingModeChange?.('universal')}
-                className="mt-2 text-sm bg-purple-100 hover:bg-purple-200 text-purple-800 px-3 py-1 rounded transition"
-              >
-                Try Universal Renderer
-              </button>
-            )}
+        default:
+          return (
+            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+              <h4 className="text-gray-800 font-semibold mb-2">❓ Unsupported Question Type</h4>
+              <p className="text-gray-700 text-sm">
+                Question type "{(question as any).type || 'unknown'}" is not supported by individual components.
+              </p>
+              {useUniversalRenderer && (
+                <button
+                  onClick={() => onRenderingModeChange?.('universal')}
+                  className="mt-2 text-sm bg-purple-100 hover:bg-purple-200 text-purple-800 px-3 py-1 rounded transition"
+                >
+                  Try Universal Renderer
+                </button>
+              )}
+            </div>
+          );
+      }
+    } catch (error) {
+      console.error('Error rendering individual question:', error);
+      return (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <h4 className="text-red-800 font-semibold mb-2">⚠️ Rendering Error</h4>
+          <p className="text-red-700 text-sm mb-3">
+            Failed to render question component: {(error as Error).message}
+          </p>
+          <div className="text-xs text-red-600 bg-red-100 p-2 rounded font-mono">
+            Question ID: {question.id}<br/>
+            Type: {question.type}<br/>
+            Available properties: {Object.keys(question).join(', ')}
           </div>
-        );
+        </div>
+      );
     }
   };
 
-  // ✅ ADDED: Helper function for type mismatch errors
+  // ✅ ENHANCED: Helper function for type mismatch errors
   const renderQuestionTypeError = (expectedType: string, missingProperty: string) => {
     return (
       <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
         <h4 className="text-yellow-800 font-semibold mb-2">⚠️ Question Type Mismatch</h4>
         <p className="text-yellow-700 text-sm mb-3">
-          This question is marked as "{expectedType}" but is missing required property: {missingProperty}
+          This question is marked as "{expectedType}" but is missing or has invalid property: {missingProperty}
         </p>
         <div className="text-xs text-yellow-600 bg-yellow-100 p-2 rounded font-mono">
           Question ID: {question.id}<br/>
           Type: {question.type}<br/>
-          Available properties: {Object.keys(question).join(', ')}
+          Available properties: {Object.keys(question).join(', ')}<br/>
+          Has explanation: {'explanation' in question ? '✓' : '✗'}
         </div>
         {enableEnhancedValidation && (
           <div className="mt-2 text-xs text-yellow-700">
-            💡 Enable question validation to catch these issues earlier
+            💡 This suggests a type system mismatch. Check that all question interfaces include required properties.
           </div>
         )}
       </div>
@@ -179,7 +199,7 @@ export const QuestionContainer: React.FC<QuestionContainerProps> = ({
               <div>
                 <h4 className="text-blue-800 font-semibold mb-1">Universal Renderer</h4>
                 <p className="text-blue-700 text-sm">
-                  Enhanced rendering with type-safe individual components.
+                  Enhanced rendering with type-safe individual components using questionSystem types.
                 </p>
               </div>
             </div>
@@ -188,6 +208,13 @@ export const QuestionContainer: React.FC<QuestionContainerProps> = ({
             <div className="bg-white rounded p-4 border">
               {renderIndividualQuestion()}
             </div>
+            
+            {/* ✅ ADDED: Debug info for development */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="mt-3 text-xs text-blue-600 bg-blue-100 p-2 rounded">
+                Debug: Using questionSystem types | Has explanation: {'explanation' in question ? '✓' : '✗'}
+              </div>
+            )}
             
             {/* ✅ ADDED: Fallback button */}
             <div className="mt-3 text-center">
@@ -229,6 +256,9 @@ export const QuestionContainer: React.FC<QuestionContainerProps> = ({
         <p className="text-red-700 text-sm mb-3">
           This question has invalid data and cannot be displayed.
         </p>
+        <div className="text-xs text-red-600 bg-red-100 p-2 rounded font-mono mb-3">
+          Question validation failed. Expected properties may be missing.
+        </div>
         <button
           onClick={() => onRenderingModeChange?.('standard')}
           className="text-sm bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded transition"
@@ -312,6 +342,15 @@ export const QuestionContainer: React.FC<QuestionContainerProps> = ({
                  (question.type === 'match-click' && isMatchClickQuestion(question)) ||
                  (question.type === 'short-answer' && isShortAnswerQuestion(question))
                   ? '✓ Valid Type' : '⚠ Type Mismatch'}
+              </span>
+            )}
+
+            {/* ✅ NEW: Explanation property indicator */}
+            {enableEnhancedValidation && (
+              <span className={`px-2 py-1 rounded-full text-xs ${
+                'explanation' in question ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
+              }`}>
+                {'explanation' in question ? '✓ Has Explanation' : '⚠ Missing Explanation'}
               </span>
             )}
           </div>
